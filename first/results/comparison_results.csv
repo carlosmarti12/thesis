@@ -1,0 +1,16 @@
+topic,term,ground_truth,method,prediction,candidates,exact_match,fuzzy_similarity,semantic_similarity,top_3_accuracy,top_5_accuracy
+topic-12722,recommender system,recommendation engine,same_term_baseline,recommender system,"[""recommender system""]",False,0.5641025641025641,0.8017131090164185,False,False
+topic-12722,recommender system,recommendation engine,llm_single_prompt_baseline,recommendation engine,"[""recommendation engine""]",True,1.0,1.0,True,True
+topic-12722,recommender system,recommendation engine,mas_langgraph,recommendation engine,"[""recommendation engine"", ""automated recommender"", ""recommendation platform"", ""suggestion system""]",True,1.0,1.0,True,True
+topic-2484,stocks,shares,same_term_baseline,stocks,"[""stocks""]",False,0.33333333333333337,0.6918749809265137,False,False
+topic-2484,stocks,shares,llm_single_prompt_baseline,shares,"[""shares""]",True,1.0,1.0,True,True
+topic-2484,stocks,shares,mas_langgraph,,[],False,0.0,0.0,False,False
+topic-4285,equity market,stock market,same_term_baseline,equity market,"[""equity market""]",False,0.64,0.8036888837814331,False,False
+topic-4285,equity market,stock market,llm_single_prompt_baseline,stock market,"[""stock market""]",True,1.0,1.0,True,True
+topic-4285,equity market,stock market,mas_langgraph,Stock market,"[""Stock market"", ""Equity exchange"", ""Share market"", ""Public equity markets"", ""Securities marketplace"", ""Capital stocks"", ""Listed equities sector"", ""Common stock arena""]",True,1.0,1.0,True,True
+topic-3721,liability law,responsibility law,same_term_baseline,liability law,"[""liability law""]",False,0.7096774193548387,0.6819446086883545,False,False
+topic-3721,liability law,responsibility law,llm_single_prompt_baseline,tort law,"[""tort law""]",False,0.4615384615384615,0.4372226595878601,False,False
+topic-3721,liability law,responsibility law,mas_langgraph,civil liability statutes,"[""civil liability statutes"", ""legal accountability rules"", ""tort law""]",False,0.4285714285714286,0.5516936779022217,False,False
+topic-1274,accountancy,financial auditing,same_term_baseline,accountancy,"[""accountancy""]",False,0.3448275862068966,0.5266649723052979,False,False
+topic-1274,accountancy,financial auditing,llm_single_prompt_baseline,accounting,"[""accounting""]",False,0.5,0.6410108804702759,False,False
+topic-1274,accountancy,financial auditing,mas_langgraph,accounting,"[""accounting"", ""bookkeeping"", ""ledger keeping"", ""record-keeping""]",False,0.5,0.6410108804702759,False,False
