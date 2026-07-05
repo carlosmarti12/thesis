@@ -9,7 +9,7 @@ from tqdm import tqdm
 from src.data import load_synonym_dataset
 from src.baselines import same_term_baseline, llm_single_prompt_baseline
 from src.graph import build_synonym_graph
-from src.evaluation import evaluate_candidates
+from src.evaluation import evaluate_prediction
 
 
 # Internal method name constants
@@ -26,7 +26,6 @@ def run_same_term_method(term: str, topic: str) -> Dict[str, Any]:
         "method": _METHOD_NAMES["same"],
         "prediction": prediction,
         "candidates": [prediction],
-        "num_final_candidates": 1,
     }
 
 
@@ -36,33 +35,39 @@ def run_llm_single_prompt_method(term: str, topic: str) -> Dict[str, Any]:
         "method": _METHOD_NAMES["llm"],
         "prediction": prediction,
         "candidates": [prediction],
-        "num_final_candidates": 1,
     }
 
 
 def run_mas_langgraph_method(app, term: str, topic: str) -> Dict[str, Any]:
-    # `topic` is only carried along for logging/grouping; the graph's real
-    # input is `term` alone, and the ground truth never enters `app.invoke`.
     result = app.invoke({"term": term, "topic": topic, "log": []})
 
-    candidates = result.get("final_candidates", [])
+    ranked_candidates = result.get("ranked_candidates", [])
+    candidates = [
+        item["candidate"]
+        for item in ranked_candidates
+        if isinstance(item, dict) and "candidate" in item
+    ]
+    if not candidates:
+        candidates = result.get("filtered_candidates", [])
+    if not candidates:
+        candidates = result.get("candidates", [])
+
+    # top-1 ranked candidate used as point prediction for single-value metrics
     prediction = candidates[0] if candidates else ""
 
     return {
         "method": _METHOD_NAMES["mas"],
         "prediction": prediction,
         "candidates": candidates,
-        "num_final_candidates": result.get("num_final_candidates", len(candidates)),
         "domain": result.get("domain", ""),
     }
 
 
 def _build_row(topic, term, ground_truth, output: Dict[str, Any]) -> Dict[str, Any]:
-    # `ground_truth` (row["en_synonym"]) is used only here, to score the
-    # candidates the method already produced — never fed back into prediction.
-    metrics = evaluate_candidates(
-        candidates=output["candidates"],
+    metrics = evaluate_prediction(
+        prediction=output["prediction"],
         ground_truth=ground_truth,
+        candidates=output["candidates"],
     )
     return {
         "topic": topic,
@@ -72,14 +77,13 @@ def _build_row(topic, term, ground_truth, output: Dict[str, Any]) -> Dict[str, A
         "domain": output.get("domain", ""),
         "prediction": output["prediction"],
         "candidates": json.dumps(output["candidates"], ensure_ascii=False),
-        "num_final_candidates": output["num_final_candidates"],
-        "exact_top1": metrics["exact_top1"],
-        "exact_any": metrics["exact_any"],
+        "exact_match": metrics["exact_match"],
         "fuzzy_similarity": metrics["fuzzy_similarity"],
         "semantic_similarity": metrics["semantic_similarity"],
         "top_3_accuracy": metrics["top_3_accuracy"],
         "top_5_accuracy": metrics["top_5_accuracy"],
-        "mrr": metrics["mrr"],
+        "top_8_accuracy": metrics["top_8_accuracy"],
+        "top_8_fuzzy_accuracy": metrics["top_8_fuzzy_accuracy"],
     }
 
 
@@ -156,19 +160,21 @@ def print_summary(results: pd.DataFrame) -> None:
         results.groupby("method")
         .agg(
             n=("term", "count"),
-            exact_top1=("exact_top1", "mean"),
-            exact_any=("exact_any", "mean"),
-            fuzzy_similarity=("fuzzy_similarity", "mean"),
+            exact_match=("exact_match", "mean"),
             semantic_similarity=("semantic_similarity", "mean"),
-            top_3_accuracy=("top_3_accuracy", "mean"),
             top_5_accuracy=("top_5_accuracy", "mean"),
-            mrr=("mrr", "mean"),
+            top_8_accuracy=("top_8_accuracy", "mean"),
+            top_8_fuzzy_accuracy=("top_8_fuzzy_accuracy", "mean"),
         )
         .reset_index()
     )
 
     print("\n=== SUMMARY BY METHOD ===")
     print(summary.to_string(index=False))
+    print("\nKey metrics:")
+    print("  top_8_accuracy       — ground truth appears exactly in the 8 candidates (MAS primary metric)")
+    print("  top_8_fuzzy_accuracy — same but allowing fuzzy partial matches (token_set_ratio >= 80)")
+    print("  For baselines: top_8 == exact_match (single candidate list).")
 
     empty_mask = (results["prediction"] == "") | results["prediction"].isna()
     if empty_mask.any():
@@ -176,8 +182,8 @@ def print_summary(results: pd.DataFrame) -> None:
         print(results.loc[empty_mask, ["term", "method"]].to_string(index=False))
 
     print("\n=== SAMPLE RESULTS ===")
-    cols = ["term", "ground_truth", "method", "prediction", "exact_top1", "semantic_similarity"]
-    print(results[cols].head(20).to_string(index=False))
+    cols = ["term", "ground_truth", "method", "prediction", "top_8_accuracy", "top_8_fuzzy_accuracy", "semantic_similarity"]
+    print(results[cols].head(24).to_string(index=False))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,101 @@
+topic,term,ground_truth,method,prediction,candidates,num_final_candidates,time_seconds,exact_top1,exact_any,fuzzy_similarity,semantic_similarity,top_3_accuracy,top_5_accuracy,mrr
+topic-12722,recommender system,recommendation engine,same_term_limit_100,recommender system,"[""recommender system""]",1,1.1920928955078125e-06,False,False,0.5641025641025641,0.8017131090164185,False,False,0.0
+topic-2484,stocks,shares,same_term_limit_100,stocks,"[""stocks""]",1,9.5367431640625e-07,False,False,0.33333333333333337,0.6918751001358032,False,False,0.0
+topic-4285,equity market,stock market,same_term_limit_100,equity market,"[""equity market""]",1,4.76837158203125e-07,False,False,0.64,0.8036891222000122,False,False,0.0
+topic-3721,liability law,responsibility law,same_term_limit_100,liability law,"[""liability law""]",1,2.384185791015625e-07,False,False,0.7096774193548387,0.681944727897644,False,False,0.0
+topic-1274,accountancy,financial auditing,same_term_limit_100,accountancy,"[""accountancy""]",1,4.76837158203125e-07,False,False,0.3448275862068966,0.5266649723052979,False,False,0.0
+topic-5882,auditors,financial examiners,same_term_limit_100,auditors,"[""auditors""]",1,4.76837158203125e-07,False,False,0.2962962962962963,0.6801270842552185,False,False,0.0
+topic-1276,accounting,financial accounting,same_term_limit_100,accounting,"[""accounting""]",1,7.152557373046875e-07,False,False,0.6666666666666667,0.8892039656639099,False,False,0.0
+topic-1953,acculturation,cultural adaptation,same_term_limit_100,acculturation,"[""acculturation""]",1,4.76837158203125e-07,False,False,0.6875,0.39237111806869507,False,False,0.0
+topic-1919,actual pastoral liturgical practice,current liturgical practice,same_term_limit_100,actual pastoral liturgical practice,"[""actual pastoral liturgical practice""]",1,4.76837158203125e-07,False,False,0.7419354838709676,0.8342791795730591,False,False,0.0
+topic-1980,adhd,attention deficit disorder,same_term_limit_100,adhd,"[""adhd""]",1,4.76837158203125e-07,False,False,0.19999999999999996,0.723759651184082,False,False,0.0
+topic-4079,administrative law,regulatory law,same_term_limit_100,administrative law,"[""administrative law""]",1,4.76837158203125e-07,False,False,0.4375,0.5233328342437744,False,False,0.0
+topic-2276,adorno,critical theorist,same_term_limit_100,adorno,"[""adorno""]",1,4.76837158203125e-07,False,False,0.26086956521739135,0.21302185952663422,False,False,0.0
+topic-2250,africa,Sub-Saharan region,same_term_limit_100,africa,"[""africa""]",1,2.384185791015625e-07,False,False,0.25,0.6281067132949829,False,False,0.0
+topic-1280,agricultural economy,agricultural economics,same_term_limit_100,agricultural economy,"[""agricultural economy""]",1,2.384185791015625e-07,False,False,0.9047619047619048,0.8946830034255981,False,False,0.0
+topic-7782,aggression,hostility,same_term_limit_100,aggression,"[""aggression""]",1,2.384185791015625e-07,False,False,0.21052631578947367,0.6816224455833435,False,False,0.0
+topic-5124,alcohol addiction,alcohol dependence,same_term_limit_100,alcohol addiction,"[""alcohol addiction""]",1,2.384185791015625e-07,False,False,0.6285714285714286,0.8469732999801636,False,False,0.0
+topic-2500,general econometrics,economic statistics,same_term_limit_100,general econometrics,"[""general econometrics""]",1,7.152557373046875e-07,False,False,0.5128205128205128,0.6937490701675415,False,False,0.0
+topic-2501,alliances and joint ventures,strategic partnerships,same_term_limit_100,alliances and joint ventures,"[""alliances and joint ventures""]",1,4.76837158203125e-07,False,False,0.36,0.7198052406311035,False,False,0.0
+topic-1285,foreigners,strangers,same_term_limit_100,foreigners,"[""foreigners""]",1,2.384185791015625e-07,False,False,0.5263157894736843,0.416897177696228,False,False,0.0
+topic-10501,americanization,Americanisation,same_term_limit_100,americanization,"[""americanization""]",1,2.384185791015625e-07,False,False,0.9333333333333332,0.9272270798683167,False,False,0.0
+topic-9362,anxiety,worry,same_term_limit_100,anxiety,"[""anxiety""]",1,2.384185791015625e-07,False,False,0.16666666666666663,0.47164100408554077,False,False,0.0
+topic-16802,"Antarctic, Arctic, Polar Regions",polar areas,same_term_limit_100,"Antarctic, Arctic, Polar Regions","[""Antarctic, Arctic, Polar Regions""]",1,4.76837158203125e-07,False,False,0.4390243902439024,0.6824129819869995,False,False,0.0
+topic-1290,"anthropology and philosophy of religion, relation",relationship between anthropology and religious philosophy,same_term_limit_100,"anthropology and philosophy of religion, relation","[""anthropology and philosophy of religion, relation""]",1,2.384185791015625e-07,False,False,0.5094339622641509,0.9297840595245361,False,False,0.0
+topic-1291,arabic,Arabian,same_term_limit_100,arabic,"[""arabic""]",1,4.76837158203125e-07,False,False,0.7692307692307692,0.7408484220504761,False,False,0.0
+topic-1292,labour and health,occupational health,same_term_limit_100,labour and health,"[""labour and health""]",1,2.384185791015625e-07,False,False,0.6111111111111112,0.5833357572555542,False,False,0.0
+topic-1293,industrial and organisational psychology,work psychology,same_term_limit_100,industrial and organisational psychology,"[""industrial and organisational psychology""]",1,2.384185791015625e-07,False,False,0.47272727272727283,0.7130119800567627,False,False,0.0
+topic-6581,working hours,working time,same_term_limit_100,working hours,"[""working hours""]",1,4.76837158203125e-07,False,False,0.64,0.8332280516624451,False,False,0.0
+topic-1296,labour economics,employment economics,same_term_limit_100,labour economics,"[""labour economics""]",1,4.76837158203125e-07,False,False,0.6666666666666667,0.7844510674476624,False,False,0.0
+topic-2201,labour market,employment market,same_term_limit_100,labour market,"[""labour market""]",1,4.76837158203125e-07,False,False,0.6,0.7667472958564758,False,False,0.0
+topic-6603,labour market policy,employment policy,same_term_limit_100,labour market policy,"[""labour market policy""]",1,4.76837158203125e-07,False,False,0.6486486486486487,0.7137025594711304,False,False,0.0
+topic-1298,labour market issues,employment issues,same_term_limit_100,labour market issues,"[""labour market issues""]",1,2.384185791015625e-07,False,False,0.6486486486486487,0.7138620615005493,False,False,0.0
+topic-1299,job motivation,work motivation,same_term_limit_100,job motivation,"[""job motivation""]",1,7.152557373046875e-07,False,False,0.8275862068965517,0.9033404588699341,False,False,0.0
+topic-6661,working conditions,employment conditions,same_term_limit_100,working conditions,"[""working conditions""]",1,4.76837158203125e-07,False,False,0.6666666666666667,0.7422128915786743,False,False,0.0
+topic-1300,work participation,employment participation,same_term_limit_100,work participation,"[""work participation""]",1,4.76837158203125e-07,False,False,0.7142857142857143,0.8129706978797913,False,False,0.0
+topic-1301,labour law,employment law,same_term_limit_100,labour law,"[""labour law""]",1,4.76837158203125e-07,False,False,0.5,0.7771340608596802,False,False,0.0
+topic-1303,reduction of working hours,workweek reduction,same_term_limit_100,reduction of working hours,"[""reduction of working hours""]",1,7.152557373046875e-07,False,False,0.40909090909090906,0.7307581901550293,False,False,0.0
+topic-1302,industrial/labour relations,employment relations,same_term_limit_100,industrial/labour relations,"[""industrial/labour relations""]",1,9.5367431640625e-07,False,False,0.5217391304347826,0.7138761281967163,False,False,0.0
+topic-1305,working conditions creation,quality of worklife,same_term_limit_100,working conditions creation,"[""working conditions creation""]",1,4.76837158203125e-07,False,False,0.26086956521739135,0.3147099018096924,False,False,0.0
+topic-1306,labour issues,employment issues,same_term_limit_100,labour issues,"[""labour issues""]",1,4.76837158203125e-07,False,False,0.6,0.6973878145217896,False,False,0.0
+topic-4081,arbitration,dispute arbitration,same_term_limit_100,arbitration,"[""arbitration""]",1,4.76837158203125e-07,False,False,0.7333333333333334,0.8950819969177246,False,False,0.0
+topic-3937,reasoning,logical argumentation,same_term_limit_100,reasoning,"[""reasoning""]",1,2.384185791015625e-07,False,False,0.33333333333333337,0.664592981338501,False,False,0.0
+topic-5627,aristoteles,Aristotle,same_term_limit_100,aristoteles,"[""aristoteles""]",1,4.76837158203125e-07,False,False,0.9,0.5418916344642639,False,False,0.0
+topic-2517,poverty,destitution,same_term_limit_100,poverty,"[""poverty""]",1,7.152557373046875e-07,False,False,0.2222222222222222,0.29273080825805664,False,False,0.0
+topic-2519,asylum seekers,refugees,same_term_limit_100,asylum seekers,"[""asylum seekers""]",1,4.76837158203125e-07,False,False,0.36363636363636365,0.7540886402130127,False,False,0.0
+topic-1309,asset liability management,balance sheet management,same_term_limit_100,asset liability management,"[""asset liability management""]",1,4.76837158203125e-07,False,False,0.6,0.4712027311325073,False,False,0.0
+topic-21,attitudes,mindset,same_term_limit_100,attitudes,"[""attitudes""]",1,4.76837158203125e-07,False,False,0.375,0.5060447454452515,False,False,0.0
+topic-6701,auditory perception,hearing perception,same_term_limit_100,auditory perception,"[""auditory perception""]",1,7.152557373046875e-07,False,False,0.7027027027027026,0.9231189489364624,False,False,0.0
+topic-3542,augustine,St. Augustine,same_term_limit_100,augustine,"[""augustine""]",1,4.76837158203125e-07,False,False,0.8571428571428572,0.900619387626648,False,False,0.0
+topic-1313,automatic language analysis,computational linguistics,same_term_limit_100,automatic language analysis,"[""automatic language analysis""]",1,4.76837158203125e-07,False,False,0.5,0.5699320435523987,False,False,0.0
+topic-3966,automation,mechanization,same_term_limit_100,automation,"[""automation""]",1,4.76837158203125e-07,False,False,0.5217391304347826,0.30310770869255066,False,False,0.0
+topic-1905,autonomy and moral,self-governance and ethics,same_term_limit_100,autonomy and moral,"[""autonomy and moral""]",1,2.384185791015625e-07,False,False,0.31818181818181823,0.6336890459060669,False,False,0.0
+topic-2527,bank - firm relationships,financial partnerships,same_term_limit_100,bank - firm relationships,"[""bank - firm relationships""]",1,2.384185791015625e-07,False,False,0.5106382978723405,0.5859395265579224,False,False,0.0
+topic-5721,banking law,financial law,same_term_limit_100,banking law,"[""banking law""]",1,4.76837158203125e-07,False,False,0.5833333333333333,0.7350656986236572,False,False,0.0
+topic-1316,banking systems,financial systems,same_term_limit_100,banking systems,"[""banking systems""]",1,4.76837158203125e-07,False,False,0.6875,0.7634453773498535,False,False,0.0
+topic-1318,primary education,elementary education,same_term_limit_100,primary education,"[""primary education""]",1,2.384185791015625e-07,False,False,0.7567567567567568,0.747912585735321,False,False,0.0
+topic-5221,bayesian statistics,Bayesian inference,same_term_limit_100,bayesian statistics,"[""bayesian statistics""]",1,4.76837158203125e-07,False,False,0.5945945945945945,0.8787760734558105,False,False,0.0
+topic-4283,corporate policy and strategy,business strategy,same_term_limit_100,corporate policy and strategy,"[""corporate policy and strategy""]",1,4.76837158203125e-07,False,False,0.4782608695652174,0.720454752445221,False,False,0.0
+topic-1998,business communication and ethics,corporate communication ethics,same_term_limit_100,business communication and ethics,"[""business communication and ethics""]",1,2.384185791015625e-07,False,False,0.6984126984126984,0.8661800622940063,False,False,0.0
+topic-5551,business modelling,business analytics,same_term_limit_100,business modelling,"[""business modelling""]",1,2.384185791015625e-07,False,False,0.6111111111111112,0.5928677320480347,False,False,0.0
+topic-1320,business economics,managerial economics,same_term_limit_100,business economics,"[""business economics""]",1,4.76837158203125e-07,False,False,0.631578947368421,0.7814818620681763,False,False,0.0
+topic-1321,business ethics,corporate ethics,same_term_limit_100,business ethics,"[""business ethics""]",1,4.76837158203125e-07,False,False,0.5161290322580645,0.8762365579605103,False,False,0.0
+topic-2532,business studies,business administration,same_term_limit_100,business studies,"[""business studies""]",1,4.76837158203125e-07,False,False,0.6153846153846154,0.6260528564453125,False,False,0.0
+topic-15222,Firm relocation,business relocation,same_term_limit_100,Firm relocation,"[""Firm relocation""]",1,4.76837158203125e-07,False,False,0.7058823529411764,0.8464537858963013,False,False,0.0
+topic-7801,companies,businesses,same_term_limit_100,companies,"[""companies""]",1,4.76837158203125e-07,False,False,0.3157894736842105,0.7675407528877258,False,False,0.0
+topic-8685,bounded rationality,limited rationality,same_term_limit_100,bounded rationality,"[""bounded rationality""]",1,2.384185791015625e-07,False,False,0.736842105263158,0.691673755645752,False,False,0.0
+topic-5681,information systems management,IT management,same_term_limit_100,information systems management,"[""information systems management""]",1,2.384185791015625e-07,False,False,0.6046511627906976,0.7540761828422546,False,False,0.0
+topic-2536,taxes,levies,same_term_limit_100,taxes,"[""taxes""]",1,2.384185791015625e-07,False,False,0.36363636363636365,0.281139075756073,False,False,0.0
+topic-1327,tax law,fiscal law,same_term_limit_100,tax law,"[""tax law""]",1,7.152557373046875e-07,False,False,0.5882352941176471,0.7083753347396851,False,False,0.0
+topic-1328,investment,investing,same_term_limit_100,investment,"[""investment""]",1,7.152557373046875e-07,False,False,0.736842105263158,0.9028321504592896,False,False,0.0
+topic-11441,investor behaviour,Investor psychology,same_term_limit_100,investor behaviour,"[""investor behaviour""]",1,4.76837158203125e-07,False,False,0.5945945945945945,0.8171998858451843,False,False,0.0
+topic-6461,mutual fund,investment fund,same_term_limit_100,mutual fund,"[""mutual fund""]",1,1.1920928955078125e-06,False,False,0.5384615384615384,0.8848641514778137,False,False,0.0
+topic-1331,policy evaluation,policy analysis,same_term_limit_100,policy evaluation,"[""policy evaluation""]",1,4.76837158203125e-07,False,False,0.625,0.8314338326454163,False,False,0.0
+topic-4681,mediation,conflict resolution,same_term_limit_100,mediation,"[""mediation""]",1,2.384185791015625e-07,False,False,0.3571428571428571,0.49004173278808594,False,False,0.0
+topic-9022,assertive outreach,proactive engagement,same_term_limit_100,assertive outreach,"[""assertive outreach""]",1,4.76837158203125e-07,False,False,0.42105263157894735,0.3471648395061493,False,False,0.0
+topic-2541,berber language,Tamazight,same_term_limit_100,berber language,"[""berber language""]",1,4.76837158203125e-07,False,False,0.25,0.11629112809896469,False,False,0.0
+topic-1997,occupational ethics,professional ethics,same_term_limit_100,occupational ethics,"[""occupational ethics""]",1,4.76837158203125e-07,False,False,0.6842105263157895,0.7347698211669922,False,False,0.0
+topic-15902,Occupational ethics for ministers,ministerial ethics,same_term_limit_100,Occupational ethics for ministers,"[""Occupational ethics for ministers""]",1,4.76837158203125e-07,False,False,0.43137254901960786,0.80808424949646,False,False,0.0
+topic-4353,occupational diseases,work-related illnesses,same_term_limit_100,occupational diseases,"[""occupational diseases""]",1,4.76837158203125e-07,False,False,0.41860465116279066,0.6822699308395386,False,False,0.0
+topic-16804,protected species,endangered species,same_term_limit_100,protected species,"[""protected species""]",1,4.76837158203125e-07,False,False,0.6285714285714286,0.7433508038520813,False,False,0.0
+topic-2542,decision theory,decision analysis,same_term_limit_100,decision theory,"[""decision theory""]",1,4.76837158203125e-07,False,False,0.625,0.792543888092041,False,False,0.0
+topic-2643,decision support systems,decision aid systems,same_term_limit_100,decision support systems,"[""decision support systems""]",1,4.76837158203125e-07,False,False,0.7727272727272727,0.7924105525016785,False,False,0.0
+topic-6807,decision making,decision process,same_term_limit_100,decision making,"[""decision making""]",1,4.76837158203125e-07,False,False,0.5806451612903225,0.8549598455429077,False,False,0.0
+topic-1337,information management and technology,information systems management,same_term_limit_100,information management and technology,"[""information management and technology""]",1,4.76837158203125e-07,False,False,0.6567164179104478,0.7686203122138977,False,False,0.0
+topic-1338,administrative reform,bureaucratic reform,same_term_limit_100,administrative reform,"[""administrative reform""]",1,7.152557373046875e-07,False,False,0.6,0.794542670249939,False,False,0.0
+topic-1340,management of non-profit organisations,non-profit management,same_term_limit_100,management of non-profit organisations,"[""management of non-profit organisations""]",1,4.76837158203125e-07,False,False,0.5084745762711864,0.9256470799446106,False,False,0.0
+topic-1341,public administration,administrative organisation,same_term_limit_100,public administration,"[""public administration""]",1,7.152557373046875e-07,False,False,0.5833333333333333,0.7269620299339294,False,False,0.0
+topic-3792,administrative procedural law,administrative litigation,same_term_limit_100,administrative procedural law,"[""administrative procedural law""]",1,4.76837158203125e-07,False,False,0.6296296296296297,0.690853476524353,False,False,0.0
+topic-8942,consciousness,awareness,same_term_limit_100,consciousness,"[""consciousness""]",1,4.76837158203125e-07,False,False,0.36363636363636365,0.5779495239257812,False,False,0.0
+topic-2278,bible (studies),biblical studies,same_term_limit_100,bible (studies),"[""bible (studies)""]",1,7.152557373046875e-07,False,False,0.8275862068965517,0.8552313446998596,False,False,0.0
+topic-2332,bible as literature,scriptural literature,same_term_limit_100,bible as literature,"[""bible as literature""]",1,4.76837158203125e-07,False,False,0.65,0.5514931678771973,False,False,0.0
+topic-16882,Bible and culture,scriptural influence on culture,same_term_limit_100,Bible and culture,"[""Bible and culture""]",1,4.76837158203125e-07,False,False,0.5416666666666667,0.5845087766647339,False,False,0.0
+topic-2330,bible translations,scripture translations,same_term_limit_100,bible translations,"[""bible translations""]",1,4.76837158203125e-07,False,False,0.75,0.935783863067627,False,False,0.0
+topic-1344,bible studies; exegesis,Bible interpretation,same_term_limit_100,bible studies; exegesis,"[""bible studies; exegesis""]",1,7.152557373046875e-07,False,False,0.4761904761904761,0.5233874320983887,False,False,0.0
+topic-1346,bible studies; new testament,New Testament studies,same_term_limit_100,bible studies; new testament,"[""bible studies; new testament""]",1,2.384185791015625e-07,False,False,0.5416666666666667,0.9247369766235352,False,False,0.0
+topic-1348,biodiversity,natural diversity,same_term_limit_100,biodiversity,"[""biodiversity""]",1,3.5762786865234375e-06,False,False,0.6206896551724138,0.7432959079742432,False,False,0.0
+topic-12123,"Blanchot, Maurice (1907-2003)",literary philosopher,same_term_limit_100,"Blanchot, Maurice (1907-2003)","[""Blanchot, Maurice (1907-2003)""]",1,7.152557373046875e-07,False,False,0.26086956521739135,0.13427042961120605,False,False,0.0
+topic-1351,urban planning and building law,city planning regulations,same_term_limit_100,urban planning and building law,"[""urban planning and building law""]",1,2.384185791015625e-07,False,False,0.5,0.7682427167892456,False,False,0.0
+topic-1352,brabant,Brabant region,same_term_limit_100,brabant,"[""brabant""]",1,2.384185791015625e-07,False,False,0.6666666666666667,0.8867825269699097,False,False,0.0
+topic-1402,Letter of James,Epistle of James,same_term_limit_100,Letter of James,"[""Letter of James""]",1,4.76837158203125e-07,False,False,0.7741935483870968,0.7707448601722717,False,False,0.0
+topic-1356,law of civil procedure,civil litigation law,same_term_limit_100,law of civil procedure,"[""law of civil procedure""]",1,7.152557373046875e-07,False,False,0.33333333333333337,0.6929585933685303,False,False,0.0

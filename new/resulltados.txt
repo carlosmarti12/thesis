@@ -1,0 +1,218 @@
+(.venv) carlos@wyz:~/thesis/new$ python src/run_experiments.py --method same_term --limit 50
+Running method: same_term
+Rows: 50
+Loading embedding model...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 6068.46it/s]
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 50/50 [00:00<00:00, 138.08it/s]
+
+Summary:
+{
+  "rows": 50,
+  "exact_top1": 0.0,
+  "exact_any": 0.0,
+  "top_3_accuracy": 0.0,
+  "top_5_accuracy": 0.0,
+  "mean_fuzzy_similarity": 0.5398108894280947,
+  "mean_semantic_similarity": 0.6803774753212929,
+  "mean_mrr": 0.0,
+  "avg_time_seconds": 5.102157592773438e-07
+}
+
+Saved detailed results to: results/same_term_results.csv
+Saved summary to: results/same_term_summary.json
+(.venv) carlos@wyz:~/thesis/new$ python src/run_experiments.py --method embedding --limit 50
+Running method: embedding
+Rows: 50
+Loading embedding model...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 20193.20it/s]
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 50/50 [00:00<00:00, 50.17it/s]
+
+Summary:
+{
+  "rows": 50,
+  "exact_top1": 0.68,
+  "exact_any": 0.9,
+  "top_3_accuracy": 0.8,
+  "top_5_accuracy": 0.9,
+  "mean_fuzzy_similarity": 0.9369604660045837,
+  "mean_semantic_similarity": 0.9325127220153808,
+  "mean_mrr": 0.7530000000000001,
+  "avg_time_seconds": 0.01642468452453613
+}
+
+Saved detailed results to: results/embedding_results.csv
+Saved summary to: results/embedding_summary.json
+(.venv) carlos@wyz:~/thesis/new$ python src/run_experiments.py --method llm --limit 20 --model qwen3.5:latest
+Running method: llm
+Rows: 20
+Loading embedding model...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 16322.10it/s]
+Loading Ollama model: qwen3.5:latest
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 20/20 [55:44<00:00, 167.23s/it]
+
+Summary:
+{
+  "rows": 20,
+  "exact_top1": 0.35,
+  "exact_any": 0.5,
+  "top_3_accuracy": 0.45,
+  "top_5_accuracy": 0.5,
+  "mean_fuzzy_similarity": 0.7347273314053082,
+  "mean_semantic_similarity": 0.7557637366931885,
+  "mean_mrr": 0.4041666666666667,
+  "avg_time_seconds": 167.18295044898986
+}
+
+Saved detailed results to: results/llm_results.csv
+Saved summary to: results/llm_summary.json
+(.venv) carlos@wyz:~/thesis/new$ python src/run_experiments.py --method llm --limit 20 --model llama3.2:3b
+Running method: llm
+Rows: 20
+Loading embedding model...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 5315.32it/s]
+Loading Ollama model: llama3.2:3b
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 20/20 [00:20<00:00,  1.02s/it]
+
+Summary:
+{
+  "rows": 20,
+  "exact_top1": 0.0,
+  "exact_any": 0.35,
+  "top_3_accuracy": 0.3,
+  "top_5_accuracy": 0.35,
+  "mean_fuzzy_similarity": 0.7948207342437453,
+  "mean_semantic_similarity": 0.7841898337006569,
+  "mean_mrr": 0.16,
+  "avg_time_seconds": 1.0045689702033997
+}
+
+Saved detailed results to: results/llm_results.csv
+Saved summary to: results/llm_summary.json
+(.venv) carlos@wyz:~/thesis/new$ ls results
+embedding_results.csv  embedding_summary.json  llm_results.csv  llm_summary.json  same_term_results.csv  same_term_summary.json
+(.venv) carlos@wyz:~/thesis/new$ python src/run_mas_langgraph.py --limit 20 --model llama3.2:3b
+Rows: 20
+Loading embedding model...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 16931.08it/s]
+Loading Ollama model: llama3.2:3b
+Building MAS LangGraph...
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 20/20 [00:19<00:00,  1.02it/s]
+
+Summary:
+{
+  "rows": 20,
+  "exact_top1": 0.35,
+  "exact_any": 0.85,
+  "top_3_accuracy": 0.7,
+  "top_5_accuracy": 0.85,
+  "mean_fuzzy_similarity": 0.9585858585858587,
+  "mean_semantic_similarity": 0.9239336818456649,
+  "mean_mrr": 0.5349999999999999,
+  "avg_time_seconds": 0.9756500124931335
+}
+
+Saved detailed results to: results/mas_langgraph_results.csv
+Saved summary to: results/mas_langgraph_summary.json
+(.venv) carlos@wyz:~/thesis/new$ python src/run_mas_langgraph.py --limit 20 --model qwen3.5:latest
+Rows: 20
+Loading embedding model...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 15679.36it/s]
+Loading Ollama model: qwen3.5:latest
+Building MAS LangGraph...
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 20/20 [1:05:48<00:00, 197.42s/it]
+
+Summary:
+{
+  "rows": 20,
+  "exact_top1": 0.35,
+  "exact_any": 0.85,
+  "top_3_accuracy": 0.75,
+  "top_5_accuracy": 0.85,
+  "mean_fuzzy_similarity": 0.922027027027027,
+  "mean_semantic_similarity": 0.9268195062875748,
+  "mean_mrr": 0.55,
+  "avg_time_seconds": 197.41216362714766
+}
+
+Saved detailed results to: results/mas_langgraph_results.csv
+Saved summary to: results/mas_langgraph_summary.json
+(.venv) carlos@wyz:~/thesis/new$ 
+
+
+#Cuales son mejores
+
+1. embedding_limit_100
+2. mas_langgraph_llama3.2_3b_limit_100
+3. llm_llama3.2_3b_limit_100
+4. same_term_limit_100
+
+
+
+rm results/*.csv results/*.json
+
+python src/run_experiments.py --method same_term
+python src/run_experiments.py --method embedding
+python src/run_experiments.py --method llm --model llama3.2:3b
+python src/run_mas_langgraph.py --model llama3.2:3b
+python src/run_mas_v2_langgraph.py --model llama3.2:3b
+
+python src/compare_results.py
+
+
+
+
+cd ~/thesis/new
+source .venv/bin/activate
+
+python src/prepare_dataset.py
+
+rm -f results/*.csv results/*.json
+
+python src/run_experiments.py --method same_term --limit 300
+python src/run_experiments.py --method embedding --limit 300
+python src/run_experiments.py --method llm --limit 300 --model llama3.2:3b
+python src/run_mas_langgraph.py --limit 300 --model llama3.2:3b
+python src/run_mas_v2_langgraph.py --limit 300 --model llama3.2:3b
+python src/run_mas_v3_safe_hybrid.py --limit 300 --model llama3.2:3b
+
+python src/compare_results.py
+
+rm -f results/*.csv results/*.json
+
+python src/run_experiments.py --method same_term --limit 100
+python src/run_experiments.py --method embedding --limit 100
+python src/run_experiments.py --method llm --limit 100 --model llama3.2:3b
+python src/run_mas_langgraph.py --limit 100 --model llama3.2:3b
+python src/run_mas_v2_langgraph.py --limit 100 --model llama3.2:3b
+python src/run_mas_v3_safe_hybrid.py --limit 100 --model llama3.2:3b
+
+python src/compare_results.py
+
+
+python src/run_mas_v3_safe_hybrid.py --model llama3.2:3b
+
+cat results/mas_v3_safe_hybrid_llama3.2_3b_full_summary.json
+
+python - <<'PY'
+import pandas as pd
+
+path = "results/mas_v3_safe_hybrid_llama3.2_3b_full_results.csv"
+df = pd.read_csv(path)
+
+print(df["num_final_candidates"].value_counts().sort_index())
+print(df[["term", "prediction", "candidates", "num_final_candidates"]].head(10))
+PY
+
+mkdir -p thesis_results/experiment_full_v3
+cp results/* thesis_results/experiment_full_v3/
+
+
+mkdir -p thesis_results/experiment_300_v3
+cp results/* thesis_results/experiment_300_v3/
+

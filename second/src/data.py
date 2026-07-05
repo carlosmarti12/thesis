@@ -29,8 +29,5 @@ def load_synonym_dataset() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = load_synonym_dataset()
-    print(df)
-    #print("Rows:", len(df))
-
-    df.to_csv("synonyms_clean.csv", index=False)
-    print("Saved to synonyms_clean.csv")
+    print(df.head())
+    print("Rows:", len(df))

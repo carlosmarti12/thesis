@@ -5,7 +5,9 @@ from typing import List
 import ollama
 
 
-MODEL_NAME = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
+MODEL_FAST = os.getenv("OLLAMA_MODEL_FAST", "llama3.2:3b")
+MODEL_STRONG = os.getenv("OLLAMA_MODEL_STRONG", "deepseek-r1:8b")
+MODEL_CONTEXTUAL = os.getenv("OLLAMA_MODEL_CONTEXTUAL", "llama3.2:3b")
 
 _REFUSAL_PHRASES = [
     "i can't", "i cannot", "i'm unable", "i'm sorry", "i apologize",
@@ -18,16 +20,22 @@ _REFUSAL_PHRASES = [
 _SKIP_STARTERS = ("here", "sure", "note", "below", "following", "certainly", "of course")
 
 
+def strip_think_tags(text: str) -> str:
+    """Remove <think>...</think> blocks produced by deepseek-r1 and similar models."""
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+
 def ask_llm(prompt: str, model: str | None = None, temperature: float = 0.2, retries: int = 2) -> str:
     last_exc: Exception | None = None
     for attempt in range(retries + 1):
         try:
             response = ollama.chat(
-                model=model or MODEL_NAME,
+                model=model or MODEL_FAST,
                 messages=[{"role": "user", "content": prompt}],
                 options={"temperature": min(temperature + attempt * 0.15, 1.0)},
             )
-            return response["message"]["content"].strip()
+            raw = response["message"]["content"].strip()
+            return strip_think_tags(raw)
         except Exception as e:
             last_exc = e
     raise last_exc  # type: ignore[misc]
@@ -39,6 +47,8 @@ def is_refusal(text: str) -> bool:
 
 
 def clean_list_response(response: str) -> List[str]:
+    response = strip_think_tags(response)
+
     if is_refusal(response):
         return []
 
@@ -48,6 +58,11 @@ def clean_list_response(response: str) -> List[str]:
         line = line.strip()
         if not line:
             continue
+
+        for arrow in (" → ", " -> ", "→", "->"):
+            if arrow in line:
+                line = line.split(arrow, 1)[1].strip()
+                break
 
         line = re.sub(r"^[\-\*\•\d\.\)\s]+", "", line).strip()
         line = line.strip("\"'` ")
@@ -67,7 +82,6 @@ def clean_list_response(response: str) -> List[str]:
             continue
 
         if len(line) > 80:
-            # Handle comma-separated inline lists like "shares, equities, securities"
             parts = [
                 re.sub(r"^[\-\*\•\d\.\)\s]+", "", p).strip().strip("\"'` ")
                 for p in line.split(",")
@@ -89,7 +103,5 @@ def clean_list_response(response: str) -> List[str]:
 
 
 if __name__ == "__main__":
-    answer = ask_llm(
-        'Give me one English synonym for the term "stocks". Return only the synonym.'
-    )
+    answer = ask_llm('Give me one English synonym for the term "stocks". Return only the synonym.')
     print(answer)

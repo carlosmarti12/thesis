@@ -85,29 +85,67 @@ def top_k_contains_ground_truth(
     return False
 
 
-def evaluate_prediction(
-    prediction: str,
+def exact_top1(candidates: List[str], ground_truth: str) -> bool:
+    """
+    Strict exact match between the first (top-ranked) candidate and the ground truth.
+    """
+
+    if not candidates:
+        return False
+
+    return exact_match(candidates[0], ground_truth)
+
+
+def exact_any(candidates: List[str], ground_truth: str) -> bool:
+    """
+    True if the ground truth exactly matches any candidate in the list.
+    """
+
+    gold = normalize_text(ground_truth)
+    return any(normalize_text(c) == gold for c in candidates)
+
+
+def mrr(candidates: List[str], ground_truth: str) -> float:
+    """
+    Mean Reciprocal Rank of the first exact match (1/rank), 0.0 if absent.
+    """
+
+    gold = normalize_text(ground_truth)
+    for rank, candidate in enumerate(candidates, start=1):
+        if normalize_text(candidate) == gold:
+            return 1.0 / rank
+
+    return 0.0
+
+
+def evaluate_candidates(
+    candidates: List[str],
     ground_truth: str,
-    candidates: List[str] | None = None,
 ) -> Dict[str, Any]:
     """
-    Returns all evaluation metrics for one prediction.
+    Returns all evaluation metrics for a final candidate list, comparing it
+    against `ground_truth` (e.g. row["en_synonym"]).
+
+    `candidates` must be the system's *output* (already generated without any
+    access to the ground truth) — this function is only called afterwards,
+    purely for scoring.
     """
 
-    if candidates is None:
-        candidates = [prediction] if prediction else []
+    top1 = candidates[0] if candidates else ""
 
     return {
-        "exact_match": exact_match(prediction, ground_truth),
-        "fuzzy_similarity": fuzzy_similarity(prediction, ground_truth),
-        "semantic_similarity": semantic_similarity(prediction, ground_truth),
+        "exact_top1": exact_top1(candidates, ground_truth),
+        "exact_any": exact_any(candidates, ground_truth),
         "top_3_accuracy": top_k_contains_ground_truth(candidates, ground_truth, k=3),
         "top_5_accuracy": top_k_contains_ground_truth(candidates, ground_truth, k=5),
+        "fuzzy_similarity": fuzzy_similarity(top1, ground_truth),
+        "semantic_similarity": semantic_similarity(top1, ground_truth),
+        "mrr": mrr(candidates, ground_truth),
     }
 
 
 if __name__ == "__main__":
-    pred = "shares"
     gold = "shares"
+    candidates = ["equities", "shares", "stocks"]
 
-    print(evaluate_prediction(pred, gold, candidates=["equities", "shares", "stocks"]))
+    print(evaluate_candidates(candidates, gold))

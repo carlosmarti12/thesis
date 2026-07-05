@@ -1,0 +1,184 @@
+================================================================================
+ARCHITECTURE JUSTIFICATION — MAS Synonym Finder
+================================================================================
+
+TASK
+----
+Given an academic term (e.g. "auditors"), find its synonyms or alternative labels
+as they would appear in an academic taxonomy or database. The ground truth is the
+column en_synonym from the TU-Expert-Collection-Topic-Synonyms dataset.
+
+This is a generative retrieval task: the system must produce a ranked list of
+candidates and is evaluated by whether the correct synonym appears anywhere in
+that list (top-k match, both exact and fuzzy).
+
+
+PIPELINE OVERVIEW
+-----------------
+
+  Input term
+      │
+      ▼
+  [Agent 1] Domain Inference
+      │  domain label (e.g. "finance", "law")
+      ▼
+  [Agent 2] Synonym Generator  (dual-strategy: lexical + compound)
+      │  raw candidate list (up to ~16 unique items)
+      ▼
+  [Agent 3] Self-Reflection
+      │  filtered candidate list (generator reviews its own output)
+      ▼
+  [Agent 4] Domain Critic
+      │  domain-validated candidate list
+      ▼
+  [Agent 5] Semantic Ranker   (deterministic — no LLM call)
+      │  ranked list sorted by embedding cosine similarity
+      ▼
+  Output: ranked_candidates  →  evaluated with top-k match
+
+
+WHY FIVE AGENTS AND WHY THIS ORDER
+------------------------------------
+
+Agent 1 — Domain Inference
+  Why it exists:
+    The dataset contains no domain metadata; only an opaque topic ID is provided.
+    Synonyms are domain-specific: "equity" means something different in law than
+    in finance. Without knowing the domain, the generator would produce generic
+    synonyms that may not be valid in the correct academic context.
+  Why it comes first:
+    Every downstream agent benefits from domain context. Placing it first ensures
+    that generation, reflection, and criticism all operate within the right field.
+  Design note:
+    Low temperature (0.1) — domain classification is a factual, low-ambiguity task.
+    Higher temperature would introduce noise without benefit.
+
+Agent 2 — Synonym Generator (dual-strategy)
+  Why it exists:
+    Core generative step. The dataset contains several distinct synonym types that
+    a single prompt cannot cover equally well:
+      - Simple lexical synonyms ("anxiety" → "worry")
+      - Compound domain-prefixed forms ("accounting" → "financial accounting")
+      - Acronym expansions ("adhd" → "attention deficit disorder")
+      - Spelling variants ("labour" → "labor")
+    A single generic prompt tends to produce too many of one type and miss others.
+  Why dual-strategy:
+    Two focused prompts — one for lexical synonyms and one for compound/domain forms —
+    generate more diverse candidates, increasing the probability that the ground-truth
+    synonym is present in the list. Both lists are merged and deduplicated before
+    being passed downstream, typically producing ~12–16 unique candidates.
+  Why it comes second (after domain inference):
+    The domain label is injected into both prompts so the LLM generates
+    domain-appropriate synonyms rather than generic word associations.
+
+Agent 3 — Self-Reflection
+  Why it exists:
+    Generative LLMs reliably produce related terms alongside true synonyms. For
+    example, for "auditors" the generator may include "financial professionals"
+    (a hypernym) or "audit committee" (a related concept). These are not synonyms
+    and inflate the candidate list with noise.
+    Self-reflection implements the reflexive critique pattern: the same agent that
+    generated the candidates now evaluates them using the criterion "could this
+    replace the original term as a label in an academic taxonomy?"
+  Why it comes before the domain critic:
+    Self-reflection checks synonym quality (same concept?); the domain critic
+    checks domain relevance (right field?). These are orthogonal concerns. Placing
+    quality-checking before relevance-checking reduces the number of candidates the
+    critic needs to process and avoids the critic having to compensate for
+    quality failures it was not designed to handle.
+  Design note:
+    Falls back to the full candidate list if reflection removes everything,
+    preventing the pipeline from producing empty results due to an over-strict LLM.
+    Low temperature (0.1) — this is an evaluative/filtering task, not a creative one.
+
+Agent 4 — Domain Critic
+  Why it exists:
+    Even after self-reflection, some candidates may be valid synonyms in general
+    English but wrong for the specific academic domain inferred by Agent 1.
+    For example, "security" is a valid synonym of "equity" in finance, but not in
+    computer science. The domain critic applies domain-specific expertise to prune
+    these cases.
+  Why it comes after self-reflection:
+    At this point candidates are already filtered for synonym quality; the critic
+    operates on a smaller, higher-quality list and can focus purely on domain fit.
+  Design note:
+    If the critic removes all candidates, the full reflected list is returned as a
+    fallback — correctness is preferred over empty output.
+
+Agent 5 — Semantic Ranker
+  Why it exists:
+    After filtering, multiple valid candidates may remain. Ranking them by embedding
+    cosine similarity ensures the most semantically close synonyms appear first.
+    This maximises top-k evaluation scores and, if a single "best" candidate is
+    needed, provides a principled selection without an additional LLM call.
+  Why it is deterministic (no LLM call):
+    Ranking by semantic similarity is a well-defined mathematical operation. An
+    LLM-based ranker would introduce stochasticity, latency, and potential
+    hallucination for a task that embeddings handle objectively and cheaply.
+  Why it comes last:
+    Ranking requires a stable, final list. Running it earlier would require
+    re-ranking after each filter step, adding cost with no benefit.
+
+
+WHY A SEQUENTIAL (LINEAR) ARCHITECTURE
+---------------------------------------
+A parallel or conditional architecture was considered and rejected for the following
+reasons:
+
+  1. Data dependency: each agent requires the output of the previous one. Domain
+     inference must complete before generation; generation before reflection; etc.
+     True parallelism is not possible without duplicating work.
+
+  2. Cascade quality: each step improves the quality of the list. Skipping or
+     parallelising steps would bypass quality gates and likely reduce accuracy.
+
+  3. Interpretability: a linear pipeline makes it straightforward to log and
+     inspect the state at each step (raw candidates → reflected → filtered →
+     ranked), which is valuable for analysing failure cases and iterating on
+     individual agents.
+
+  4. Scope: the task is inherently sequential (infer context → generate →
+     refine → validate → rank). A more complex graph (e.g. conditional branches,
+     loops) would add architectural overhead without addressing the core challenge
+     of finding rare domain-specific synonym phrasings.
+
+
+EVALUATION
+----------
+The system is evaluated with top-k match:
+
+  Correct  — the ground-truth synonym (en_synonym) appears in the final
+             ranked_candidates list (within top k).
+  Incorrect — it does not.
+
+Two variants are reported:
+  top_8_accuracy       — strict exact match after text normalisation
+  top_8_fuzzy_accuracy — fuzzy match using token_set_ratio >= 80, which handles
+                         cases where the candidate partially overlaps with the
+                         ground truth (e.g. "examiners" vs "financial examiners")
+
+Additional reference metrics:
+  exact_match          — top-1 candidate vs ground truth (strict)
+  semantic_similarity  — embedding cosine similarity of top-1 vs ground truth
+  top_3_accuracy / top_5_accuracy — stricter top-k thresholds for comparison
+
+Baselines for comparison:
+  same_term_baseline        — returns the input term unchanged (lower bound)
+  llm_single_prompt_baseline — single LLM call, no multi-agent pipeline
+
+
+KNOWN LIMITATIONS
+------------------
+  - Some ground truths in the dataset are highly idiosyncratic (e.g. "africa" →
+    "Sub-Saharan region", "adorno" → "critical theorist"). These represent
+    editorial choices in the original taxonomy that cannot be reliably predicted
+    from the term alone, regardless of the architecture.
+  - The LLM (llama3.2:3b via Ollama) has a limited context window and relatively
+    small parameter count, which constrains generation quality compared to larger
+    models. Swapping to a larger model would likely improve recall without any
+    architectural change.
+  - Fuzzy matching introduces a small risk of false positives (counting a
+    semantically close but incorrect candidate as correct). This is mitigated by
+    reporting both exact and fuzzy metrics side by side.
+
+================================================================================

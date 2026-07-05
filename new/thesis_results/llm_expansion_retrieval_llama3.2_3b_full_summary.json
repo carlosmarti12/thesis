@@ -1,0 +1,11 @@
+{
+  "rows": 982,
+  "exact_top1": 0.554989816700611,
+  "exact_any": 0.8329938900203666,
+  "top_3_accuracy": 0.7718940936863544,
+  "top_5_accuracy": 0.8329938900203666,
+  "mean_fuzzy_similarity": 0.9185264161668687,
+  "mean_semantic_similarity": 0.9151351339052869,
+  "mean_mrr": 0.6649355057705363,
+  "avg_time_seconds": 0.7077957819047139
+}

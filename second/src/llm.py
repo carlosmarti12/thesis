@@ -49,6 +49,12 @@ def clean_list_response(response: str) -> List[str]:
         if not line:
             continue
 
+        # Strip "original → synonym" or "original -> synonym" patterns produced by few-shot examples
+        for arrow in (" → ", " -> ", "→", "->"):
+            if arrow in line:
+                line = line.split(arrow, 1)[1].strip()
+                break
+
         line = re.sub(r"^[\-\*\•\d\.\)\s]+", "", line).strip()
         line = line.strip("\"'` ")
 

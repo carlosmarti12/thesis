@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from src.data import load_synonym_dataset
 from src.graph import build_synonym_graph
-from src.evaluation import evaluate_candidates
+from src.evaluation import top_k_contains_ground_truth, semantic_similarity, FUZZY_THRESHOLD
 
 
 def run_experiment(
@@ -35,9 +35,6 @@ def run_experiment(
     app = build_synonym_graph()
 
     for _, row in tqdm(df.iterrows(), total=len(df), desc="Processing"):
-        # Input to the MAS is only the source term. `en_synonym` (ground truth)
-        # is read here but never passed into `app.invoke` — it is only used
-        # below, after the fact, to score the candidates the system produced.
         term = str(row["en"])
         topic = str(row["topic"])
         ground_truth = str(row["en_synonym"])
@@ -51,22 +48,31 @@ def run_experiment(
             tqdm.write(f"ERROR '{term}': {e}")
             result = {}
 
-        final_candidates = result.get("final_candidates", [])
-        metrics = evaluate_candidates(final_candidates, ground_truth)
+        ranked = result.get("ranked_candidates", [])
+        final_candidates = [
+            item["candidate"]
+            for item in ranked
+            if isinstance(item, dict) and "candidate" in item
+        ]
+        if not final_candidates:
+            final_candidates = result.get("filtered_candidates", result.get("candidates", []))
+
+        top8_match = top_k_contains_ground_truth(final_candidates, ground_truth, k=8, fuzzy=False)
+        top8_fuzzy_match = top_k_contains_ground_truth(final_candidates, ground_truth, k=8, fuzzy=True)
+        top1_candidate = final_candidates[0] if final_candidates else ""
 
         rows.append(
             {
                 "topic": topic,
                 "term": term,
                 "ground_truth": ground_truth,
+                "top8_match": top8_match,
+                "top8_fuzzy_match": top8_fuzzy_match,
+                "top1_candidate": top1_candidate,
+                "semantic_similarity": semantic_similarity(top1_candidate, ground_truth),
                 "final_candidates": final_candidates,
-                "num_final_candidates": result.get("num_final_candidates", len(final_candidates)),
-                "prediction": final_candidates[0] if final_candidates else "",
-                **metrics,
                 "candidates": result.get("candidates", []),
                 "filtered_candidates": result.get("filtered_candidates", []),
-                "ranked_candidates": result.get("ranked_candidates", []),
-                "llm_ranked_candidates": result.get("llm_ranked_candidates", []),
             }
         )
         done_terms.add(term)
@@ -94,18 +100,14 @@ if __name__ == "__main__":
     )
 
     print("\n=== METRICS ===")
-    print(f"Rows:                     {len(results)}")
-    print(f"Exact Top-1:              {results['exact_top1'].mean():.3f}")
-    print(f"Exact Any (top-5):        {results['exact_any'].mean():.3f}")
-    print(f"Top-3 Accuracy:           {results['top_3_accuracy'].mean():.3f}")
-    print(f"Top-5 Accuracy:           {results['top_5_accuracy'].mean():.3f}")
-    print(f"Avg Fuzzy Similarity:     {results['fuzzy_similarity'].mean():.3f}")
-    print(f"Avg Semantic Similarity:  {results['semantic_similarity'].mean():.3f}")
-    print(f"MRR:                      {results['mrr'].mean():.3f}")
+    print(f"Rows:                      {len(results)}")
+    print(f"Top-8 Exact Accuracy:      {results['top8_match'].mean():.3f}")
+    print(f"Top-8 Fuzzy Accuracy:      {results['top8_fuzzy_match'].mean():.3f}  (token_set_ratio >= {FUZZY_THRESHOLD})")
+    print(f"Avg Semantic Similarity:   {results['semantic_similarity'].mean():.3f}")
 
-    empty = (results["prediction"] == "") | results["prediction"].isna()
+    empty = results["final_candidates"].apply(lambda x: len(x) == 0 if isinstance(x, list) else True)
     if empty.any():
-        print(f"\n⚠  Empty predictions: {empty.sum()} row(s)")
+        print(f"\n⚠  Empty candidate lists: {empty.sum()} row(s)")
         print(results.loc[empty, "term"].tolist())
 
     print(f"\nSaved to {args.output}")
