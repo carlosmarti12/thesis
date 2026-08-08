@@ -1,0 +1,11 @@
+term,ground_truth,prediction,candidates,num_candidates,time_seconds,reranker_fallback,hit@1,hit@3,hit@5,ndcg@3,ndcg@5,mrr,rank
+recommender system,recommendation engine,recommendation engine,"[""recommendation engine"", ""information retrieval system"", ""document search"", ""information search"", ""information processing""]",5,20.226296186447144,False,True,True,True,1.0,1.0,1.0,1
+stocks,shares,shares,"[""shares"", ""capital markets"", ""investing"", ""stock management"", ""stock market""]",5,13.970512866973877,False,True,True,True,1.0,1.0,1.0,1
+equity market,stock market,stock market,"[""stock market"", ""capital markets"", ""market analysis"", ""market strategy"", ""employment market""]",5,13.83534860610962,False,True,True,True,1.0,1.0,1.0,1
+africa,Sub-Saharan region,Sub-Saharan region,"[""Sub-Saharan region"", ""developing countries"", ""emerging economies"", ""East Europe"", ""development""]",5,13.967992067337036,False,True,True,True,1.0,1.0,1.0,1
+general econometrics,economic statistics,individual econometrics,"[""individual econometrics"", ""economic modeling"", ""economic statistics"", ""practical econometrics"", ""economic science""]",5,13.728382110595703,False,False,True,True,0.5,0.5,0.3333333333333333,3
+americanization,Americanisation,Americanisation,"[""Americanisation"", ""cultural adaptation"", ""mechanization"", ""modernisation"", ""international integration""]",5,13.61444616317749,False,True,True,True,1.0,1.0,1.0,1
+arabic,Arabian,Arabian,"[""Arabian"", ""ancient Hebrew"", ""Islamic studies"", ""interpretation"", ""way of life""]",5,13.697843551635742,False,True,True,True,1.0,1.0,1.0,1
+reasoning,logical argumentation,logical argumentation,"[""logical argumentation"", ""interpretation"", ""logical fallacies"", ""estimation"", ""Bayesian inference""]",5,13.657444715499878,False,True,True,True,1.0,1.0,1.0,1
+business studies,business administration,organizational studies,"[""organizational studies"", ""business administration"", ""economic science"", ""market analysis"", ""business law""]",5,13.653572082519531,False,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+Firm relocation,business relocation,business relocation,"[""business relocation"", ""corporate consolidation"", ""reorganisation"", ""organizational transformation"", ""consolidations""]",5,13.552131175994873,False,True,True,True,1.0,1.0,1.0,1

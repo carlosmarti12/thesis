@@ -1,0 +1,970 @@
+term,ground_truth,prediction,category,reverse_abbrev,lexical_overlap,shares_stem,term_words,gold_rank_pre,gold_rank_post,failure_type
+recommender system,recommendation engine,recommendation engine,compound,False,0.0,True,2,1,1,correct
+stocks,shares,shares,single_word,False,0.0,False,1,1,1,correct
+equity market,stock market,stock market,compound,False,0.3333333333333333,True,2,1,1,correct
+liability law,responsibility law,responsibility law,compound,False,0.3333333333333333,False,2,1,1,correct
+accountancy,financial auditing,financial accounting,single_word,False,0.0,False,1,5,2,ranking_error
+auditors,financial examiners,financial examiners,single_word,False,0.0,False,1,1,1,correct
+accounting,financial accounting,financial accounting,single_word,False,0.5,True,1,1,1,correct
+acculturation,cultural adaptation,cultural adaptation,single_word,False,0.0,False,1,1,1,correct
+actual pastoral liturgical practice,current liturgical practice,current liturgical practice,multi_word_phrase,False,0.4,True,4,4,1,correct
+adhd,attention deficit disorder,attention deficit disorder,abbreviation_like,False,0.0,False,1,1,1,correct
+administrative law,regulatory law,regulatory law,compound,False,0.3333333333333333,False,2,1,1,correct
+adorno,critical theorist,Frankfurt School theorist,single_word,False,0.0,False,1,1,2,ranking_error
+africa,Sub-Saharan region,Sub-Saharan region,single_word,False,0.0,False,1,1,1,correct
+agricultural economy,agricultural economics,agricultural economics,compound,False,0.3333333333333333,True,2,1,1,correct
+aggression,hostility,hostility,single_word,False,0.0,False,1,1,1,correct
+alcohol addiction,alcohol dependence,alcohol dependence,compound,False,0.3333333333333333,True,2,1,1,correct
+general econometrics,economic statistics,economic statistics,compound,False,0.0,True,2,3,1,correct
+alliances and joint ventures,strategic partnerships,strategic partnerships,multi_word_phrase,False,0.0,False,4,1,1,correct
+foreigners,strangers,immigrants,single_word,False,0.0,False,1,2,4,ranking_error
+americanization,Americanisation,Americanisation,single_word,False,0.0,True,1,1,1,correct
+anxiety,worry,worry,single_word,True,0.0,False,1,1,1,correct
+"Antarctic, Arctic, Polar Regions",polar areas,polar areas,multi_word_phrase,False,0.2,True,4,1,1,correct
+"anthropology and philosophy of religion, relation",relationship between anthropology and religious philosophy,relationship between anthropology and religious philosophy,multi_word_phrase,False,0.3333333333333333,True,6,1,1,correct
+arabic,Arabian,Arabian,single_word,False,0.0,True,1,1,1,correct
+labour and health,occupational health,occupational health,multi_word_phrase,False,0.25,True,3,1,1,correct
+industrial and organisational psychology,work psychology,occupational psychology,multi_word_phrase,False,0.2,True,4,2,3,ranking_error
+working hours,working time,working time,compound,False,0.3333333333333333,True,2,1,1,correct
+labour economics,employment economics,employment economics,compound,False,0.3333333333333333,True,2,1,1,correct
+labour market,employment market,employment market,compound,False,0.3333333333333333,True,2,1,1,correct
+labour market policy,employment policy,employment policy,multi_word_phrase,False,0.25,True,3,1,1,correct
+labour market issues,employment issues,employment issues,multi_word_phrase,False,0.25,True,3,1,1,correct
+job motivation,work motivation,work motivation,compound,False,0.3333333333333333,True,2,1,1,correct
+working conditions,employment conditions,employment conditions,compound,False,0.3333333333333333,True,2,1,1,correct
+work participation,employment participation,employment participation,compound,False,0.3333333333333333,True,2,1,1,correct
+labour law,employment law,employment law,compound,False,0.3333333333333333,False,2,1,1,correct
+reduction of working hours,workweek reduction,workweek reduction,multi_word_phrase,False,0.2,True,4,1,1,correct
+industrial/labour relations,employment relations,employment relations,compound,False,0.3333333333333333,True,2,1,1,correct
+working conditions creation,quality of worklife,employment conditions,multi_word_phrase,False,0.0,False,3,-1,-1,retrieval_miss
+labour issues,employment issues,employment issues,compound,False,0.3333333333333333,True,2,1,1,correct
+arbitration,dispute arbitration,dispute arbitration,single_word,False,0.5,True,1,2,1,correct
+reasoning,logical argumentation,logical argumentation,single_word,False,0.0,False,1,1,1,correct
+aristoteles,Aristotle,Aristotle,single_word,False,0.0,True,1,1,1,correct
+poverty,destitution,destitution,single_word,False,0.0,False,1,3,1,correct
+asylum seekers,refugees,refugees,compound,False,0.0,False,2,1,1,correct
+asset liability management,balance sheet management,risk management,multi_word_phrase,False,0.2,True,3,3,3,ranking_error
+attitudes,mindset,disposition,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+auditory perception,hearing perception,hearing perception,compound,False,0.3333333333333333,True,2,1,1,correct
+augustine,St. Augustine,St. Augustine,single_word,False,0.5,True,1,1,1,correct
+automatic language analysis,computational linguistics,automated parsing,multi_word_phrase,False,0.0,False,3,5,2,ranking_error
+automation,mechanization,mechanization,single_word,False,0.0,False,1,2,1,correct
+autonomy and moral,self-governance and ethics,self-governance and ethics,multi_word_phrase,False,0.2,False,3,1,1,correct
+bank - firm relationships,financial partnerships,financial partnerships,compound,False,0.0,False,4,2,1,correct
+banking law,financial law,financial law,compound,False,0.3333333333333333,False,2,1,1,correct
+banking systems,financial systems,financial systems,compound,False,0.3333333333333333,True,2,1,1,correct
+primary education,elementary education,elementary education,compound,False,0.3333333333333333,True,2,1,1,correct
+bayesian statistics,Bayesian inference,Bayesian inference,compound,False,0.3333333333333333,True,2,1,1,correct
+corporate policy and strategy,business strategy,business strategy,multi_word_phrase,False,0.2,True,4,1,1,correct
+business communication and ethics,corporate communication ethics,corporate communication ethics,multi_word_phrase,False,0.4,True,4,1,1,correct
+business modelling,business analytics,strategic planning,compound,False,0.3333333333333333,True,2,-1,-1,retrieval_miss
+business economics,managerial economics,managerial economics,compound,False,0.3333333333333333,True,2,3,1,correct
+business ethics,corporate ethics,corporate ethics,compound,False,0.3333333333333333,True,2,1,1,correct
+business studies,business administration,organizational studies,compound,False,0.3333333333333333,True,2,2,2,ranking_error
+Firm relocation,business relocation,business relocation,compound,False,0.3333333333333333,True,2,1,1,correct
+companies,businesses,businesses,single_word,False,0.0,False,1,1,1,correct
+bounded rationality,limited rationality,limited rationality,compound,False,0.3333333333333333,True,2,1,1,correct
+information systems management,IT management,IT management,multi_word_phrase,False,0.25,True,3,1,1,correct
+taxes,levies,levies,abbreviation_like,False,0.0,False,1,3,1,correct
+tax law,fiscal law,fiscal law,compound,False,0.3333333333333333,False,2,1,1,correct
+investment,investing,funding,single_word,False,0.0,True,1,2,2,ranking_error
+investor behaviour,Investor psychology,Investor psychology,compound,False,0.3333333333333333,True,2,1,1,correct
+mutual fund,investment fund,investment fund,compound,False,0.3333333333333333,False,2,1,1,correct
+policy evaluation,policy analysis,policy analysis,compound,False,0.3333333333333333,True,2,2,1,correct
+mediation,conflict resolution,dispute resolution,single_word,False,0.0,False,1,3,2,ranking_error
+assertive outreach,proactive engagement,proactive engagement,compound,False,0.0,False,2,1,1,correct
+berber language,Tamazight,Tamazight,compound,False,0.0,False,2,1,1,correct
+occupational ethics,professional ethics,professional ethics,compound,False,0.3333333333333333,True,2,1,1,correct
+Occupational ethics for ministers,ministerial ethics,ministerial ethics,multi_word_phrase,False,0.2,True,4,1,1,correct
+occupational diseases,work-related illnesses,work-related illnesses,compound,False,0.0,False,2,1,1,correct
+protected species,endangered species,endangered species,compound,False,0.3333333333333333,True,2,1,1,correct
+decision theory,decision analysis,decision analysis,compound,False,0.3333333333333333,True,2,1,1,correct
+decision support systems,decision aid systems,decision aid systems,multi_word_phrase,False,0.5,True,3,1,1,correct
+decision making,decision process,decision process,compound,False,0.3333333333333333,True,2,1,1,correct
+information management and technology,information systems management,information systems management,multi_word_phrase,False,0.4,True,4,3,1,correct
+administrative reform,bureaucratic reform,bureaucratic reform,compound,False,0.3333333333333333,True,2,1,1,correct
+management of non-profit organisations,non-profit management,non-profit management,compound,False,0.5,True,4,1,1,correct
+public administration,administrative organisation,public management,compound,False,0.0,True,2,4,4,ranking_error
+administrative procedural law,administrative litigation,administrative litigation,multi_word_phrase,False,0.25,True,3,1,1,correct
+consciousness,awareness,awareness,single_word,False,0.0,False,1,1,1,correct
+bible (studies),biblical studies,biblical studies,compound,False,0.0,False,2,1,1,correct
+bible as literature,scriptural literature,scriptural literature,multi_word_phrase,False,0.25,True,3,1,1,correct
+Bible and culture,scriptural influence on culture,biblical studies,multi_word_phrase,False,0.16666666666666666,True,3,-1,-1,retrieval_miss
+bible translations,scripture translations,scripture translations,compound,False,0.3333333333333333,True,2,1,1,correct
+bible studies; exegesis,Bible interpretation,biblical studies,multi_word_phrase,False,0.25,True,3,3,2,ranking_error
+bible studies; new testament,New Testament studies,New Testament studies,multi_word_phrase,False,0.4,True,4,1,1,correct
+biodiversity,natural diversity,natural diversity,single_word,False,0.0,False,1,1,1,correct
+"Blanchot, Maurice (1907-2003)",literary philosopher,literary philosopher,compound,False,0.0,False,3,1,1,correct
+urban planning and building law,city planning regulations,city planning regulations,multi_word_phrase,False,0.14285714285714285,True,5,1,1,correct
+brabant,Brabant region,Brabant region,single_word,False,0.5,True,1,1,1,correct
+Letter of James,Epistle of James,Epistle of James,multi_word_phrase,False,0.5,True,3,1,1,correct
+law of civil procedure,civil litigation law,civil litigation law,multi_word_phrase,False,0.4,True,4,3,1,correct
+civil law,non-criminal law,civil litigation law,compound,False,0.3333333333333333,False,2,-1,-1,retrieval_miss
+Citizens Participation,public involvement,public involvement,compound,False,0.0,False,2,1,1,correct
+citizenship,nationality,nationality,single_word,False,0.0,False,1,1,1,correct
+burnout,exhaustion,emotional exhaustion,single_word,False,0.0,False,1,2,2,ranking_error
+Business Process Management,process optimization,process optimization,multi_word_phrase,False,0.25,True,3,3,1,correct
+business transactions,commercial dealings,commercial dealings,compound,False,0.0,False,2,1,1,correct
+collective labour agreements,union contracts,union contracts,multi_word_phrase,False,0.0,False,3,1,1,correct
+central banks,monetary authority,monetary authority,compound,False,0.0,False,2,1,1,correct
+China,People's Republic of China,People's Republic of China,abbreviation_like,False,0.25,True,1,1,1,correct
+surgery,surgical procedure,surgical procedure,single_word,False,0.0,False,1,1,1,correct
+Christian creed,Christian statement of belief,Christian statement of belief,compound,False,0.2,True,2,1,1,correct
+christian philosophy,Christian worldview,Christian worldview philosophy,compound,False,0.3333333333333333,True,2,3,2,ranking_error
+christian liturgy,Christian worship,current liturgical practice,compound,False,0.3333333333333333,True,2,1,2,ranking_error
+Christianity and Culture,Christian cultural studies,Christian cultural studies,multi_word_phrase,False,0.0,True,3,1,1,correct
+chronic heart failure,persistent heart failure,persistent heart failure,multi_word_phrase,False,0.5,True,3,1,1,correct
+chronic diseases,long-term illnesses,long-term illnesses,compound,False,0.0,False,2,1,1,correct
+civil society,civic community,civic community,compound,False,0.0,False,2,1,1,correct
+cognition,mental processes,mental processes,single_word,False,0.0,False,1,1,1,correct
+cognitive linguistics,language cognition,language cognition,compound,False,0.0,True,2,1,1,correct
+cognitive neuropsychology,neurocognitive psychology,neurocognitive psychology,compound,False,0.0,True,2,2,1,correct
+cognitive processes,mental processes,mental processes,compound,False,0.3333333333333333,True,2,1,1,correct
+cognitive science,cognitive studies,cognitive studies,compound,False,0.3333333333333333,True,2,3,1,correct
+coma,unconscious state,unconscious state,abbreviation_like,False,0.0,False,1,1,1,correct
+work-family confict,work-life conflict,work-life conflict,compound,False,0.0,True,2,1,1,correct
+combinatorics,combinatorial mathematics,combinatorial mathematics,single_word,False,0.0,True,1,1,1,correct
+communication,information exchange,speech,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+communication skills,interpersonal skills,interpersonal skills,compound,False,0.3333333333333333,True,2,1,1,correct
+communitarianism,Community-based philosophy,Community-based philosophy,single_word,False,0.0,True,1,3,1,correct
+Competence development,Capability development,Capability development,compound,False,0.3333333333333333,True,2,3,1,correct
+competition,rivalry,rivalry,single_word,False,0.0,False,1,1,1,correct
+computational semantics,machine semantics,machine semantics,compound,False,0.3333333333333333,True,2,1,1,correct
+computer crime,cybercrime,cybercrime,compound,False,0.0,False,2,1,1,correct
+computer linguistics,computational linguistics,computational linguistics,compound,False,0.3333333333333333,True,2,1,1,correct
+computer models,computational models,computational models,compound,False,0.3333333333333333,True,2,1,1,correct
+computer simulation,computational modeling,simulation,compound,False,0.0,True,2,1,2,ranking_error
+computer systems,computing systems,computing systems,compound,False,0.3333333333333333,True,2,1,1,correct
+conflicts,disputes,disputes,single_word,False,0.0,False,1,1,1,correct
+constitutional law,fundamental law,jurisprudence,compound,False,0.3333333333333333,False,2,-1,-1,retrieval_miss
+constitutional law history,history of constitutional law,history of constitutional law,multi_word_phrase,False,0.75,True,3,1,1,correct
+constitutional issues,constitutional challenges,constitutional challenges,compound,False,0.3333333333333333,True,2,1,1,correct
+consumer behaviour,buying behavior,buying behavior,compound,False,0.0,True,2,1,1,correct
+cooperative information systems,collaborative information systems,collaborative information systems,multi_word_phrase,False,0.5,True,3,2,1,correct
+cooperative game theory,collaborative game theory,collaborative game theory,multi_word_phrase,False,0.5,True,3,1,1,correct
+coping,stress management,stress management,single_word,False,0.0,False,1,1,1,correct
+corporate governance,corporate management,corporate management,compound,False,0.3333333333333333,True,2,2,1,correct
+criminology,criminal science,criminal science,single_word,False,0.0,True,1,1,1,correct
+cross-cultural research,intercultural research,intercultural research,compound,False,0.3333333333333333,True,2,1,1,correct
+cross-cultural psychology,intercultural psychology,intercultural psychology,compound,False,0.3333333333333333,True,2,1,1,correct
+cultural heritage,cultural legacy,cultural legacy,compound,False,0.3333333333333333,True,2,1,1,correct
+Economics of art and culture,cultural economics,cultural economics,multi_word_phrase,False,0.16666666666666666,True,5,1,1,correct
+cultural diversity,cultural variety,cultural variety,compound,False,0.3333333333333333,True,2,2,1,correct
+culture,cultural practices,way of life,single_word,False,0.0,True,1,3,2,ranking_error
+culture and internationalisation,global culture,cross-cultural communication,multi_word_phrase,False,0.25,True,3,1,5,ranking_error
+culture in brabant,Brabant heritage,Brabant heritage,multi_word_phrase,False,0.25,True,3,1,1,correct
+cultural and country differences,cross-cultural differences,cross-cultural differences,multi_word_phrase,False,0.2,True,4,1,1,correct
+cultural and social history,social and cultural history,social and cultural history,multi_word_phrase,False,1.0,True,4,1,1,correct
+Art education,arts instruction,arts instruction,compound,False,0.0,False,2,1,1,correct
+philosophy of culture,cultural philosophy,cultural philosophy,multi_word_phrase,False,0.25,True,3,1,1,correct
+cultural psychology,cross-cultural psychology,cross-cultural psychology,compound,False,0.3333333333333333,True,2,1,1,correct
+cultural sociology,sociology of culture,sociology of culture,compound,False,0.25,True,2,1,1,correct
+cultureral differences,cultural diversity,cross-cultural differences,compound,False,0.0,True,2,3,2,ranking_error
+data mining,data analysis,data analysis,compound,False,0.3333333333333333,False,2,1,1,correct
+data warehouse,data repository,data repository,compound,False,0.3333333333333333,False,2,1,1,correct
+databases,data repositories,data repositories,single_word,False,0.0,False,1,1,1,correct
+decentralization,devolution,devolution,single_word,False,0.0,False,1,1,1,correct
+deconstruction,critical analysis,critical analysis,single_word,False,0.0,False,1,4,1,correct
+dementia,cognitive decline,cognitive decline,single_word,False,0.0,False,1,1,1,correct
+democracy,popular government,popular government,single_word,False,0.0,False,1,2,1,correct
+demography,population studies,population studies,single_word,False,0.0,False,1,1,1,correct
+depression,melancholy,melancholy,single_word,False,0.0,False,1,1,1,correct
+depression during pregnancy,prenatal depression,prenatal depression,multi_word_phrase,False,0.25,True,3,1,1,correct
+third world,developing countries,developing countries,compound,False,0.0,False,2,1,1,correct
+derivatives,financial instruments,financial derivatives,single_word,False,0.0,False,1,3,3,ranking_error
+Derrida,Jacques Derrida,Jacques Derrida,single_word,False,0.5,True,1,1,1,correct
+Diabetic disease,blood sugar disorder,blood sugar disorder,compound,False,0.0,False,2,1,1,correct
+dialect and society,Regional language and society,Regional language and society,multi_word_phrase,False,0.4,True,3,1,1,correct
+Didache and James's letter,early Christian texts,Epistle of James,multi_word_phrase,False,0.0,False,4,4,4,ranking_error
+Didache and Matthew's gospel,Didache and the Gospel of Matthew,Didache and the Gospel of Matthew,multi_word_phrase,False,0.42857142857142855,True,4,1,1,correct
+didache and early judaism,early Christian teachings and Judaism,early Christian teachings and Judaism,multi_word_phrase,False,0.5,True,4,1,1,correct
+"Didache, Matthew's gospel and James's letter",early Christian texts,Didache and the Gospel of Matthew,multi_word_phrase,False,0.0,False,6,4,4,ranking_error
+services marketing,service promotion,service promotion,compound,False,0.0,True,2,1,1,correct
+service industry,service sector,service sector,compound,False,0.3333333333333333,True,2,1,1,correct
+digital library,electronic library,electronic library,compound,False,0.3333333333333333,True,2,1,1,correct
+digital culture,cyber culture,cyber culture,compound,False,0.3333333333333333,True,2,1,1,correct
+discrete mathematics,combinatorial mathematics,combinatorial mathematics,compound,False,0.3333333333333333,True,2,1,1,correct
+diversity in organisations,organizational inclusivity,organizational inclusivity,multi_word_phrase,False,0.0,True,3,2,1,correct
+diversity management,inclusion management,inclusion management,compound,False,0.3333333333333333,True,2,1,1,correct
+dividend policy,profit distribution strategy,profit distribution strategy,compound,False,0.0,False,2,1,1,correct
+document retrieval,document search,document search,compound,False,0.3333333333333333,True,2,1,1,correct
+dogma,doctrine,doctrine,abbreviation_like,False,0.0,False,1,1,1,correct
+dogmatic theology,doctrinal theology,doctrinal theology,compound,False,0.3333333333333333,True,2,1,1,correct
+fallacies and unfair methods of discussion,logical fallacies,logical fallacies,multi_word_phrase,False,0.14285714285714285,True,6,1,1,correct
+drugs addiction,substance dependence,substance dependence,compound,False,0.0,False,2,1,1,correct
+german,Teutonic,Teutonic,single_word,False,0.0,False,1,1,1,correct
+sustainable tourism,eco-friendly tourism,eco-tourism,compound,False,0.3333333333333333,True,2,2,2,ranking_error
+sustainable development,green development,green development,compound,False,0.3333333333333333,True,2,1,1,correct
+dynamic game theory,evolving game theory,evolving game theory,multi_word_phrase,False,0.5,True,3,1,1,correct
+e-business,online business,online business,single_word,False,0.0,False,1,1,1,correct
+e-commerce,online retail,online retail,single_word,False,0.0,False,1,1,1,correct
+econometrics,economic modeling,economic modeling,single_word,False,0.0,True,1,5,1,correct
+economics,economic science,economic science,single_word,False,0.0,True,1,1,1,correct
+economics of regulation,regulatory economics,regulatory economics,multi_word_phrase,False,0.25,True,3,1,1,correct
+economics of innovation,innovation economics,innovation economics,multi_word_phrase,False,0.6666666666666666,True,3,1,1,correct
+general economics,economic theory,economic science,compound,False,0.0,True,2,2,2,ranking_error
+history of economic thought,economic history,economic philosophy,multi_word_phrase,False,0.5,True,4,3,3,ranking_error
+economic geography,spatial economics,spatial economics,compound,False,0.0,True,2,1,1,correct
+economic growth,economic development,economic development,compound,False,0.3333333333333333,True,2,1,1,correct
+psychology of economic behaviour,behavioral economics,behavioral economics,multi_word_phrase,False,0.0,True,4,1,1,correct
+economic situation,economic condition,economic condition,compound,False,0.3333333333333333,True,2,1,1,correct
+EEG,brainwave recording,brain wave test,abbreviation_like,False,0.0,False,1,-1,-1,retrieval_miss
+securities law,financial regulation,financial regulation,compound,False,0.0,False,2,2,1,correct
+property rights,ownership rights,ownership rights,compound,False,0.3333333333333333,True,2,1,1,correct
+electroencephalogram,brain wave test,brain wave test,single_word,False,0.0,False,1,1,1,correct
+electrophysiology,bioelectricity,neural physiology,single_word,False,0.0,False,1,1,2,ranking_error
+electromyography,muscle electrical recording,electromyogram,single_word,False,0.0,True,1,2,2,ranking_error
+Electronic Business,e-commerce,online business,compound,False,0.0,False,2,2,2,ranking_error
+electronic commerce,online shopping,e-commerce,compound,False,0.0,False,2,5,4,ranking_error
+EMG,electromyogram,electromyogram,abbreviation_like,False,0.0,False,1,1,1,correct
+emotions,feelings,feelings,single_word,False,0.0,False,1,1,1,correct
+emotions and health,emotional well-being,mind-body medicine,multi_word_phrase,False,0.0,True,3,1,3,ranking_error
+emotional exhaustion,burnout,burnout,compound,False,0.0,False,2,1,1,correct
+empirical finance,Experimental finance,quantitative finance,compound,False,0.3333333333333333,True,2,3,3,ranking_error
+empirical macroeconomics,data-driven macroeconomics,data-driven macroeconomics,compound,False,0.3333333333333333,True,2,1,1,correct
+Empirical legal studies,Empirical jurisprudence,Empirical jurisprudence,multi_word_phrase,False,0.25,True,3,1,1,correct
+jurisprudence,legal theory,legal philosophy,single_word,False,0.0,False,1,2,2,ranking_error
+energy economics,energy markets,energy markets,compound,False,0.3333333333333333,True,2,1,1,correct
+energy sources,power sources,power sources,compound,False,0.3333333333333333,True,2,1,1,correct
+energy problems,energy challenges,energy challenges,compound,False,0.3333333333333333,True,2,1,1,correct
+english,the English language,the English language,single_word,False,0.3333333333333333,True,1,1,1,correct
+epidemilogy,disease study,disease study,single_word,False,0.0,False,1,1,1,correct
+epilepsy,seizure disorder,seizure disorder,single_word,False,0.0,False,1,1,1,correct
+law of succession,inheritance law,inheritance law,multi_word_phrase,False,0.25,False,3,1,1,correct
+aesthetics,philosophy of beauty,aesthetics philosophy,single_word,False,0.0,False,1,2,2,ranking_error
+ethics,moral philosophy,moral philosophy,single_word,False,0.0,False,1,3,1,correct
+ethnic groups,cultural communities,cultural communities,compound,False,0.0,False,2,1,1,correct
+ethnic minority groups,minority communities,ethnic groups,multi_word_phrase,False,0.25,True,3,1,2,ranking_error
+ethnic minority groups and culture,minority cultures,cultural communities,multi_word_phrase,False,0.16666666666666666,True,5,1,2,ranking_error
+Ethnographic research,ethnographics,intercultural research methods,compound,False,0.0,True,2,1,4,ranking_error
+European Public Procurement Law,EU procurement regulations,EU procurement regulations,multi_word_phrase,False,0.16666666666666666,True,4,1,1,correct
+european tax law,EU tax regulations,EU tax regulations,multi_word_phrase,False,0.2,False,3,1,1,correct
+European Administrative Law,EU administrative law,EU administrative law,multi_word_phrase,False,0.5,True,3,1,1,correct
+european environmental law,EU environmental regulations,EU environmental regulations,multi_word_phrase,False,0.2,True,3,1,1,correct
+European Private Law,EU private law,EU private law,multi_word_phrase,False,0.5,True,3,1,1,correct
+european law,EU legislation,EU legislation,compound,False,0.0,False,2,1,1,correct
+european social security law,European welfare law,European welfare law,multi_word_phrase,False,0.4,True,4,1,1,correct
+european convention on human rights,European Human Rights Charter,European Human Rights Charter,multi_word_phrase,False,0.5,True,5,1,1,correct
+european monetary union,eurozone,eurozone,multi_word_phrase,False,0.0,False,3,1,1,correct
+european politics,EU politics,EU politics,compound,False,0.3333333333333333,True,2,1,1,correct
+euthanasia,mercy killing,mercy killing,single_word,False,0.0,False,1,2,1,correct
+gospels,good news,early Christian texts,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+evolution,development,development,single_word,False,0.0,False,1,2,1,correct
+evs,European Values Study,power sources,abbreviation_like,False,0.0,False,1,-1,-1,retrieval_miss
+exegesis,interpretation,Bible interpretation,single_word,False,0.0,False,1,1,2,ranking_error
+experimental economics,behavioral economics,behavioral economics,compound,False,0.3333333333333333,True,2,2,1,correct
+expert systems,knowledge systems,knowledge systems,compound,False,0.3333333333333333,True,2,1,1,correct
+external reporting,external disclosure,financial reporting,compound,False,0.3333333333333333,True,2,2,2,ranking_error
+extreme value theory,extreme value analysis,extreme value analysis,multi_word_phrase,False,0.5,True,3,1,1,correct
+family law,domestic relations law,domestic relations law,compound,False,0.25,False,2,1,1,correct
+feminism,women's liberation,women's liberation,single_word,False,0.0,False,1,1,1,correct
+feminist theology,gender theology,gender theology,compound,False,0.3333333333333333,True,2,1,1,correct
+film en literature,cinematic literature,cinematic literature,multi_word_phrase,False,0.25,True,3,1,1,correct
+film studies,cinema studies,cinema studies,compound,False,0.3333333333333333,True,2,1,1,correct
+philosophy,wisdom,mental philosophy,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+philosophic and christian philosophy of life,Christian worldview philosophy,Christian worldview philosophy,multi_word_phrase,False,0.2857142857142857,True,6,2,1,correct
+philosophy of cognitive psychology,cognitive psychology theory,philosophy of psychology,multi_word_phrase,False,0.4,True,4,4,5,ranking_error
+philosophy of economy,economic philosophy,economic philosophy,multi_word_phrase,False,0.25,True,3,1,1,correct
+philosophy of mind,mental philosophy,mental philosophy,multi_word_phrase,False,0.25,True,3,1,1,correct
+philosophy of ~the state,political theory,political theory,multi_word_phrase,False,0.0,False,4,1,1,correct
+philosophical psychology,philosophy of psychology,philosophy of psychology,compound,False,0.25,True,2,1,1,correct
+Financial reporting,financial statements,financial statements,compound,False,0.3333333333333333,True,2,1,1,correct
+financial intermediation,financial brokerage,financial structure,compound,False,0.3333333333333333,True,2,-1,-1,retrieval_miss
+financial management,fiscal management,fiscal management,compound,False,0.3333333333333333,True,2,1,1,correct
+financial analysis,financial evaluation,financial evaluation,compound,False,0.3333333333333333,True,2,1,1,correct
+financial crisis,economic meltdown,economic meltdown,compound,False,0.0,False,2,1,1,correct
+financial econometrics,quantitative finance,quantitative finance,compound,False,0.0,True,2,5,1,correct
+"financial economics, models",financial modeling,financial modeling,multi_word_phrase,False,0.25,True,3,1,1,correct
+financial markets,capital markets,capital markets,compound,False,0.3333333333333333,True,2,1,1,correct
+capital structure,financial composition,financial structure,compound,False,0.0,False,2,3,2,ranking_error
+financial mathematics,quantitative finance,quantitative finance,compound,False,0.0,True,2,3,1,correct
+finance,financial management,business finance,single_word,False,0.0,True,1,-1,-1,retrieval_miss
+finance,funding,investing,single_word,False,0.0,False,1,3,2,ranking_error
+corporate finance; international finance,business finance; global finance,business finance; global finance,multi_word_phrase,False,0.3333333333333333,True,4,2,1,correct
+fiscal policy,budgetary policy,budgetary policy,compound,False,0.3333333333333333,True,2,1,1,correct
+fiscal economics,public finance,public finance,compound,False,0.0,False,2,2,1,correct
+flexicurity,flexible security,flexible security,single_word,False,0.0,True,1,1,1,correct
+phonology,sound system study,sound system study,single_word,False,0.0,False,1,3,1,correct
+forensic psychology,criminal psychology,criminal psychology,compound,False,0.3333333333333333,True,2,1,1,correct
+fundamental research,basic research,basic research,compound,False,0.3333333333333333,True,2,1,1,correct
+mergers and acquisitions,corporate consolidation,corporate consolidation,multi_word_phrase,False,0.0,False,3,1,1,correct
+"mergers, acquisitions and protection",corporate consolidation,corporate consolidation,multi_word_phrase,False,0.0,False,4,1,1,correct
+physiology,biological functions,biological functions,single_word,False,0.0,False,1,1,1,correct
+birth,childbirth,childbirth,abbreviation_like,False,0.0,False,1,2,1,correct
+commemoration,remembrance,remembrance,single_word,False,0.0,False,1,1,1,correct
+behaviour,conduct,conduct,single_word,False,0.0,False,1,1,1,correct
+behaviour influence,behavior modification,behavior modification,compound,False,0.0,True,2,1,1,correct
+behavioral economics,Behavioral finance,Behavioral finance,compound,False,0.3333333333333333,True,2,1,1,correct
+mental health,psychological well-being,psychological well-being,compound,False,0.0,False,2,1,1,correct
+infant mental health,baby mental health,baby mental health,multi_word_phrase,False,0.5,True,3,1,1,correct
+mental health care,psychological care,psychological care,multi_word_phrase,False,0.25,False,3,1,1,correct
+spiritual counseling,spiritual guidance,spiritual guidance,compound,False,0.3333333333333333,True,2,1,1,correct
+spiritual counseling / pastoral work / soul care,spiritual guidance,spiritual counseling,multi_word_phrase,False,0.125,True,8,3,3,ranking_error
+data banks,data repositories,data repositories,compound,False,0.3333333333333333,False,2,1,1,correct
+memory,recollection,recollection,single_word,False,0.0,False,1,1,1,correct
+facial expressions,facial cues,facial cues,compound,False,0.3333333333333333,True,2,2,1,correct
+literacy,reading and writing skills,reading and writing skills,single_word,False,0.0,False,1,1,1,correct
+"gender studies, theology",feminist theology,gender theology,multi_word_phrase,False,0.25,True,3,2,2,ranking_error
+history,historical study,local history,single_word,False,0.0,True,1,-1,-1,retrieval_miss
+history Persian period,Achaemenid history,Achaemenid history,multi_word_phrase,False,0.25,True,3,1,1,correct
+history of reformation,Reformation history,Reformation history,multi_word_phrase,False,0.6666666666666666,True,3,1,1,correct
+History of Christianity,Christian history,Christian history,multi_word_phrase,False,0.25,True,3,1,1,correct
+history of church and theology,ecclesiastical history,ecclesiastical history,multi_word_phrase,False,0.16666666666666666,True,5,4,1,correct
+dispute resolution,conflict resolution,conflict resolution,compound,False,0.3333333333333333,True,2,1,1,correct
+Communication Skills,interpersonal skills,interpersonal skills,compound,False,0.3333333333333333,True,2,1,1,correct
+violence,aggression,aggression,single_word,False,0.0,False,1,1,1,correct
+families,households,households,single_word,False,0.0,False,1,1,1,correct
+sociology of the family,family sociology,family sociology,multi_word_phrase,False,0.5,True,4,1,1,correct
+health,well-being,life quality,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+health law,medical law,medical law,compound,False,0.3333333333333333,False,2,1,1,correct
+health care,medical services,medical services,compound,False,0.0,False,2,1,1,correct
+health care economics,health economics,health economics,multi_word_phrase,False,0.6666666666666666,True,3,1,1,correct
+health care management,health services management,health services management,multi_word_phrase,False,0.5,True,3,1,1,correct
+health care organisation,health services management,health care administration,multi_word_phrase,False,0.2,True,3,3,2,ranking_error
+health care strategy and management,health care administration,health services management,multi_word_phrase,False,0.3333333333333333,True,5,2,2,ranking_error
+health care policy,health policy,health policy,multi_word_phrase,False,0.6666666666666666,True,3,1,1,correct
+globalisation,international integration,international integration,single_word,False,0.0,False,1,2,1,correct
+images of god en men,theological representations,theological representations,multi_word_phrase,False,0.0,False,5,1,1,correct
+images of god,conceptions of God,theological representations,multi_word_phrase,False,0.5,False,3,2,2,ranking_error
+religion,faith,faith,single_word,True,0.0,False,1,3,1,correct
+psychology of religion and pastoral psychology,religious psychology,religious psychology,multi_word_phrase,False,0.16666666666666666,True,6,1,1,correct
+religion and pastoral sociology,religious sociology,religious sociology,multi_word_phrase,False,0.2,True,4,1,1,correct
+religions; phenomenology,religious studies,religious studies,compound,False,0.0,True,2,4,1,correct
+philosophy of religion,religious philosophy,religious philosophy,multi_word_phrase,False,0.25,True,3,1,1,correct
+pedagogy of religion,religious education theory,religious education theory,multi_word_phrase,False,0.0,True,3,1,1,correct
+"divinity, contemporary themes of",modern theological themes,modern theological themes,multi_word_phrase,False,0.16666666666666666,True,4,1,1,correct
+gods call,divine vocation,divine vocation,compound,False,0.0,False,2,1,1,correct
+gambling,betting,betting,single_word,False,0.0,False,1,1,1,correct
+gambling addiction,compulsive gambling,compulsive gambling,compound,False,0.3333333333333333,True,2,1,1,correct
+gregorian,plainchant,ecclesiastical Latin,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+greek,Koine Greek,Koine Greek,abbreviation_like,False,0.5,True,1,1,1,correct
+growth theories,development theories,development theories,compound,False,0.3333333333333333,True,2,1,1,correct
+group dynamics,team dynamics,team dynamics,compound,False,0.3333333333333333,True,2,1,1,correct
+group support systems,collaborative systems,collaborative systems,multi_word_phrase,False,0.25,True,3,1,1,correct
+group processes,group dynamics,group dynamics,compound,False,0.3333333333333333,True,2,2,1,correct
+fundamental rights,basic rights,basic rights,compound,False,0.3333333333333333,True,2,1,1,correct
+foundations of mathematics,mathematical foundations,mathematical foundations,multi_word_phrase,False,0.25,True,3,1,1,correct
+fundamentals of psychology,basics of psychology,basics of psychology,multi_word_phrase,False,0.5,True,3,1,1,correct
+foundations of developments in european law,principles of European legal development,principles of European legal development,multi_word_phrase,False,0.2222222222222222,True,6,1,1,correct
+habermas,critical theorist,social theories,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+trade policy,commercial policy,commercial policy,compound,False,0.3333333333333333,True,2,1,1,correct
+commercial law,business law,business law,compound,False,0.3333333333333333,False,2,1,1,correct
+heart and vascular diseases,cardiovascular diseases,cardiovascular diseases,multi_word_phrase,False,0.2,True,4,1,1,correct
+hebrew,ancient Hebrew,ancient Hebrew,single_word,False,0.5,True,1,1,1,correct
+hebrew bible,Tanakh,Tanakh,compound,False,0.0,False,2,4,1,correct
+attachment,bonding,bonding,single_word,False,0.0,False,1,1,1,correct
+contemporary philosophy; history of,modern philosophy; historical development,modern philosophy; historical development,multi_word_phrase,False,0.14285714285714285,True,4,2,1,correct
+hedge funds,investment funds,investment funds,compound,False,0.3333333333333333,True,2,1,1,correct
+hegel,Hegelian philosophy,Hegelian philosophy,abbreviation_like,False,0.0,True,1,1,1,correct
+Heidegger,existential philosopher,existential philosopher,single_word,False,0.0,False,1,2,1,correct
+hermeneutics,interpretive theory,interpretive theory,single_word,False,0.0,False,1,2,1,correct
+cerebral/brain haemorrhage,brain bleed,brain bleed,compound,False,0.0,False,2,1,1,correct
+brain,cerebrum,cerebrum,abbreviation_like,False,0.0,False,1,1,1,correct
+brain and behaviour,neurobehavioral science,neurobehavioral science,multi_word_phrase,False,0.0,False,3,5,1,correct
+brain damage,brain injury,brain injury,compound,False,0.3333333333333333,True,2,1,1,correct
+recovery (in long term psychiatry),rehabilitation,recovery,multi_word_phrase,False,0.0,False,5,2,2,ranking_error
+scalp cooling,head cooling,head cooling,compound,False,0.3333333333333333,True,2,1,1,correct
+horkheimer,Frankfurt School theorist,Frankfurt School theorist,single_word,False,0.0,False,1,2,1,correct
+household economics,family economics,family economics,compound,False,0.3333333333333333,True,2,1,1,correct
+assistance,support services,guidance,single_word,False,0.0,False,1,3,3,ranking_error
+human resource development,talent development,employee development,multi_word_phrase,False,0.25,True,3,2,2,ranking_error
+human resource management,personnel management,personnel management,multi_word_phrase,False,0.25,True,3,1,1,correct
+humanitarian intervention,humanitarian aid,humanitarian aid,compound,False,0.3333333333333333,True,2,1,1,correct
+law governing matrimonial property rights,marital property law,marital property law,multi_word_phrase,False,0.3333333333333333,True,5,1,1,correct
+hybrid organization,mixed organization,mixed organization,compound,False,0.3333333333333333,True,2,1,1,correct
+hyperactivity,overactivity,overactivity,single_word,False,0.0,False,1,1,1,correct
+ict,information and communication technology,information and communication technology,abbreviation_like,False,0.0,False,1,2,1,correct
+ICT and labour,digital labor,digital labor,multi_word_phrase,False,0.0,False,3,1,1,correct
+ict in education,educational technology,educational technology,multi_word_phrase,False,0.0,True,3,1,1,correct
+ict management,IT administration,IT management,compound,False,0.0,False,2,3,3,ranking_error
+identity,self-concept,self-concept,single_word,False,0.0,False,1,1,1,correct
+identity management,IdM,IT administration,compound,True,0.0,False,2,-1,-1,retrieval_miss
+imf,international financial institution,international financial institution,abbreviation_like,False,0.0,False,1,1,1,correct
+inculturation,cultural adaptation,cultural adaptation,single_word,False,0.0,False,1,1,1,correct
+industrial networks,industrial connections,industrial connections,compound,False,0.3333333333333333,True,2,1,1,correct
+industrial organization,industrial economics,industrial economics,compound,False,0.3333333333333333,True,2,3,1,correct
+computer science and ethics,ethical computing,ethical computing,multi_word_phrase,False,0.0,True,4,2,1,correct
+computer science law,IT law,legal informatics,multi_word_phrase,False,0.25,False,3,2,2,ranking_error
+information and communication technology in education,educational technology,educational technology,multi_word_phrase,False,0.14285714285714285,True,6,1,1,correct
+information management,data management,information systems management,compound,False,0.3333333333333333,True,2,1,2,ranking_error
+information processes,information processing,information processing,compound,False,0.3333333333333333,True,2,1,1,correct
+information law,data law,data law,compound,False,0.3333333333333333,False,2,1,1,correct
+information systems,data management systems,information technology,compound,False,0.25,True,2,-1,-1,retrieval_miss
+Information Systems Management,IT management,IT management,multi_word_phrase,False,0.25,True,3,1,1,correct
+information technology,IT,information and communication technology,compound,True,0.0,False,2,-1,-1,retrieval_miss
+data processing,information processing,information processing,compound,False,0.3333333333333333,True,2,1,1,correct
+information retrieval,information search,information search,compound,False,0.3333333333333333,True,2,2,1,correct
+infrastructure,facilities,facilities,single_word,False,0.0,False,1,1,1,correct
+Indigenous peoples,native communities,native communities,compound,False,0.0,False,2,1,1,correct
+income inequality,income disparity,income disparity,compound,False,0.3333333333333333,True,2,1,1,correct
+income distribution,income allocation,income disparity,compound,False,0.3333333333333333,True,2,2,2,ranking_error
+income tax,earnings tax,earnings tax,compound,False,0.3333333333333333,False,2,1,1,correct
+Purchasing and supply management,procurement management,procurement management,multi_word_phrase,False,0.2,True,4,1,1,correct
+innovation,advancement,development,single_word,False,0.0,False,1,1,2,ranking_error
+insolvency law,bankruptcy law,bankruptcy law,compound,False,0.3333333333333333,False,2,1,1,correct
+effort,exertion,exertion,single_word,False,0.0,False,1,2,1,correct
+institutional economics,institutional theory,institutional theory,compound,False,0.3333333333333333,True,2,1,1,correct
+institutional theory,Institutional framework,Institutional framework,compound,False,0.3333333333333333,True,2,1,1,correct
+instructive texts (*),instructional materials,instructional materials,multi_word_phrase,False,0.0,True,3,1,1,correct
+intellectual property law,IP law,IP law,multi_word_phrase,False,0.25,False,3,1,1,correct
+intelligent interfaces,smart interfaces,smart interfaces,compound,False,0.3333333333333333,True,2,1,1,correct
+intelligence differences between cultures,cross-cultural intelligence,cross-cultural differences,multi_word_phrase,False,0.2,True,4,1,4,ranking_error
+Inter-organizational networks,collaborative networks,inter-firm relationships,compound,False,0.3333333333333333,True,2,3,2,ranking_error
+inter-organisational relationships,inter-firm relationships,inter-firm relationships,compound,False,0.3333333333333333,True,2,1,1,correct
+interaction and communication skills,interpersonal skills,interpersonal skills,multi_word_phrase,False,0.2,True,4,1,1,correct
+interactive governance,Participatory governance,Participatory governance,compound,False,0.3333333333333333,True,2,1,1,correct
+intercultural negotiating,cross-cultural negotiation,cross-cultural negotiation,compound,False,0.0,True,2,1,1,correct
+intercultural communication,cross-cultural communication,cross-cultural communication,compound,False,0.3333333333333333,True,2,1,1,correct
+intercultural assistance,cross-cultural support,cross-cultural support,compound,False,0.0,False,2,1,1,correct
+intercultural theologie,cross-cultural theology,cross-cultural theology,compound,False,0.0,True,2,1,1,correct
+intergenerational risk sharing,cross-generational risk distribution,cross-generational risk distribution,multi_word_phrase,False,0.2,False,3,1,1,correct
+intergroup relationships,group interactions,group interactions,compound,False,0.0,True,2,1,1,correct
+internal control,internal oversight,internal oversight,compound,False,0.3333333333333333,True,2,2,1,correct
+international labour law,global employment law,global employment law,multi_word_phrase,False,0.2,False,3,1,1,correct
+international tax law,global tax law,global tax law,multi_word_phrase,False,0.5,False,3,1,1,correct
+international human resource management,global HR management,global HR management,multi_word_phrase,False,0.16666666666666666,True,4,1,1,correct
+international management,global management,global management,compound,False,0.3333333333333333,True,2,1,1,correct
+international competition law,global antitrust law,global antitrust law,multi_word_phrase,False,0.2,False,3,1,1,correct
+international environmental law,global environmental law,global environmental law,multi_word_phrase,False,0.5,True,3,1,1,correct
+international monetary fund,global financial institution,international financial institution,multi_word_phrase,False,0.0,False,3,2,2,ranking_error
+international public law,global public law,global public law,multi_word_phrase,False,0.5,True,3,1,1,correct
+international law,global law,global law,compound,False,0.3333333333333333,False,2,1,1,correct
+International Criminal Court,ICCt,transnational criminal law,multi_word_phrase,True,0.0,False,3,-1,-1,retrieval_miss
+international criminal law,transnational criminal law,transnational criminal law,multi_word_phrase,False,0.5,True,3,1,1,correct
+International Financial Reporting Standards (IFRS),global accounting standards,global accounting standards,multi_word_phrase,False,0.14285714285714285,True,5,1,1,correct
+international economics,global economics,global economics,compound,False,0.3333333333333333,True,2,1,1,correct
+international finance,global finance,global finance,compound,False,0.3333333333333333,True,2,1,1,correct
+international trade,global commerce,global commerce,compound,False,0.0,False,2,1,1,correct
+internet,cyberspace,the web,single_word,False,0.0,False,1,2,2,ranking_error
+internet addiction,online dependency,online dependency,compound,False,0.0,False,2,1,1,correct
+interpolation,estimation,spatial interpolation,single_word,False,0.0,False,1,1,2,ranking_error
+inter-religious communication,interfaith dialogue,interfaith dialogue,compound,False,0.0,True,2,1,1,correct
+Intertextuality,textual interaction,textual interaction,single_word,False,0.0,True,1,1,1,correct
+intuitionistic mathematics,constructivist mathematics,constructivist mathematics,compound,False,0.3333333333333333,True,2,1,1,correct
+investment under uncertainty,uncertain investments,uncertain investments,multi_word_phrase,False,0.0,True,3,1,1,correct
+investment analysis,investment evaluation,investment evaluation,compound,False,0.3333333333333333,True,2,1,1,correct
+islam,Islamic studies,Islamic studies,abbreviation_like,False,0.0,True,1,2,1,correct
+islam in the netherlands,Muslim Communities in the Netherlands,Muslim Communities in the Netherlands,multi_word_phrase,False,0.5,True,4,1,1,correct
+ivf,test-tube fertilization,test-tube fertilization,abbreviation_like,False,0.0,False,1,1,1,correct
+annual reporting,Yearly report,Yearly report,compound,False,0.0,True,2,1,1,correct
+"Jacobi, F.H.",Friedrich Heinrich Jacobi,Friedrich Heinrich Jacobi,compound,False,0.0,True,2,1,1,correct
+James,Jacob,"Matthew, James, and Didache",abbreviation_like,False,0.0,False,1,-1,-1,retrieval_miss
+The Book of Ben Sira,Ecclesiasticus,scriptural literature,multi_word_phrase,False,0.0,False,5,-1,-1,retrieval_miss
+youth assistance,youth support,youth support,compound,False,0.3333333333333333,True,2,1,1,correct
+jesus,Christ,Christ,abbreviation_like,False,0.0,False,1,1,1,correct
+"judaism and christianity, relationship between",interfaith relations,Judeo-Christian relations,multi_word_phrase,False,0.0,True,5,-1,-1,retrieval_miss
+Jews in modernity,modern Jewish history,modern Jewish history,multi_word_phrase,False,0.0,True,3,1,1,correct
+"Judaism, modern",contemporary Judaism,contemporary Judaism,compound,False,0.0,True,2,1,1,correct
+"judaism, early/ancient",ancient Jewish religion,ancient Jewish religion,compound,False,0.0,False,2,1,1,correct
+johannes,John the Apostle,John the Apostle,single_word,False,0.0,False,1,2,1,correct
+youth and pastoral care,youth ministry,youth ministry,multi_word_phrase,False,0.2,True,4,2,1,correct
+legal skills,legal competencies,legal competencies,compound,False,0.3333333333333333,True,2,1,1,correct
+cancer,malignant neoplasm,malignant neoplasm,single_word,False,0.0,False,1,1,1,correct
+catholic church in the 19th and 20th century,modern Catholic history,modern Catholic history,multi_word_phrase,False,0.1,True,8,1,1,correct
+epistemology,theory of knowledge,theory of knowledge,single_word,False,0.0,False,1,1,1,correct
+knowledge representation,information modeling,ontology,compound,False,0.0,False,2,1,2,ranking_error
+knowledge technology,information technology,information processing,compound,False,0.3333333333333333,True,2,1,4,ranking_error
+church,congregation,congregation,single_word,False,0.0,False,1,1,1,correct
+church state relations,church-state interaction,church-state interaction,multi_word_phrase,False,0.0,True,3,1,1,correct
+ministry,Clergy,clerical ministry,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+church authority,ecclesiastical authority,ecclesiastical authority,compound,False,0.3333333333333333,True,2,1,1,correct
+ecclesial leadership,Ecclesiastical leadership,Ecclesiastical leadership,compound,False,0.3333333333333333,True,2,1,1,correct
+devotion/piety and non-practising,religious observance and secularism,contemporary piety,compound,False,0.16666666666666666,False,3,-1,-1,retrieval_miss
+church music,sacred music,sacred music,compound,False,0.3333333333333333,True,2,1,1,correct
+"church fathers, ancient",early theologians,early theologians,multi_word_phrase,False,0.0,False,3,1,1,correct
+Integrated care,coordinated care,coordinated care,compound,False,0.3333333333333333,False,2,1,1,correct
+voting mechanisms,electoral methods,voting system,compound,False,0.0,False,2,2,2,ranking_error
+electoral systems,voting system,voting system,compound,False,0.0,True,2,1,1,correct
+clinical neuropsychology,neuropsychological therapy,neurobehavioral science,compound,False,0.0,True,2,1,4,ranking_error
+credit systems,credit infrastructure,credit infrastructure,compound,False,0.3333333333333333,True,2,2,1,correct
+Kriging,spatial interpolation,spatial interpolation,single_word,False,0.0,False,1,1,1,correct
+critical theory,radical critique,Marxist theory,compound,False,0.0,True,2,-1,-1,retrieval_miss
+splines,curves,curves,single_word,False,0.0,False,1,1,1,correct
+philosophy of art,aesthetics philosophy,aesthetics philosophy,multi_word_phrase,False,0.25,True,3,1,1,correct
+artificial intelligence,machine intelligence,machine intelligence,compound,False,0.3333333333333333,True,2,1,1,correct
+quality of work,work quality,work quality,multi_word_phrase,False,0.6666666666666666,True,3,1,1,correct
+quality of life,well-being,life quality,multi_word_phrase,False,0.0,False,3,2,2,ranking_error
+Quality of life,life quality,well-being,multi_word_phrase,False,0.6666666666666666,True,3,1,2,ranking_error
+quality of the judiciary,judicial performance,judicial performance,multi_word_phrase,False,0.0,True,4,1,1,correct
+quality of care,health care quality,health care quality,multi_word_phrase,False,0.5,True,3,1,1,correct
+agriculture,farming,farming,single_word,False,0.0,False,1,1,1,correct
+latin,classical language,ecclesiastical Latin,abbreviation_like,False,0.0,False,1,2,2,ranking_error
+lifestyle,way of life,way of life,single_word,False,0.0,False,1,1,1,correct
+learning styles,study methods,learning techniques,compound,False,0.0,False,2,-1,-1,retrieval_miss
+learning disorders,learning disabilities,learning disabilities,compound,False,0.3333333333333333,True,2,1,1,correct
+reading research,Reading studies,Reading studies,compound,False,0.3333333333333333,True,2,1,1,correct
+reading disorders,reading difficulties,reading difficulties,compound,False,0.3333333333333333,True,2,1,1,correct
+leadership,guidance,guidance,single_word,False,0.0,False,1,1,1,correct
+organisational learning,organizational knowledge acquisition,organizational knowledge acquisition,compound,False,0.0,True,2,1,1,correct
+machine learning,automated learning,machine intelligence,compound,False,0.3333333333333333,True,2,2,2,ranking_error
+learning organisations,adaptive organizations,adaptive organizations,compound,False,0.0,True,2,5,1,correct
+Latvia,Latvian Republic,Latvian Republic,single_word,False,0.0,True,1,2,1,correct
+quality of life after heart and vascular diseases,well-being after cardiovascular diseases,well-being after cardiovascular diseases,multi_word_phrase,False,0.2,True,8,1,1,correct
+levinas,Levinasian philosophy,Levinasian philosophy,single_word,False,0.0,True,1,1,1,correct
+liberalisation,deregulation,deregulation,single_word,False,0.0,False,1,1,1,correct
+liberalism and political philosophy,liberal political theory,liberal political theory,multi_word_phrase,False,0.16666666666666666,True,4,1,1,correct
+literary-historical aspects,textual history,textual history,compound,False,0.0,False,2,1,1,correct
+literature,written works,written works,single_word,False,0.0,False,1,1,1,correct
+literature and theology,theological literature,theological literature,multi_word_phrase,False,0.25,True,3,1,1,correct
+study of literature,literary analysis,literary analysis,multi_word_phrase,False,0.0,True,3,1,1,correct
+liturgy (contemporary),modern worship,current liturgical practice,compound,False,0.0,False,2,3,2,ranking_error
+liturgical studies,liturgical theology,liturgical theology,compound,False,0.3333333333333333,True,2,1,1,correct
+liturgical latin,ecclesiastical Latin,ecclesiastical Latin,compound,False,0.3333333333333333,True,2,1,1,correct
+liturgic celebrations,religious ceremonies,religious ceremonies,compound,False,0.0,False,2,1,1,correct
+liturgic music,sacred music,sacred music,compound,False,0.3333333333333333,True,2,1,1,correct
+locke,John Locke,John Locke,abbreviation_like,False,0.5,True,1,1,1,correct
+logic,reasoning,logical argumentation,abbreviation_like,False,0.0,False,1,1,2,ranking_error
+logic and philosophy of language,analytical philosophy,linguistic philosophy,multi_word_phrase,False,0.16666666666666666,True,5,-1,-1,retrieval_miss
+logistics,supply chain management,logistics management,single_word,False,0.0,False,1,2,2,ranking_error
+logistics management,supply chain management,supply chain management,compound,False,0.25,True,2,1,1,correct
+Local Democracy,community governance,Municipal governance,compound,False,0.0,False,2,1,2,ranking_error
+tax on wages/income tax,income tax,income tax,multi_word_phrase,False,0.25,False,4,2,1,correct
+lyotard,postmodern theorist,postmodern theorist,single_word,False,0.0,False,1,1,1,correct
+corporate social responsibility,corporate conscience,corporate conscience,multi_word_phrase,False,0.25,True,3,2,1,correct
+machiavelli,political strategist,persuasion,single_word,False,0.0,False,1,2,2,ranking_error
+power,authority,authority,abbreviation_like,False,0.0,False,1,1,1,correct
+power in organisations,organizational influence,organizational influence,multi_word_phrase,False,0.0,True,3,1,1,correct
+macroeconomics,national economics,data-driven macroeconomics,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+management,administration,administration,single_word,False,0.0,False,1,1,1,correct
+management and ethics,ethical management,ethical management,multi_word_phrase,False,0.25,True,3,1,1,correct
+management games,business simulations,business simulations,compound,False,0.0,False,2,1,1,correct
+small business management,small enterprise management,small enterprise management,multi_word_phrase,False,0.5,True,3,1,1,correct
+marketing,market strategy,marketing strategy,single_word,False,0.0,True,1,5,2,ranking_error
+marketing management,marketing strategy,marketing strategy,compound,False,0.3333333333333333,True,2,1,1,correct
+market research,market analysis,market analysis,compound,False,0.3333333333333333,True,2,1,1,correct
+Marx,Marxism,Marxism,abbreviation_like,False,0.0,False,1,1,1,correct
+marxism,Marxist theory,Marxist theory,single_word,False,0.0,True,1,1,1,correct
+substantive criminal law,criminal code,penal law,multi_word_phrase,False,0.25,True,3,2,2,ranking_error
+mathematical statistics,statistical mathematics,statistical mathematics,compound,False,0.0,True,2,1,1,correct
+Matthew-James-Didache,"Matthew, James, and Didache","Matthew, James, and Didache",single_word,False,0.0,True,1,1,1,correct
+mathew,Matthew's Gospel,Matthew's Gospel,single_word,False,0.0,False,1,1,1,correct
+competition policy,antitrust policy,antitrust policy,compound,False,0.3333333333333333,True,2,1,1,correct
+competition law,antitrust law,antitrust law,compound,False,0.3333333333333333,False,2,1,1,correct
+codetermination,worker participation,worker participation,single_word,False,0.0,False,1,1,1,correct
+Media,communication channels,communication channels,abbreviation_like,False,0.0,False,1,4,1,correct
+media,communication channels,communication channels,abbreviation_like,False,0.0,False,1,4,1,correct
+media ethics,journalistic ethics,journalistic ethics,compound,False,0.3333333333333333,True,2,1,1,correct
+mediation,dispute resolution,dispute resolution,single_word,False,0.0,False,1,1,1,correct
+medical ethics,healthcare ethics,healthcare ethics,compound,False,0.3333333333333333,True,2,1,1,correct
+medical psychology,health psychology,health psychology,compound,False,0.3333333333333333,True,2,1,1,correct
+multilingualism,polyglotism,polyglotism,single_word,False,0.0,False,1,1,1,correct
+man-machine interaction,human-computer interaction,human-computer interaction,compound,False,0.3333333333333333,True,2,1,1,correct
+human evolution,human development,human development,compound,False,0.3333333333333333,True,2,1,1,correct
+human rights,Civil Liberties,basic rights,compound,False,0.0,False,2,1,2,ranking_error
+mental effort,cognitive effort,cognitive effort,compound,False,0.3333333333333333,True,2,1,1,correct
+metaphors,allegories,allegories,single_word,False,0.0,False,1,3,1,correct
+metaphysics,ontology,metaphysical study,single_word,False,0.0,False,1,1,2,ranking_error
+metaphysics of reason and action,philosophy of action,philosophy of action,multi_word_phrase,False,0.3333333333333333,True,5,1,1,correct
+meta models,higher-order models,higher-order models,compound,False,0.3333333333333333,True,2,5,1,correct
+cross-cultural research methodology,intercultural research methods,intercultural research methods,compound,False,0.2,True,3,1,1,correct
+methodology and statistics,research methods and statistics,research methods and statistics,multi_word_phrase,False,0.4,True,3,1,1,correct
+methodology,research methods,research methods,single_word,False,0.0,True,1,2,1,correct
+Methodology of civil law,Civil law methodology,Civil law methodology,multi_word_phrase,False,0.75,True,4,1,1,correct
+micro-econometrics,individual econometrics,individual econometrics,single_word,False,0.0,False,1,1,1,correct
+microeconomics,individual economics,individual economics,single_word,False,0.0,False,1,2,1,correct
+medieval philosophy; history of,medieval thought,medieval thought,multi_word_phrase,False,0.2,True,4,1,1,correct
+history of middle ages,medieval history,medieval history,multi_word_phrase,False,0.2,True,4,1,1,correct
+medieval theology,Middle Ages theology,Middle Ages theology,compound,False,0.25,True,2,1,1,correct
+small and medium-sized enterprises,small businesses,small businesses,compound,False,0.2,True,4,1,1,correct
+migrants,immigrants,immigrants,single_word,False,0.0,False,1,1,1,correct
+Migration Law,immigration law,immigration law,compound,False,0.3333333333333333,False,2,1,1,correct
+environmental economics,ecological economics,ecological economics,compound,False,0.3333333333333333,True,2,1,1,correct
+environmental policy,ecological policy,ecological policy,compound,False,0.3333333333333333,True,2,1,1,correct
+environmental impact study,environmental assessment,environmental assessment,multi_word_phrase,False,0.25,True,3,1,1,correct
+environmental management,ecological management,ecological management,compound,False,0.3333333333333333,True,2,1,1,correct
+environmental law,ecological law,environmental protection law,compound,False,0.3333333333333333,False,2,1,2,ranking_error
+environmental criminal law,ecological criminal law,ecological criminal law,multi_word_phrase,False,0.5,True,3,1,1,correct
+doctrines of war,Military doctrine,Military doctrine,multi_word_phrase,False,0.0,True,3,1,1,correct
+minorities,ethnic groups,minority communities,single_word,False,0.0,False,1,3,3,ranking_error
+modeling,simulation,computational modeling,single_word,False,0.0,False,1,1,3,ranking_error
+models,frameworks,computational models,single_word,False,0.0,False,1,1,4,ranking_error
+modern devotion,contemporary piety,contemporary piety,compound,False,0.0,False,2,1,1,correct
+modern philosophy; history of,contemporary philosophy history,modern philosophy; historical development,multi_word_phrase,False,0.16666666666666666,True,4,2,2,ranking_error
+mother tongue; education,native language education,native language education,multi_word_phrase,False,0.2,True,3,1,1,correct
+monetary policy,financial policy,financial policy,compound,False,0.3333333333333333,True,2,1,1,correct
+monetary economics,financial economics,financial economics,compound,False,0.3333333333333333,True,2,1,1,correct
+moral responsibility,ethical accountability,ethical accountability,compound,False,0.0,False,2,3,1,correct
+morphology,linguistic morphology,linguistic morphology,single_word,False,0.5,True,1,1,1,correct
+muslims - christians dialogue,interfaith dialogue,interfaith dialogue,compound,False,0.2,True,4,1,1,correct
+motivation,drive,work motivation,single_word,True,0.0,False,1,-1,-1,retrieval_miss
+multi level analysis,hierarchical analysis,hierarchical analysis,multi_word_phrase,False,0.25,True,3,1,1,correct
+multiculturalism,cultural diversity,cultural diversity,single_word,False,0.0,False,1,1,1,correct
+multicultural society,diverse society,diverse society,compound,False,0.3333333333333333,True,2,1,1,correct
+multicultural city,diverse city,diverse city,compound,False,0.3333333333333333,False,2,1,1,correct
+multimedia,mixed media,mixed media,single_word,False,0.0,False,1,1,1,correct
+"Nancy, Jean-Luc (1940-)",contemporary philosopher,postmodern theorist,compound,False,0.0,False,3,1,2,ranking_error
+nanotechnology,Nanoengineering,Nanoengineering,single_word,False,0.0,False,1,1,1,correct
+narcissism and shame,egoism and guilt,egoism and guilt,multi_word_phrase,False,0.2,False,3,1,1,correct
+natality/birth rate,birth rate,birth rate,compound,False,0.3333333333333333,False,2,1,1,correct
+nationalism,nationalist ideology,nationalist ideology,single_word,False,0.0,True,1,2,1,correct
+Nature Protection Law,environmental protection law,environmental protection law,multi_word_phrase,False,0.5,True,3,2,1,correct
+physics,physical science,physical science,single_word,False,0.0,True,1,1,1,correct
+dutch,Dutch language,Dutch language,abbreviation_like,False,0.5,True,1,1,1,correct
+dutch as a second language,Dutch language acquisition,Dutch language acquisition,multi_word_phrase,False,0.3333333333333333,True,5,2,1,correct
+privilege against self-incrimination,right to remain silent,right to remain silent,compound,False,0.0,False,3,1,1,correct
+Networks,interconnected systems,interconnected systems,single_word,False,0.0,False,1,2,1,correct
+networks,interconnected systems,interconnected systems,single_word,False,0.0,False,1,1,1,correct
+network industries,interconnected industries,interconnected industries,compound,False,0.3333333333333333,True,2,1,1,correct
+neural networks,artificial neural networks,artificial neural networks,compound,False,0.6666666666666666,True,2,1,1,correct
+neurophysiology,neural physiology,neural physiology,single_word,False,0.0,False,1,1,1,correct
+neuropsychology,brain-behavior science,brain-behavior science,single_word,False,0.0,False,1,3,1,correct
+nietzsche,Nietzschean philosophy,Nietzschean philosophy,single_word,False,0.0,True,1,1,1,correct
+new testament,Christian Scriptures,Christian Scriptures,compound,False,0.0,False,2,2,1,correct
+nonresponse,no response,non-binding guidelines,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+non profit sector,charitable sector,charitable sector,multi_word_phrase,False,0.25,True,3,1,1,correct
+Nonverbal communication,body language,body language,compound,False,0.0,False,2,1,1,correct
+nonprofit organisations,charitable organizations,charitable organizations,compound,False,0.0,True,2,1,1,correct
+numerical analysis,computational mathematics,computational mathematics,compound,False,0.0,False,2,1,1,correct
+"ecumenism, ecumenical theology",Christian unity,Christian unity,multi_word_phrase,False,0.0,False,3,1,1,correct
+moot court,mock trial,mock trial,compound,False,0.0,False,2,1,1,correct
+sales tax,value-added tax,value-added tax,compound,False,0.3333333333333333,False,2,1,1,correct
+negotiating,negotiation,negotiation,single_word,False,0.0,True,1,1,1,correct
+entrepreneurship,business creation,business creation,single_word,False,0.0,False,1,1,1,correct
+enterprises,businesses,businesses,single_word,False,0.0,False,1,1,1,correct
+corporate finance,business finance,business finance,compound,False,0.3333333333333333,True,2,1,1,correct
+corporate models,business frameworks,business frameworks,compound,False,0.0,False,2,1,1,correct
+works council,employee council,employee council,compound,False,0.3333333333333333,True,2,1,1,correct
+company law,corporate law,corporate law,compound,False,0.3333333333333333,False,2,1,1,correct
+company strategy,business strategy,business strategy,compound,False,0.3333333333333333,True,2,1,1,correct
+company assessment (*),business valuation,business valuation,multi_word_phrase,False,0.0,False,3,4,1,correct
+education,schooling,schooling,single_word,False,0.0,False,1,1,1,correct
+educational and training psychology,instructional psychology,instructional psychology,multi_word_phrase,False,0.2,True,4,1,1,correct
+educational law,school law,school law,compound,False,0.3333333333333333,False,2,1,1,correct
+sociology of education,educational sociology,educational sociology,multi_word_phrase,False,0.25,True,3,1,1,correct
+research,investigation,investigation,single_word,False,0.0,False,1,1,1,correct
+research design,study plan,study plan,compound,False,0.0,False,2,2,1,correct
+online dispute resolution,e-mediation,e-mediation,multi_word_phrase,False,0.0,False,3,1,1,correct
+online shopping,internet shopping,internet shopping,compound,False,0.3333333333333333,True,2,1,1,correct
+ontology,metaphysical study,metaphysics,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+cooperative information system development,Collaborative Information Systems Development,Collaborative Information Systems Development,multi_word_phrase,False,0.3333333333333333,True,4,1,1,correct
+development economics,economic development,economic development,compound,False,0.3333333333333333,True,2,1,1,correct
+developing countries,emerging economies,emerging economies,compound,False,0.0,False,2,1,1,correct
+developing countries; economy,emerging economies,emerging economies,multi_word_phrase,False,0.0,True,3,1,1,correct
+eye tracking,gaze tracking,gaze tracking,compound,False,0.3333333333333333,True,2,1,1,correct
+Eastern Europe,East Europe,East Europe,compound,False,0.3333333333333333,True,2,1,1,correct
+public administration,public management,public management,compound,False,0.3333333333333333,True,2,1,1,correct
+public finance,government finance,government finance,compound,False,0.3333333333333333,True,2,1,1,correct
+public finance of local authorities,municipal finance,municipal finance,multi_word_phrase,False,0.16666666666666666,True,5,1,1,correct
+revelation,divine disclosure,divine disclosure,single_word,False,0.0,False,1,2,1,correct
+operations research,operational analysis,operational analysis,compound,False,0.0,True,2,1,1,correct
+options,financial derivatives,option valuation,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+option pricing,option valuation,option valuation,compound,False,0.3333333333333333,True,2,1,1,correct
+optimisation,improvement,improvement,single_word,False,0.0,False,1,1,1,correct
+parenting,child rearing,child rearing,single_word,False,0.0,False,1,1,1,correct
+organisation,institution,institution,single_word,False,0.0,False,1,2,1,correct
+organisation and management,business administration,organizational structure,multi_word_phrase,False,0.0,False,3,5,4,ranking_error
+organizational commitment,workplace loyalty,workplace loyalty,compound,False,0.0,False,2,1,1,correct
+organisational culture,corporate culture,corporate culture,compound,False,0.3333333333333333,True,2,1,1,correct
+organizational design,organizational structure,organizational structure,compound,False,0.3333333333333333,True,2,1,1,correct
+organisational development,organizational growth,organizational transformation,compound,False,0.0,True,2,1,2,ranking_error
+organisational psychology,industrial psychology,occupational psychology,compound,False,0.3333333333333333,True,2,4,2,ranking_error
+organisations,institutions,institutions,single_word,False,0.0,False,1,1,1,correct
+organisational sociology,sociology of organizations,sociology of organizations,compound,False,0.25,True,2,1,1,correct
+organisation theory,organizational theory,organizational theory,compound,False,0.3333333333333333,True,2,1,1,correct
+organisational change,organizational transformation,organizational transformation,compound,False,0.0,True,2,1,1,correct
+organisation studies,organizational studies,organizational studies,compound,False,0.3333333333333333,True,2,1,1,correct
+old testament,Hebrew Bible,Hebrew Bible,compound,False,0.0,False,2,1,1,correct
+aging,growing old,growing old,abbreviation_like,False,0.0,False,1,1,1,correct
+older workers,senior employees,senior employees,compound,False,0.0,False,2,1,1,correct
+elderly people,senior citizens,senior citizens,compound,False,0.0,False,2,1,1,correct
+government policy,public policy,public policy,compound,False,0.3333333333333333,True,2,1,1,correct
+public economics,government economics,government economics,compound,False,0.3333333333333333,True,2,1,1,correct
+government finance,public finance,public finance,compound,False,0.3333333333333333,True,2,1,1,correct
+mergers,consolidations,consolidations,single_word,False,0.0,False,1,1,1,correct
+minor mental disorders,emotional exhaustion,psychological disorders,multi_word_phrase,False,0.0,False,3,-1,-1,retrieval_miss
+paneldata and latent variables,longitudinal data and hidden variables,longitudinal data and hidden variables,multi_word_phrase,False,0.2857142857142857,True,4,5,1,correct
+pastoral psychology,Pastoral Counseling Psychology,Pastoral Counseling Psychology,compound,False,0.6666666666666666,True,2,1,1,correct
+pastoral sociology,sociology of pastoral care,sociology of pastoral care,compound,False,0.5,True,2,1,1,correct
+pastoral theology,spiritual care theology,spiritual care theology,compound,False,0.25,True,2,4,1,correct
+priesthood/pastoral care,clerical ministry,Catholic pastoral care,compound,False,0.0,False,2,-1,-1,retrieval_miss
+pastoral counseling,spiritual counseling,spiritual counseling,compound,False,0.3333333333333333,True,2,2,1,correct
+pastoral assistance,spiritual support,Catholic pastoral care,compound,False,0.0,False,2,2,2,ranking_error
+Ecclesiastical Latin New Testament Greek,Patristic studies,ecclesiastical Latin,multi_word_phrase,False,0.0,False,5,-1,-1,retrieval_miss
+pensions,retirement benefits,retirement benefits,single_word,False,0.0,False,1,1,1,correct
+"pensions, pension deal, pensioenfondsen",retirement benefits,retirement benefits,multi_word_phrase,False,0.0,False,4,1,1,correct
+perception,awareness,interpretation,single_word,False,0.0,False,1,1,2,ranking_error
+Personalization,customization,customization,single_word,False,0.0,False,1,1,1,correct
+psychology of human resources,occupational psychology,occupational psychology,multi_word_phrase,False,0.2,True,4,2,1,correct
+human resource development,employee development,employee development,multi_word_phrase,False,0.25,True,3,1,1,correct
+human resources sciences,personnel sciences,personnel sciences,multi_word_phrase,False,0.25,True,3,1,1,correct
+persons and family law,family law,family law,multi_word_phrase,False,0.5,True,4,1,1,correct
+personal growth,self-improvement,self-improvement,compound,False,0.0,False,2,1,1,correct
+personality,character,disposition,single_word,False,0.0,False,1,2,2,ranking_error
+personality and health,health psychology,health psychology,multi_word_phrase,False,0.25,True,3,2,1,correct
+persuasive communication,persuasion,persuasive speech,compound,False,0.0,True,2,2,2,ranking_error
+pluralism,diversity,diversity,single_word,False,0.0,False,1,1,1,correct
+pastoral care,spiritual care,spiritual care,compound,False,0.3333333333333333,False,2,4,1,correct
+consensus democracy,Consensus-based democracy,Consensus-based democracy,compound,False,0.3333333333333333,True,2,1,1,correct
+political science,government studies,political theory,compound,False,0.0,False,2,2,2,ranking_error
+politics,governance,governance,single_word,False,0.0,False,1,1,1,correct
+political and administrative crisis,governance crisis,governance crisis,multi_word_phrase,False,0.2,True,4,1,1,correct
+political philosophy / political ethics,political theory,political theory,multi_word_phrase,False,0.2,True,5,2,1,correct
+political parties,Political Groups,Political Groups,compound,False,0.3333333333333333,True,2,1,1,correct
+portfolio theory,investment theory,investment theory,compound,False,0.3333333333333333,True,2,1,1,correct
+postmodernism,post-structuralism,post-structuralism,single_word,False,0.0,False,1,1,1,correct
+practical theology,applied theology,applied theology,compound,False,0.3333333333333333,True,2,1,1,correct
+performance indicators,performance metrics,performance metrics,compound,False,0.3333333333333333,True,2,1,1,correct
+private law,civil law,civil law,compound,False,0.3333333333333333,False,2,1,1,correct
+privacy,confidentiality,confidentiality,single_word,False,0.0,False,1,1,1,correct
+privatization,deregulation,ownership rights,single_word,False,0.0,False,1,1,3,ranking_error
+procedural law,legal procedure,legal procedure,compound,False,0.0,True,2,2,1,correct
+production management,manufacturing process management,manufacturing process management,compound,False,0.25,True,2,1,1,correct
+productivity,efficiency,efficiency,single_word,False,0.0,False,1,1,1,correct
+professionalisation,skill development,skill development,single_word,False,0.0,False,1,1,1,correct
+programming,coding,coding,single_word,False,0.0,False,1,1,1,correct
+psychiatry and religion,mental health and spirituality,mental health and spirituality,multi_word_phrase,False,0.16666666666666666,False,3,1,1,correct
+mental disorders,psychological disorders,psychological disorders,compound,False,0.3333333333333333,True,2,1,1,correct
+psycho-oncology,cancer psychology,cancer psychology,single_word,False,0.0,True,1,1,1,correct
+psychopharmacology,neuropharmacology,neuropharmacology,single_word,False,0.0,False,1,1,1,correct
+psychophysiology,physiological psychology,physiological psychology,single_word,False,0.0,True,1,1,1,correct
+psycholinguistics,language psychology,language psychology,single_word,False,0.0,True,1,1,1,correct
+psychology,mental science,mental science,single_word,False,0.0,False,1,1,1,correct
+psychological contract,implicit agreement,implicit agreement,compound,False,0.0,False,2,2,1,correct
+psychological marketing,consumer psychology,advertising psychology,compound,False,0.0,True,2,2,2,ranking_error
+psychometrics,psychological measurement,psychological measurement,single_word,False,0.0,True,1,1,1,correct
+psychonomics,cognitive psychology,behavioral economics,single_word,False,0.0,True,1,2,3,ranking_error
+psychosomatics,mind-body medicine,mind-body medicine,single_word,False,0.0,False,1,1,1,correct
+psychotherapy,talk therapy,talk therapy,single_word,False,0.0,False,1,1,1,correct
+public/private distinction,public-private divide,public-private divide,compound,False,0.0,True,2,1,1,correct
+public sector,government sector,government sector,compound,False,0.3333333333333333,True,2,1,1,correct
+disasters,Catastrophes,Catastrophes,single_word,False,0.0,False,1,1,1,correct
+rawls,John Rawls' theories,John Rawls' theories,abbreviation_like,False,0.0,True,1,1,1,correct
+law and economics,economic law,regulatory economics,multi_word_phrase,False,0.25,True,3,1,2,ranking_error
+law and informatization/computerization,legal informatics,legal informatics,multi_word_phrase,False,0.0,True,3,1,1,correct
+judiciary system,judiciary,judiciary,compound,False,0.5,True,2,1,1,correct
+legal principles,legal doctrines,jurisprudence,compound,False,0.3333333333333333,True,2,-1,-1,retrieval_miss
+philosophy of law,legal philosophy,jurisprudence,multi_word_phrase,False,0.25,True,3,1,2,ranking_error
+history of law,legal history,legal history,multi_word_phrase,False,0.25,True,3,1,1,correct
+legal persons law,corporate law,corporate law,multi_word_phrase,False,0.25,False,3,1,1,correct
+sociology of law,legal sociology,legal sociology,multi_word_phrase,False,0.25,True,3,1,1,correct
+rule of law,legal governance,legal governance,multi_word_phrase,False,0.0,False,3,1,1,correct
+legal theory,jurisprudence,jurisprudence,compound,False,0.0,False,2,2,1,correct
+comparative law,legal comparison,legal comparison,compound,False,0.0,True,2,1,1,correct
+judicial construction,legal interpretation,legal interpretation,compound,False,0.0,False,2,1,1,correct
+advertising,promotion,promotion,single_word,False,0.0,False,1,1,1,correct
+advertising and ethics,ethical marketing,ethical marketing,multi_word_phrase,False,0.0,True,3,1,1,correct
+psychology of advertising,advertising psychology,advertising psychology,multi_word_phrase,False,0.6666666666666666,True,3,1,1,correct
+recreation,leisure activities,leisure activities,single_word,False,0.0,False,1,1,1,correct
+reductionism,simplification,simplification,single_word,False,0.0,False,1,1,1,correct
+reflection,contemplation,reflective awareness,single_word,False,0.0,False,1,1,2,ranking_error
+regional governance,regional administration,regional administration,compound,False,0.3333333333333333,True,2,1,1,correct
+regional economics,local economics,spatial economics,compound,False,0.3333333333333333,True,2,1,2,ranking_error
+regional economic development,local economic growth,local economic growth,multi_word_phrase,False,0.2,True,3,3,1,correct
+regional history,local history,local history,compound,False,0.3333333333333333,True,2,1,1,correct
+regulation of new technologies,technology oversight,technology oversight,multi_word_phrase,False,0.0,True,4,1,1,correct
+relationship between judaism and christianity,Judeo-Christian relations,Judeo-Christian relations,multi_word_phrase,False,0.0,True,5,2,1,correct
+relations law (*),family law,domestic relations law,multi_word_phrase,False,0.25,False,3,-1,-1,retrieval_miss
+religion,religious tradition,faith,single_word,False,0.0,True,1,-1,-1,retrieval_miss
+religious fundamentalism,religious extremism,religious extremism,compound,False,0.3333333333333333,True,2,1,1,correct
+religious leadership,spiritual leadership,spiritual leadership,compound,False,0.3333333333333333,True,2,1,1,correct
+religious communication,faith-based communication,faith-based communication,compound,False,0.3333333333333333,True,2,1,1,correct
+religious market,faith marketplace,faith marketplace,compound,False,0.0,True,2,1,1,correct
+religious associations,faith-based groups,faith-based groups,compound,False,0.0,False,2,1,1,correct
+catholic care and its tradition,Catholic pastoral care,Catholic pastoral care,multi_word_phrase,False,0.3333333333333333,True,5,1,1,correct
+reorganizations,reorganisation,reorganisation,single_word,False,0.0,True,1,1,1,correct
+representation,advocacy,imitative representation,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+rethorics,persuasive speech,persuasion,single_word,False,0.0,False,1,2,2,ranking_error
+convalescence,recovery,recovery,single_word,False,0.0,False,1,1,1,correct
+rfid,radio-frequency identification,radio-frequency identification,abbreviation_like,False,0.0,False,1,1,1,correct
+risk models,risk assessment models,risk assessment models,compound,False,0.6666666666666666,True,2,1,1,correct
+risk regulation,risk management,financial regulation,compound,False,0.3333333333333333,False,2,1,2,ranking_error
+ritual studies,ritual analysis,ritual analysis,compound,False,0.3333333333333333,True,2,1,1,correct
+rituals,ceremonies,ceremonies,single_word,False,0.0,False,1,1,1,correct
+mourning,grieving,grieving,single_word,False,0.0,False,1,1,1,correct
+spatial information / geographical information,location data,location data,multi_word_phrase,False,0.0,False,5,1,1,correct
+sacramental theology,sacramentology,liturgical theology,compound,False,0.0,True,2,-1,-1,retrieval_miss
+collaborative learning,cooperative learning,cooperative learning,compound,False,0.3333333333333333,True,2,1,1,correct
+Collaboration,Cooperation,Cooperation,single_word,False,0.0,False,1,1,1,correct
+shame,embarrassment,embarrassment,abbreviation_like,False,0.0,False,1,1,1,correct
+estimation theory,parameter estimation,parameter estimation,compound,False,0.3333333333333333,True,2,3,1,correct
+creation (stories of the),origin myths,origin myths,multi_word_phrase,False,0.0,False,4,1,1,correct
+writing methods/processes/techniques,writing strategies,writing strategies,compound,False,0.3333333333333333,True,2,1,1,correct
+guilt,remorse,remorse,abbreviation_like,False,0.0,False,1,1,1,correct
+guilt and sin,moral culpability,remorse,multi_word_phrase,False,0.0,False,3,3,2,ranking_error
+gender,sex,sex,single_word,True,0.0,False,1,1,1,correct
+gender differences,gender disparities,gender disparities,compound,False,0.3333333333333333,True,2,1,1,correct
+sects and new religious movements,alternative religious groups,alternative religious groups,multi_word_phrase,False,0.14285714285714285,True,5,1,1,correct
+semantics,meaning analysis,interpretation,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+semiotics,sign theory,sign theory,single_word,False,0.0,False,1,1,1,correct
+Service-Oriented Computing,service-based computing,service-based computing,compound,False,0.3333333333333333,True,2,1,1,correct
+simulation,imitative representation,imitative representation,single_word,False,0.0,False,1,1,1,correct
+victims,survivors,survivors,single_word,False,0.0,False,1,2,1,correct
+social capital,social networks,social networks,compound,False,0.3333333333333333,True,2,1,1,correct
+social network analysis,network analysis,network analysis,multi_word_phrase,False,0.6666666666666666,True,3,1,1,correct
+social law,welfare law,welfare law,compound,False,0.3333333333333333,False,2,1,1,correct
+social classification,social categorization,social categorization,compound,False,0.3333333333333333,True,2,1,1,correct
+social cognition,Social understanding,Social understanding,compound,False,0.3333333333333333,True,2,1,1,correct
+social cohesion,social unity,social unity,compound,False,0.3333333333333333,True,2,1,1,correct
+social dilemmas,collective action problem,collective action problem,compound,False,0.0,False,2,1,1,correct
+social philosophy / social ethics,social ethics,social ethics,multi_word_phrase,False,0.5,True,5,1,1,correct
+social inequality,social disparity,social disparity,compound,False,0.3333333333333333,True,2,1,1,correct
+social politics,welfare politics,welfare politics,compound,False,0.3333333333333333,True,2,1,1,correct
+social processes,interpersonal process,group dynamics,compound,False,0.0,True,2,1,3,ranking_error
+social psychology,interpersonal psychology,group dynamics,compound,False,0.3333333333333333,True,2,1,2,ranking_error
+social justice,equitable justice,equitable justice,compound,False,0.3333333333333333,True,2,1,1,correct
+social exclusion,marginalization,marginalization,compound,False,0.0,False,2,1,1,correct
+social security,welfare system,retirement benefits,compound,False,0.0,False,2,3,3,ranking_error
+social security principles,welfare principles,social safety nets,multi_word_phrase,False,0.25,True,3,1,2,ranking_error
+social security law,welfare law,global social security law,multi_word_phrase,False,0.25,False,3,3,2,ranking_error
+"social security law, international",global social security law,global social security law,multi_word_phrase,False,0.3333333333333333,True,4,1,1,correct
+sociolinguistics,social linguistics,social linguistics,single_word,False,0.0,False,1,1,1,correct
+sociology,social science,social science,single_word,False,0.0,False,1,1,1,correct
+Sociology,social science,social science,single_word,False,0.0,False,1,1,1,correct
+sociological theories,social theories,social theories,compound,False,0.3333333333333333,True,2,1,1,correct
+soft law,non-binding guidelines,non-binding guidelines,compound,False,0.0,False,2,1,1,correct
+solidarity,unity,social unity,single_word,True,0.0,False,1,3,2,ranking_error
+spanish,Castilian,Castilian,single_word,False,0.0,False,1,1,1,correct
+spelling,orthography,orthography,single_word,False,0.0,False,1,1,1,correct
+game theory,strategic interaction theory,strategic interaction theory,compound,False,0.25,True,2,1,1,correct
+spirituality,spiritual life,spiritual life,single_word,False,0.0,True,1,1,1,correct
+speech technology,voice technology,voice technology,compound,False,0.3333333333333333,True,2,1,1,correct
+talking computer,speech-enabled computer,speech-enabled computer,compound,False,0.3333333333333333,True,2,2,1,correct
+municipal law,local government law,local government law,compound,False,0.25,False,2,1,1,correct
+urban governance,Municipal governance,Municipal governance,compound,False,0.3333333333333333,True,2,1,1,correct
+urban history,city history,city history,compound,False,0.3333333333333333,True,2,1,1,correct
+standardisation,Standardization,Standardization,single_word,False,0.0,True,1,1,1,correct
+statistics,data analysis,data analysis,single_word,False,0.0,False,1,1,1,correct
+statistical methods,statistical techniques,statistical techniques,compound,False,0.3333333333333333,True,2,1,1,correct
+urban development,city planning,city planning,compound,False,0.0,False,2,1,1,correct
+terminal care,end-of-life care,end-of-life care,compound,False,0.3333333333333333,False,2,1,1,correct
+disorders,conditions,seizure disorder,single_word,False,0.0,False,1,3,3,ranking_error
+law of criminal procedure/criminal adjective law,criminal procedural law,criminal procedural law,multi_word_phrase,False,0.3333333333333333,True,6,2,1,correct
+criminal law,penal law,penal law,compound,False,0.3333333333333333,False,2,1,1,correct
+strategic voting behaviour/patterns,tactical voting,tactical voting,multi_word_phrase,False,0.25,True,3,1,1,correct
+strategic management,strategic planning,strategic planning,compound,False,0.3333333333333333,True,2,1,1,correct
+strategic decision-making,strategic planning,strategic planning,compound,False,0.3333333333333333,True,2,1,1,correct
+stratification,social hierarchy,social categorization,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+stress,tension,tension,single_word,False,0.0,False,1,2,1,correct
+stress management,stress control,stress control,compound,False,0.3333333333333333,True,2,1,1,correct
+study skills,learning techniques,study methods,compound,False,0.0,False,2,1,2,ranking_error
+supervision,oversight,oversight,single_word,False,0.0,False,1,1,1,correct
+Supply Chain Management,logistics management,logistics management,multi_word_phrase,False,0.25,True,3,1,1,correct
+syntax,sentence structure,sentence structure,single_word,False,0.0,False,1,1,1,correct
+system dynamics,Systems modeling,Systems modeling,compound,False,0.0,True,2,1,1,correct
+systems theory,systems analysis,systems analysis,compound,False,0.3333333333333333,True,2,1,1,correct
+language,speech,language science,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+language and computers,computational linguistics,computational linguistics,multi_word_phrase,False,0.0,True,3,1,1,correct
+language and artificial intelligence,computational linguistics,computational linguistics,multi_word_phrase,False,0.0,False,4,1,1,correct
+language and minorities,minority languages,minority languages,multi_word_phrase,False,0.0,True,3,1,1,correct
+language evolution,linguistic evolution,linguistic evolution,compound,False,0.3333333333333333,True,2,1,1,correct
+philosophy of language,linguistic philosophy,linguistic philosophy,multi_word_phrase,False,0.25,True,3,1,1,correct
+language behaviour,linguistic behavior,linguistic behavior,compound,False,0.0,True,2,1,1,correct
+linguistic information systems,language processing systems,language processing systems,multi_word_phrase,False,0.2,True,3,1,1,correct
+origin of language,glottogony,linguistic evolution,multi_word_phrase,False,0.0,False,3,-1,-1,retrieval_miss
+language psychology,psycholinguistics,psycholinguistics,compound,False,0.0,True,2,2,1,correct
+language technology,computational linguistics,language processing systems,compound,False,0.0,False,2,2,2,ranking_error
+language proficiency,language skills,language skills,compound,False,0.3333333333333333,True,2,1,1,correct
+language acquisition,language learning,language learning,compound,False,0.3333333333333333,True,2,1,1,correct
+linguistics,language science,language science,single_word,False,0.0,False,1,1,1,correct
+technology and ethics,tech ethics,tech ethics,multi_word_phrase,False,0.25,True,3,1,1,correct
+technology strategy,IT strategy,IT strategy,compound,False,0.3333333333333333,True,2,1,1,correct
+document design,text design,text design,compound,False,0.3333333333333333,True,2,1,1,correct
+discourse studies,text analysis,social linguistics,compound,False,0.0,False,2,1,2,ranking_error
+temperament,disposition,disposition,single_word,False,0.0,False,1,1,1,correct
+terrorism,extremism,religious extremism,single_word,False,0.0,False,1,1,2,ranking_error
+Questionnaire design,survey design,survey design,compound,False,0.3333333333333333,True,2,1,1,correct
+testing,assessment,assessment,single_word,False,0.0,False,1,1,1,correct
+theology,divinity studies,divinity studies,single_word,False,0.0,False,1,5,1,correct
+theology,religious studies,divinity studies,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+Thomas Aquinas,Scholastic philosopher,Scholastic philosopher,compound,False,0.0,False,2,1,1,correct
+temporary work,short-term employment,short-term employment,compound,False,0.0,False,2,1,1,correct
+time series,chronological data,chronological data,compound,False,0.0,False,2,1,1,correct
+applied econometrics,practical econometrics,practical econometrics,compound,False,0.3333333333333333,True,2,3,1,correct
+applied linguistics,practical linguistics,linguistic education,compound,False,0.3333333333333333,True,2,-1,-1,retrieval_miss
+computer applications,software applications,software applications,compound,False,0.3333333333333333,True,2,1,1,correct
+tourism,travel industry,travel industry,single_word,False,0.0,False,1,3,1,correct
+Tourism in protected areas,eco-tourism,eco-tourism,multi_word_phrase,False,0.0,False,4,1,1,correct
+tradition and innovation/modernization,heritage and progress,heritage and progress,multi_word_phrase,False,0.2,False,3,1,1,correct
+transition economics,transformation economics,transformation economics,compound,False,0.3333333333333333,True,2,1,1,correct
+transport,conveyance,conveyance,single_word,False,0.0,False,1,1,1,correct
+triad model,three-part model,three-part model,compound,False,0.3333333333333333,True,2,1,1,correct
+turkish,Anatolian,Anatolian,single_word,False,0.0,False,1,1,1,correct
+turkish migrants,Turkish immigrants,Turkish immigrants,compound,False,0.3333333333333333,True,2,1,1,correct
+bilingualism and multilingualism,multiple language proficiency,multiple language proficiency,multi_word_phrase,False,0.0,True,3,1,1,correct
+bilingualism,dual language proficiency,dual language proficiency,single_word,False,0.0,False,1,3,1,correct
+outsourcing,Subcontracting,Subcontracting,single_word,False,0.0,False,1,1,1,correct
+publishing companies,publishing houses,publishing houses,compound,False,0.3333333333333333,True,2,1,1,correct
+benefits,welfare payments,retirement benefits,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+ostracism,social exclusion,social exclusion,single_word,False,0.0,False,1,1,1,correct
+education in skills,skills training,skills training,multi_word_phrase,False,0.25,True,3,1,1,correct
+trade unions,labor unions,labor unions,compound,False,0.3333333333333333,True,2,1,1,correct
+Vatican II,Second Vatican Council,Second Vatican Council,compound,False,0.25,True,2,1,1,correct
+auctions,bidding,bidding,single_word,False,0.0,False,1,1,1,correct
+auction theory,Bidding Theory,Bidding Theory,compound,False,0.3333333333333333,True,2,1,1,correct
+corporate income tax,company tax,company tax,multi_word_phrase,False,0.25,False,3,1,1,correct
+law of obligations,contract law,contract law,multi_word_phrase,False,0.25,False,3,3,1,correct
+comparison between traditional and new media,media comparison,media comparison,multi_word_phrase,False,0.3333333333333333,True,6,1,1,correct
+ageing,population aging,growing old,single_word,False,0.0,False,1,3,2,ranking_error
+"the relationship between the individual, the community and the state",social contract,community governance,multi_word_phrase,False,0.0,False,10,-1,-1,retrieval_miss
+"the relationship between politics, economy and ethics",political-economic ethics,political-economic ethics,multi_word_phrase,False,0.125,True,7,1,1,correct
+the relation between science and philosophy,science-philosophy interface,science-philosophy interface,multi_word_phrase,False,0.0,True,6,2,1,correct
+fatigue,tiredness,tiredness,single_word,False,0.0,False,1,1,1,correct
+tax on wealth/wealth tax,asset tax,asset tax,multi_word_phrase,False,0.25,False,4,1,1,correct
+capital structure,financial structure,financial composition,compound,False,0.3333333333333333,True,2,1,2,ranking_error
+Resurrection,rebirth,rebirth,single_word,False,0.0,False,1,1,1,correct
+reporting,financial reporting,financial reporting,single_word,False,0.5,True,1,5,1,correct
+addiction,dependency,substance dependence,single_word,False,0.0,False,1,3,3,ranking_error
+addiction care,substance abuse treatment,substance abuse treatment,compound,False,0.0,False,2,1,1,correct
+mentally handicapped persons,intellectually disabled persons,intellectually disabled persons,multi_word_phrase,False,0.2,True,3,1,1,correct
+trust,confidence,confidence,abbreviation_like,False,0.0,False,1,1,1,correct
+replacement models,substitution models,substitution models,compound,False,0.3333333333333333,True,2,1,1,correct
+insurance,coverage,coverage,single_word,False,0.0,False,1,1,1,correct
+actuarial mathematics,Actuarial science,Actuarial science,compound,False,0.3333333333333333,True,2,1,1,correct
+welfare states,social safety nets,social safety nets,compound,False,0.0,False,2,3,1,correct
+victimology,study of victims,study of victims,single_word,False,0.0,True,1,1,1,correct
+Victorian Literature,19th-century British literature,19th-century British literature,compound,False,0.25,True,2,1,1,correct
+visual perception,sight perception,sight perception,compound,False,0.3333333333333333,True,2,1,1,correct
+Refugee law,Asylum law,Asylum law,compound,False,0.3333333333333333,False,2,1,1,correct
+history of international law,international legal history,international legal history,multi_word_phrase,False,0.4,True,4,1,1,correct
+popular culture,mass culture,mass culture,compound,False,0.3333333333333333,True,2,1,1,correct
+inventory management,stock control,stock management,compound,False,0.0,False,2,3,2,ranking_error
+inventory systems,stock management,stock management,compound,False,0.0,False,2,1,1,correct
+forecasting,prediction,prediction,single_word,False,0.0,False,1,1,1,correct
+questionnaires,surveys,surveys,single_word,False,0.0,False,1,1,1,correct
+leisure,free time,free time,single_word,False,0.0,False,1,2,1,correct
+leisure studies,recreation studies,recreation studies,compound,False,0.3333333333333333,True,2,1,1,correct
+voluntary work,volunteer service,volunteer service,compound,False,0.0,True,2,1,1,correct
+concept of truth,nature of truth,nature of truth,multi_word_phrase,False,0.5,True,3,1,1,correct
+perception,sensory awareness,interpretation,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+invalidity benefits shortfall/wao shortfall,disability benefits gap,disability benefits gap,multi_word_phrase,False,0.16666666666666666,True,4,1,1,correct
+web-based application design,web design,web design,compound,False,0.25,True,3,1,1,correct
+web services,online services,service-based computing,compound,False,0.3333333333333333,True,2,1,2,ranking_error
+web technology,internet technology,internet technology,compound,False,0.3333333333333333,True,2,1,1,correct
+well-being (als in client well-being = subjectieve maat van Quality of Life),quality of life,well-being,compound,False,0.16666666666666666,True,12,2,2,ranking_error
+well-being,welfare,quality of life,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+world bank,international financial institution,international financial institution,compound,False,0.0,False,2,3,1,correct
+work-home interaction,work-life balance,work-life conflict,compound,False,0.0,True,2,1,2,ranking_error
+pressure of work,workload pressure,workload pressure,multi_word_phrase,False,0.25,True,3,1,1,correct
+teamwork,collaborative work,collaborative work,single_word,False,0.0,False,1,2,1,correct
+unemployment,joblessness,joblessness,single_word,False,0.0,False,1,1,1,correct
+verbs,action words,action words,abbreviation_like,False,0.0,False,1,1,1,correct
+philosophy of science,scientific philosophy,scientific philosophy,multi_word_phrase,False,0.25,True,3,1,1,correct
+whiplash,neck strain,neck strain,single_word,False,0.0,False,1,1,1,correct
+philosophy,metaphysics,metaphysics,single_word,False,0.0,False,1,3,1,correct
+philosophical psychology,theoretical psychology,philosophy of psychology,compound,False,0.3333333333333333,True,2,3,3,ranking_error
+Wisdom literature,philosophical texts,scriptural literature,compound,False,0.0,False,2,2,3,ranking_error
+wilderness,wildlands,wildlands,single_word,False,0.0,False,1,2,1,correct
+mathematics,mathematical sciences,mathematical sciences,single_word,False,0.0,True,1,1,1,correct
+world wide web,the web,the web,multi_word_phrase,False,0.25,False,3,1,1,correct
+right to self-determination,self-governance,self-governance,compound,False,0.0,True,3,1,1,correct
+self consciousness,self-awareness,self-awareness,compound,False,0.0,False,2,1,1,correct
+self reflection,reflective awareness,reflective awareness,compound,False,0.0,True,2,5,1,correct
+self-regulation,self-control,self-control,single_word,False,0.0,True,1,2,1,correct
+self-learning,autonomous learning,autonomous learning,single_word,False,0.0,False,1,1,1,correct
+"soul (theological, neuroscientific...)",spirit,spirit,multi_word_phrase,False,0.0,False,3,3,1,correct
+interpretation,meaning-making,meaning analysis,single_word,False,0.0,False,1,-1,-1,retrieval_miss
+random violence,senseless violence,senseless violence,compound,False,0.3333333333333333,True,2,2,1,correct
+automatic parsing,automated parsing,automated parsing,compound,False,0.3333333333333333,True,2,1,1,correct
+search engine,information retrieval system,information retrieval system,compound,False,0.0,False,2,3,1,correct
+care,assistance,assistance,abbreviation_like,False,0.0,False,1,1,1,correct
+health care utilisation,Health Care Usage,Health Care Usage,multi_word_phrase,False,0.5,True,3,1,1,correct
+Duty of care,obligation of care,obligation of care,multi_word_phrase,False,0.5,False,3,1,1,correct
+theories of care,care models,care models,multi_word_phrase,False,0.25,False,3,1,1,correct
+South African law,South African legal system,South African legal system,multi_word_phrase,False,0.4,True,3,1,1,correct
+asset pricing,asset valuation,asset valuation,compound,False,0.3333333333333333,True,2,1,1,correct
+pension economics,retirement economics,retirement economics,compound,False,0.3333333333333333,True,2,1,1,correct
+Sensemaking,meaning-making,meaning-making,single_word,False,0.0,False,1,2,1,correct
+Bilingual development,dual language development,dual language development,compound,False,0.25,True,2,1,1,correct
+Language and education,linguistic education,linguistic education,multi_word_phrase,False,0.25,True,3,1,1,correct
+Statehood,nationhood,nationhood,single_word,False,0.0,False,1,1,1,correct
+Refugees,asylum seekers,asylum seekers,single_word,False,0.0,False,1,1,1,correct

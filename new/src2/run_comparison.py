@@ -85,6 +85,17 @@ def main():
         args.model,
     ])
 
+    # LLM rerank: reuses the embedding baseline's retrieved candidates and
+    # only asks the LLM to reorder them (no new candidates), isolating the
+    # ranking failure mode (top_5_accuracy >> exact_top1 on embedding alone).
+    run_command([
+        sys.executable,
+        "src2/run_llm_rerank.py",
+        *limit_args,
+        "--model",
+        args.model,
+    ])
+
     run_command([
         sys.executable,
         "src2/compare_results.py",

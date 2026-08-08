@@ -1,0 +1,11 @@
+term,ground_truth,prediction,candidates,num_candidates,time_seconds,reranker_fallback,hit@1,hit@3,hit@5,ndcg@3,ndcg@5,mrr,rank
+recommender system,recommendation engine,recommendation engine,"[""recommendation engine"", ""information retrieval system"", ""document search"", ""information search"", ""information processing""]",5,14.507725238800049,False,True,True,True,1.0,1.0,1.0,1
+stocks,shares,shares,"[""shares"", ""stock market"", ""capital markets"", ""investing"", ""stock management""]",5,6.478425741195679,False,True,True,True,1.0,1.0,1.0,1
+equity market,stock market,stock market,"[""stock market"", ""capital markets"", ""market analysis"", ""market strategy"", ""energy markets""]",5,19.063050746917725,False,True,True,True,1.0,1.0,1.0,1
+africa,Sub-Saharan region,Sub-Saharan region,"[""Sub-Saharan region"", ""developing countries"", ""emerging economies"", ""East Europe"", ""development""]",5,17.73041534423828,False,True,True,True,1.0,1.0,1.0,1
+general econometrics,economic statistics,practical econometrics,"[""practical econometrics"", ""economic modeling"", ""economic statistics"", ""economic science"", ""individual econometrics""]",5,6.73679518699646,False,False,True,True,0.5,0.5,0.3333333333333333,3
+americanization,Americanisation,Americanisation,"[""Americanisation"", ""cultural adaptation"", ""modernisation"", ""international integration"", ""mechanization""]",5,13.804431915283203,False,True,True,True,1.0,1.0,1.0,1
+arabic,Arabian,Arabian,"[""Arabian"", ""ancient Hebrew"", ""Islamic studies"", ""way of life"", ""interpretation""]",5,40.13379502296448,False,True,True,True,1.0,1.0,1.0,1
+reasoning,logical argumentation,logical argumentation,"[""logical argumentation"", ""Bayesian inference"", ""interpretation"", ""estimation"", ""logical fallacies""]",5,6.46841025352478,False,True,True,True,1.0,1.0,1.0,1
+business studies,business administration,business administration,"[""business administration"", ""organizational studies"", ""business strategy"", ""business law"", ""market analysis""]",5,3.817779302597046,False,True,True,True,1.0,1.0,1.0,1
+Firm relocation,business relocation,business relocation,"[""business relocation"", ""corporate consolidation"", ""consolidations"", ""reorganisation"", ""organizational transformation""]",5,5.322218656539917,False,True,True,True,1.0,1.0,1.0,1

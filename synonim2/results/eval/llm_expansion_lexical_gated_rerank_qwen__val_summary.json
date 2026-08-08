@@ -1,0 +1,16 @@
+{
+  "method": "llm_expansion_lexical_gated_rerank_qwen",
+  "rows": 194,
+  "hit@1": 0.8298969072164949,
+  "hit@3": 0.9123711340206185,
+  "hit@5": 0.9226804123711341,
+  "n_hit@1": 161,
+  "n_hit@3": 177,
+  "n_hit@5": 179,
+  "ndcg@3": 0.8805825595360847,
+  "ndcg@5": 0.8847966284294245,
+  "mrr": 0.8717353951890034,
+  "avg_time_seconds": 12.479771113887276,
+  "split": "val",
+  "reranker_fallback_count": 0
+}

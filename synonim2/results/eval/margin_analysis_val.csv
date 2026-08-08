@@ -1,0 +1,195 @@
+term,margin,hit@1,hit@3,hit@5,ndcg@3,ndcg@5,mrr,rank
+recommender system,0.05144532702185889,True,True,True,1.0,1.0,1.0,1
+stocks,0.0016697380277844731,True,True,True,1.0,1.0,1.0,1
+equity market,0.005681179463863373,True,True,True,1.0,1.0,1.0,1
+africa,0.0386350154876709,True,True,True,1.0,1.0,1.0,1
+general econometrics,0.009122319519519806,False,True,True,0.5,0.5,0.3333333333333333,3
+americanization,0.057356514036655426,True,True,True,1.0,1.0,1.0,1
+arabic,0.04297272115945816,True,True,True,1.0,1.0,1.0,1
+reasoning,0.024682819843292236,True,True,True,1.0,1.0,1.0,1
+business studies,0.0006482303142547607,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+Firm relocation,0.06228424608707428,True,True,True,1.0,1.0,1.0,1
+information systems management,0.019899081100117066,True,True,True,1.0,1.0,1.0,1
+investment,0.0052308738231658936,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+occupational ethics,0.02674143761396408,True,True,True,1.0,1.0,1.0,1
+decision making,0.027467061172832152,True,True,True,1.0,1.0,1.0,1
+administrative procedural law,0.0018787384033203125,True,True,True,1.0,1.0,1.0,1
+consciousness,0.011256965723904666,True,True,True,1.0,1.0,1.0,1
+"Blanchot, Maurice (1907-2003)",0.0003750026226043701,True,True,True,1.0,1.0,1.0,1
+brabant,0.019862373669942146,True,True,True,1.0,1.0,1.0,1
+citizenship,0.003714340925216719,True,True,True,1.0,1.0,1.0,1
+business transactions,0.03553925319151441,True,True,True,1.0,1.0,1.0,1
+collective labour agreements,0.027351051568984985,True,True,True,1.0,1.0,1.0,1
+cognitive linguistics,0.0090847909450531,True,True,True,1.0,1.0,1.0,1
+communication,0.004477375745773338,False,False,False,0.0,0.0,0.0,-1
+computer crime,0.06077787876129159,True,True,True,1.0,1.0,1.0,1
+computer models,0.008754253387451172,True,True,True,1.0,1.0,1.0,1
+computer simulation,0.004412454366684027,True,True,True,1.0,1.0,1.0,1
+constitutional issues,0.04377393424510956,True,True,True,1.0,1.0,1.0,1
+corporate governance,0.021762534976005554,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+Economics of art and culture,0.0674046128988266,True,True,True,1.0,1.0,1.0,1
+culture,0.0009958039630543203,False,True,True,0.5,0.5,0.3333333333333333,3
+culture in brabant,0.017212778329849243,True,True,True,1.0,1.0,1.0,1
+cultural and social history,0.057333171367645264,True,True,True,1.0,1.0,1.0,1
+cultural sociology,0.030787003040313787,True,True,True,1.0,1.0,1.0,1
+data warehouse,0.012132987380027771,True,True,True,1.0,1.0,1.0,1
+databases,0.0063788145780563354,True,True,True,1.0,1.0,1.0,1
+democracy,0.0013141408562660217,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+demography,0.01447979360818863,True,True,True,1.0,1.0,1.0,1
+depression,0.036894480387369755,True,True,True,1.0,1.0,1.0,1
+depression during pregnancy,0.05640835894478691,True,True,True,1.0,1.0,1.0,1
+Derrida,0.016348540782928467,True,True,True,1.0,1.0,1.0,1
+Didache and Matthew's gospel,0.05116601288318634,True,True,True,1.0,1.0,1.0,1
+"Didache, Matthew's gospel and James's letter",0.004856699042850021,False,False,True,0.0,0.43067655807339306,0.25,4
+fallacies and unfair methods of discussion,0.01799846291542062,True,True,True,1.0,1.0,1.0,1
+sustainable tourism,0.006654907356609008,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+dynamic game theory,0.008625023066997528,True,True,True,1.0,1.0,1.0,1
+e-commerce,0.0020079761743545532,True,True,True,1.0,1.0,1.0,1
+EEG,0.01768883317708969,False,False,False,0.0,0.0,0.0,-1
+Electronic Business,0.0008044466376304626,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+emotions,0.03274041414260864,True,True,True,1.0,1.0,1.0,1
+empirical finance,0.012741684913635254,False,True,True,0.5,0.5,0.3333333333333333,3
+jurisprudence,0.009127769205305336,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+energy economics,0.03382574021816254,True,True,True,1.0,1.0,1.0,1
+energy sources,0.027249437570571855,True,True,True,1.0,1.0,1.0,1
+European Administrative Law,0.051354072988033295,True,True,True,1.0,1.0,1.0,1
+european convention on human rights,0.04499882459640503,True,True,True,1.0,1.0,1.0,1
+euthanasia,0.01714873909950254,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+extreme value theory,0.09140080213546753,True,True,True,1.0,1.0,1.0,1
+feminism,0.022762876749038652,True,True,True,1.0,1.0,1.0,1
+fiscal policy,0.0013919472694396973,True,True,True,1.0,1.0,1.0,1
+fundamental research,0.0355566143989563,True,True,True,1.0,1.0,1.0,1
+behaviour,0.020986640453338645,True,True,True,1.0,1.0,1.0,1
+infant mental health,0.06454776227474213,True,True,True,1.0,1.0,1.0,1
+spiritual counseling,0.01973789930343628,True,True,True,1.0,1.0,1.0,1
+data banks,0.015885427594184875,True,True,True,1.0,1.0,1.0,1
+memory,0.008937467228282592,True,True,True,1.0,1.0,1.0,1
+"gender studies, theology",0.0343598946928978,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+health care economics,0.04929914325475693,True,True,True,1.0,1.0,1.0,1
+health care management,0.020752333104610443,True,True,True,1.0,1.0,1.0,1
+health care policy,0.049168361557854534,True,True,True,1.0,1.0,1.0,1
+"divinity, contemporary themes of",0.012180209159851074,True,True,True,1.0,1.0,1.0,1
+gregorian,0.012895599007606506,False,False,False,0.0,0.0,0.0,-1
+growth theories,0.036076294051276325,True,True,True,1.0,1.0,1.0,1
+trade policy,0.021714931726455666,True,True,True,1.0,1.0,1.0,1
+heart and vascular diseases,0.056919197241465214,True,True,True,1.0,1.0,1.0,1
+cerebral/brain haemorrhage,0.01934965252876275,True,True,True,1.0,1.0,1.0,1
+brain,0.018654078245162964,True,True,True,1.0,1.0,1.0,1
+human resource management,0.025110030174255393,True,True,True,1.0,1.0,1.0,1
+ict in education,0.049668945372104645,True,True,True,1.0,1.0,1.0,1
+imf,0.00623185932636261,True,True,True,1.0,1.0,1.0,1
+industrial organization,0.02981448918581009,False,True,True,0.5,0.5,0.3333333333333333,3
+computer science law,0.01291501522064209,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+information law,0.02331288903951645,True,True,True,1.0,1.0,1.0,1
+information systems,0.01228237897157669,False,False,False,0.0,0.0,0.0,-1
+effort,0.002790406346321106,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+instructive texts (*),0.033281341195106506,True,True,True,1.0,1.0,1.0,1
+intelligent interfaces,0.047570400767856236,True,True,True,1.0,1.0,1.0,1
+intercultural theologie,0.05876584351062775,True,True,True,1.0,1.0,1.0,1
+intergenerational risk sharing,0.03403811156749725,True,True,True,1.0,1.0,1.0,1
+intergroup relationships,0.00974542647600174,True,True,True,1.0,1.0,1.0,1
+international labour law,0.0380711555480957,True,True,True,1.0,1.0,1.0,1
+international human resource management,0.03197993338108063,True,True,True,1.0,1.0,1.0,1
+international management,0.038076095283031464,True,True,True,1.0,1.0,1.0,1
+international competition law,0.0186348557472229,True,True,True,1.0,1.0,1.0,1
+international environmental law,0.022586405277252197,True,True,True,1.0,1.0,1.0,1
+intuitionistic mathematics,0.024697713553905487,True,True,True,1.0,1.0,1.0,1
+islam in the netherlands,0.06606980827119613,True,True,True,1.0,1.0,1.0,1
+annual reporting,0.02112635225057602,True,True,True,1.0,1.0,1.0,1
+youth assistance,0.047829606316306394,True,True,True,1.0,1.0,1.0,1
+"judaism and christianity, relationship between",0.0043603122234344704,False,False,False,0.0,0.0,0.0,-1
+"judaism, early/ancient",0.021907664835453033,True,True,True,1.0,1.0,1.0,1
+johannes,0.0057325859864552076,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+devotion/piety and non-practising,0.016108497977256775,False,False,False,0.0,0.0,0.0,-1
+Integrated care,0.03678494691848755,True,True,True,1.0,1.0,1.0,1
+artificial intelligence,0.038213092088699274,True,True,True,1.0,1.0,1.0,1
+quality of care,0.05531192570924759,True,True,True,1.0,1.0,1.0,1
+lifestyle,0.02948884665966034,True,True,True,1.0,1.0,1.0,1
+organisational learning,0.004587882757186912,True,True,True,1.0,1.0,1.0,1
+literature,0.002078163623809748,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+liturgy (contemporary),0.0009979233145713806,False,True,True,0.5,0.5,0.3333333333333333,3
+liturgic music,0.04315454512834549,True,True,True,1.0,1.0,1.0,1
+locke,0.016142889857292175,True,True,True,1.0,1.0,1.0,1
+power,0.0043279677629470825,True,True,True,1.0,1.0,1.0,1
+power in organisations,0.028069788217544578,True,True,True,1.0,1.0,1.0,1
+marketing management,0.01585649698972702,True,True,True,1.0,1.0,1.0,1
+media ethics,0.03662572801113129,True,True,True,1.0,1.0,1.0,1
+multilingualism,0.01981223374605179,True,True,True,1.0,1.0,1.0,1
+man-machine interaction,0.03367086648941042,True,True,True,1.0,1.0,1.0,1
+cross-cultural research methodology,0.001048952341079712,True,True,True,1.0,1.0,1.0,1
+medieval philosophy; history of,0.02803149223327628,True,True,True,1.0,1.0,1.0,1
+history of middle ages,0.01849972659891308,True,True,True,1.0,1.0,1.0,1
+environmental economics,0.0406096950173378,True,True,True,1.0,1.0,1.0,1
+monetary economics,0.019935354590415955,True,True,True,1.0,1.0,1.0,1
+multi level analysis,0.03259545564651489,True,True,True,1.0,1.0,1.0,1
+narcissism and shame,0.034527158737182595,True,True,True,1.0,1.0,1.0,1
+natality/birth rate,0.08185437321662903,True,True,True,1.0,1.0,1.0,1
+dutch as a second language,0.0016124919056892395,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+network industries,0.01364339143037796,True,True,True,1.0,1.0,1.0,1
+neural networks,0.022128209471702576,True,True,True,1.0,1.0,1.0,1
+nietzsche,0.027008704841136932,True,True,True,1.0,1.0,1.0,1
+nonresponse,0.010429885652330162,False,False,False,0.0,0.0,0.0,-1
+entrepreneurship,0.034733992815017656,True,True,True,1.0,1.0,1.0,1
+company law,0.008668169379234314,True,True,True,1.0,1.0,1.0,1
+research,0.01778020262718205,True,True,True,1.0,1.0,1.0,1
+ontology,0.007193855941295624,False,False,False,0.0,0.0,0.0,-1
+cooperative information system development,0.034335047006607056,True,True,True,1.0,1.0,1.0,1
+public finance,0.022555425763130188,True,True,True,1.0,1.0,1.0,1
+option pricing,0.03025000203739514,True,True,True,1.0,1.0,1.0,1
+organisational development,0.005797695029865602,True,True,True,1.0,1.0,1.0,1
+organisations,0.011037158966064498,True,True,True,1.0,1.0,1.0,1
+mergers,0.020524422327677483,True,True,True,1.0,1.0,1.0,1
+minor mental disorders,0.027587130665779114,False,False,False,0.0,0.0,0.0,-1
+pastoral theology,0.00896812230348587,False,False,True,0.0,0.43067655807339306,0.25,4
+pastoral assistance,0.012341432273387909,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+Ecclesiastical Latin New Testament Greek,0.009501263499259949,False,False,False,0.0,0.0,0.0,-1
+perception,0.0009854977781121876,True,True,True,1.0,1.0,1.0,1
+political and administrative crisis,0.05821802616119387,True,True,True,1.0,1.0,1.0,1
+professionalisation,0.004479996860027313,True,True,True,1.0,1.0,1.0,1
+psychotherapy,0.0009500036636989062,True,True,True,1.0,1.0,1.0,1
+judiciary system,0.03138734896977746,True,True,True,1.0,1.0,1.0,1
+sociology of law,0.04080495983362198,True,True,True,1.0,1.0,1.0,1
+psychology of advertising,0.023493164115481968,True,True,True,1.0,1.0,1.0,1
+reductionism,0.02968291938304901,True,True,True,1.0,1.0,1.0,1
+regulation of new technologies,0.027055740356445312,True,True,True,1.0,1.0,1.0,1
+relations law (*),0.023182585835456848,False,False,False,0.0,0.0,0.0,-1
+religious communication,0.004751324653625488,True,True,True,1.0,1.0,1.0,1
+religious market,0.052211351692676544,True,True,True,1.0,1.0,1.0,1
+catholic care and its tradition,0.0061436235904693826,True,True,True,1.0,1.0,1.0,1
+creation (stories of the),0.021019399166107178,True,True,True,1.0,1.0,1.0,1
+guilt and sin,0.0036763608455657737,False,True,True,0.5,0.5,0.3333333333333333,3
+semiotics,0.008585304021835327,True,True,True,1.0,1.0,1.0,1
+social capital,0.016275846958160423,True,True,True,1.0,1.0,1.0,1
+social justice,0.007937019521539801,True,True,True,1.0,1.0,1.0,1
+sociolinguistics,0.03616487979888916,True,True,True,1.0,1.0,1.0,1
+Sociology,0.03206409513950348,True,True,True,1.0,1.0,1.0,1
+soft law,0.0024759372075399133,True,True,True,1.0,1.0,1.0,1
+urban history,0.03642083538903129,True,True,True,1.0,1.0,1.0,1
+statistical methods,0.015513710677623749,True,True,True,1.0,1.0,1.0,1
+terminal care,0.06453569233417511,True,True,True,1.0,1.0,1.0,1
+law of criminal procedure/criminal adjective law,0.009971744484371659,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+stratification,0.002482455968856767,False,False,False,0.0,0.0,0.0,-1
+stress,0.0001354109157215566,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+Supply Chain Management,0.005178624391555808,True,True,True,1.0,1.0,1.0,1
+system dynamics,0.003778506409038207,True,True,True,1.0,1.0,1.0,1
+language and computers,0.0011694952845573425,True,True,True,1.0,1.0,1.0,1
+linguistics,0.0062482178211212824,True,True,True,1.0,1.0,1.0,1
+temperament,0.016047320582649904,True,True,True,1.0,1.0,1.0,1
+theology,0.006011985242366791,False,False,True,0.0,0.38685280723454163,0.2,5
+theology,0.006011985242366791,False,False,False,0.0,0.0,0.0,-1
+Thomas Aquinas,0.012644261121749878,True,True,True,1.0,1.0,1.0,1
+temporary work,0.02656758427619943,True,True,True,1.0,1.0,1.0,1
+tradition and innovation/modernization,0.030901819467544556,True,True,True,1.0,1.0,1.0,1
+transport,0.008227825164794922,True,True,True,1.0,1.0,1.0,1
+Resurrection,0.03103882074356079,True,True,True,1.0,1.0,1.0,1
+reporting,0.0031078987651401713,False,False,True,0.0,0.38685280723454163,0.2,5
+trust,0.009532457590103127,True,True,True,1.0,1.0,1.0,1
+Victorian Literature,0.0391289393107096,True,True,True,1.0,1.0,1.0,1
+history of international law,0.016008734703063965,True,True,True,1.0,1.0,1.0,1
+forecasting,0.024842482805252142,True,True,True,1.0,1.0,1.0,1
+questionnaires,0.012901407480239935,True,True,True,1.0,1.0,1.0,1
+perception,0.0009854977781121876,False,False,False,0.0,0.0,0.0,-1
+invalidity benefits shortfall/wao shortfall,0.027380824089050293,True,True,True,1.0,1.0,1.0,1
+interpretation,0.004698845473202762,False,False,False,0.0,0.0,0.0,-1
+care,0.018872519334157234,True,True,True,1.0,1.0,1.0,1
+Duty of care,0.02813946604728701,True,True,True,1.0,1.0,1.0,1

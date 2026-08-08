@@ -1,0 +1,16 @@
+{
+  "method": "llm_expansion_weighted_t0_rerank_local",
+  "rows": 194,
+  "hit@1": 0.7680412371134021,
+  "hit@3": 0.9072164948453608,
+  "hit@5": 0.9226804123711341,
+  "n_hit@1": 149,
+  "n_hit@3": 176,
+  "n_hit@5": 179,
+  "ndcg@3": 0.8524765699926394,
+  "ndcg@5": 0.8589106211440897,
+  "mrr": 0.8369415807560138,
+  "avg_time_seconds": 13.208949981276522,
+  "split": "val",
+  "reranker_fallback_count": 0
+}

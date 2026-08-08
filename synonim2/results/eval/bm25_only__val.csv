@@ -1,0 +1,195 @@
+term,ground_truth,prediction,candidates,num_candidates,time_seconds,hit@1,hit@3,hit@5,ndcg@3,ndcg@5,mrr,rank
+recommender system,recommendation engine,voting system,"[""voting system"", ""welfare system"", ""information retrieval system"", ""sound system study"", ""South African legal system""]",5,0.002022266387939453,False,False,False,0.0,0.0,0.0,-1
+stocks,shares,,[],0,8.58306884765625e-05,False,False,False,0.0,0.0,0.0,-1
+equity market,stock market,stock market,"[""stock market"", ""employment market"", ""market strategy"", ""market analysis""]",4,0.00019240379333496094,True,True,True,1.0,1.0,1.0,1
+africa,Sub-Saharan region,,[],0,8.320808410644531e-05,False,False,False,0.0,0.0,0.0,-1
+general econometrics,economic statistics,individual econometrics,"[""individual econometrics"", ""practical econometrics""]",2,0.00019931793212890625,False,False,False,0.0,0.0,0.0,-1
+americanization,Americanisation,,[],0,8.106231689453125e-05,False,False,False,0.0,0.0,0.0,-1
+arabic,Arabian,,[],0,8.0108642578125e-05,False,False,False,0.0,0.0,0.0,-1
+reasoning,logical argumentation,,[],0,0.00013303756713867188,False,False,False,0.0,0.0,0.0,-1
+business studies,business administration,business strategy,"[""business strategy"", ""business valuation"", ""business simulations"", ""business analytics"", ""business frameworks""]",5,0.0001895427703857422,False,False,False,0.0,0.0,0.0,-1
+Firm relocation,business relocation,business relocation,"[""business relocation""]",1,0.00019025802612304688,True,True,True,1.0,1.0,1.0,1
+information systems management,IT management,collaborative information systems,"[""collaborative information systems"", ""data management systems"", ""Collaborative Information Systems Development"", ""information processing"", ""information search""]",5,0.00024390220642089844,False,False,False,0.0,0.0,0.0,-1
+investment,investing,investment funds,"[""investment funds"", ""investment evaluation"", ""investment theory"", ""investment fund""]",4,0.0001430511474609375,False,False,False,0.0,0.0,0.0,-1
+occupational ethics,professional ethics,occupational psychology,"[""occupational psychology"", ""occupational health"", ""social ethics"", ""corporate ethics"", ""ministerial ethics""]",5,0.00018596649169921875,False,False,False,0.0,0.0,0.0,-1
+decision making,decision process,decision process,"[""decision process"", ""decision analysis"", ""decision aid systems""]",3,0.0001900196075439453,True,True,True,1.0,1.0,1.0,1
+administrative procedural law,administrative litigation,criminal procedural law,"[""criminal procedural law"", ""EU administrative law"", ""administrative organisation"", ""administrative litigation"", ""economic law""]",5,0.00024008750915527344,False,False,True,0.0,0.43067655807339306,0.25,4
+consciousness,awareness,,[],0,8.177757263183594e-05,False,False,False,0.0,0.0,0.0,-1
+"Blanchot, Maurice (1907-2003)",literary philosopher,,[],0,0.00018143653869628906,False,False,False,0.0,0.0,0.0,-1
+brabant,Brabant region,Brabant heritage,"[""Brabant heritage"", ""Brabant region""]",2,0.000133514404296875,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+citizenship,nationality,,[],0,8.678436279296875e-05,False,False,False,0.0,0.0,0.0,-1
+business transactions,commercial dealings,business creation,"[""business creation"", ""business relocation"", ""business administration"", ""business finance"", ""business frameworks""]",5,0.00018739700317382812,False,False,False,0.0,0.0,0.0,-1
+collective labour agreements,union contracts,collective action problem,"[""collective action problem""]",1,0.00023365020751953125,False,False,False,0.0,0.0,0.0,-1
+cognitive linguistics,language cognition,computational linguistics,"[""computational linguistics"", ""social linguistics"", ""practical linguistics"", ""cognitive psychology"", ""cognitive studies""]",5,0.0001850128173828125,False,False,False,0.0,0.0,0.0,-1
+communication,information exchange,faith-based communication,"[""faith-based communication"", ""communication channels"", ""cross-cultural communication"", ""corporate communication ethics"", ""information and communication technology""]",5,0.0001461505889892578,False,False,False,0.0,0.0,0.0,-1
+computer crime,cybercrime,speech-enabled computer,"[""speech-enabled computer""]",1,0.0001838207244873047,False,False,False,0.0,0.0,0.0,-1
+computer models,computational models,speech-enabled computer,"[""speech-enabled computer"", ""computational models"", ""care models"", ""substitution models"", ""higher-order models""]",5,0.00018405914306640625,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+computer simulation,computational modeling,simulation,"[""simulation"", ""speech-enabled computer""]",2,0.00018358230590820312,False,False,False,0.0,0.0,0.0,-1
+constitutional issues,constitutional challenges,employment issues,"[""employment issues"", ""constitutional challenges"", ""history of constitutional law""]",3,0.00019216537475585938,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+corporate governance,corporate management,governance,"[""governance"", ""Municipal governance"", ""governance crisis"", ""legal governance"", ""Participatory governance""]",5,0.0001862049102783203,False,False,False,0.0,0.0,0.0,-1
+Economics of art and culture,cultural economics,sociology of culture,"[""sociology of culture"", ""global culture"", ""mass culture"", ""cyber culture"", ""corporate culture""]",5,0.0003361701965332031,False,False,False,0.0,0.0,0.0,-1
+culture,cultural practices,global culture,"[""global culture"", ""cyber culture"", ""corporate culture"", ""mass culture"", ""sociology of culture""]",5,0.0001494884490966797,False,False,False,0.0,0.0,0.0,-1
+culture in brabant,Brabant heritage,Brabant heritage,"[""Brabant heritage"", ""Brabant region"", ""global culture"", ""corporate culture"", ""cyber culture""]",5,0.000278472900390625,True,True,True,1.0,1.0,1.0,1
+cultural and social history,social and cultural history,social and cultural history,"[""social and cultural history"", ""cultural economics"", ""cultural variety"", ""cultural practices"", ""cultural philosophy""]",5,0.0002865791320800781,True,True,True,1.0,1.0,1.0,1
+cultural sociology,sociology of culture,educational sociology,"[""educational sociology"", ""legal sociology"", ""family sociology"", ""religious sociology"", ""cultural diversity""]",5,0.0001850128173828125,False,False,False,0.0,0.0,0.0,-1
+data warehouse,data repository,data management,"[""data management"", ""data law"", ""chronological data"", ""location data"", ""data repository""]",5,0.0001938343048095703,False,False,True,0.0,0.38685280723454163,0.2,5
+databases,data repositories,,[],0,8.153915405273438e-05,False,False,False,0.0,0.0,0.0,-1
+democracy,popular government,Consensus-based democracy,"[""Consensus-based democracy""]",1,0.00013375282287597656,False,False,False,0.0,0.0,0.0,-1
+demography,population studies,,[],0,7.939338684082031e-05,False,False,False,0.0,0.0,0.0,-1
+depression,melancholy,prenatal depression,"[""prenatal depression""]",1,0.0001327991485595703,False,False,False,0.0,0.0,0.0,-1
+depression during pregnancy,prenatal depression,prenatal depression,"[""prenatal depression""]",1,0.00023174285888671875,True,True,True,1.0,1.0,1.0,1
+Derrida,Jacques Derrida,Jacques Derrida,"[""Jacques Derrida""]",1,0.0001399517059326172,True,True,True,1.0,1.0,1.0,1
+Didache and Matthew's gospel,Didache and the Gospel of Matthew,Matthew's Gospel,"[""Matthew's Gospel"", ""Didache and the Gospel of Matthew"", ""Matthew, James, and Didache"", ""egoism and guilt"", ""self-governance and ethics""]",5,0.00028777122497558594,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+"Didache, Matthew's gospel and James's letter",early Christian texts,Matthew's Gospel,"[""Matthew's Gospel"", ""Didache and the Gospel of Matthew"", ""Matthew, James, and Didache"", ""egoism and guilt"", ""self-governance and ethics""]",5,0.00038695335388183594,False,False,False,0.0,0.0,0.0,-1
+fallacies and unfair methods of discussion,logical fallacies,logical fallacies,"[""logical fallacies"", ""research methods and statistics"", ""study methods"", ""research methods"", ""electoral methods""]",5,0.00039076805114746094,True,True,True,1.0,1.0,1.0,1
+sustainable tourism,eco-friendly tourism,eco-friendly tourism,"[""eco-friendly tourism""]",1,0.0001823902130126953,True,True,True,1.0,1.0,1.0,1
+dynamic game theory,evolving game theory,evolving game theory,"[""evolving game theory"", ""collaborative game theory"", ""Bidding Theory"", ""legal theory"", ""Marxist theory""]",5,0.00023627281188964844,True,True,True,1.0,1.0,1.0,1
+e-commerce,online retail,,[],0,0.00013756752014160156,False,False,False,0.0,0.0,0.0,-1
+EEG,brainwave recording,,[],0,7.891654968261719e-05,False,False,False,0.0,0.0,0.0,-1
+Electronic Business,e-commerce,electronic library,"[""electronic library"", ""business finance"", ""business relocation"", ""business administration"", ""business frameworks""]",5,0.00018477439880371094,False,False,False,0.0,0.0,0.0,-1
+emotions,feelings,,[],0,7.963180541992188e-05,False,False,False,0.0,0.0,0.0,-1
+empirical finance,Experimental finance,Empirical jurisprudence,"[""Empirical jurisprudence"", ""business finance; global finance"", ""global finance"", ""Experimental finance"", ""Behavioral finance""]",5,0.0001862049102783203,False,False,True,0.0,0.43067655807339306,0.25,4
+jurisprudence,legal theory,Empirical jurisprudence,"[""Empirical jurisprudence""]",1,0.0001423358917236328,False,False,False,0.0,0.0,0.0,-1
+energy economics,energy markets,energy markets,"[""energy markets"", ""energy challenges"", ""individual economics"", ""retirement economics"", ""health economics""]",5,0.0001862049102783203,True,True,True,1.0,1.0,1.0,1
+energy sources,power sources,power sources,"[""power sources"", ""energy markets"", ""energy challenges""]",3,0.00018167495727539062,True,True,True,1.0,1.0,1.0,1
+European Administrative Law,EU administrative law,EU administrative law,"[""EU administrative law"", ""European welfare law"", ""administrative organisation"", ""administrative litigation"", ""European Values Study""]",5,0.00023818016052246094,True,True,True,1.0,1.0,1.0,1
+european convention on human rights,European Human Rights Charter,European Human Rights Charter,"[""European Human Rights Charter"", ""human development"", ""basic rights"", ""ownership rights"", ""scriptural influence on culture""]",5,0.00034999847412109375,True,True,True,1.0,1.0,1.0,1
+euthanasia,mercy killing,,[],0,8.0108642578125e-05,False,False,False,0.0,0.0,0.0,-1
+extreme value theory,extreme value analysis,extreme value analysis,"[""extreme value analysis"", ""investment theory"", ""Bidding Theory"", ""legal theory"", ""Marxist theory""]",5,0.0002353191375732422,True,True,True,1.0,1.0,1.0,1
+feminism,women's liberation,,[],0,8.058547973632812e-05,False,False,False,0.0,0.0,0.0,-1
+fiscal policy,budgetary policy,fiscal management,"[""fiscal management"", ""fiscal law"", ""budgetary policy"", ""antitrust policy"", ""employment policy""]",5,0.00019478797912597656,False,True,True,0.5,0.5,0.3333333333333333,3
+fundamental research,basic research,fundamental law,"[""fundamental law"", ""intercultural research"", ""research methods"", ""basic research"", ""intercultural research methods""]",5,0.0001919269561767578,False,False,True,0.0,0.43067655807339306,0.25,4
+behaviour,conduct,,[],0,7.987022399902344e-05,False,False,False,0.0,0.0,0.0,-1
+infant mental health,baby mental health,baby mental health,"[""baby mental health"", ""mental health and spirituality"", ""mental processes"", ""mental philosophy"", ""mental science""]",5,0.0002353191375732422,True,True,True,1.0,1.0,1.0,1
+spiritual counseling,spiritual guidance,Pastoral Counseling Psychology,"[""Pastoral Counseling Psychology"", ""spiritual leadership"", ""spiritual care"", ""spiritual guidance"", ""spiritual life""]",5,0.00018668174743652344,False,False,True,0.0,0.43067655807339306,0.25,4
+data banks,data repositories,data management,"[""data management"", ""data law"", ""chronological data"", ""location data"", ""data repository""]",5,0.00019812583923339844,False,False,False,0.0,0.0,0.0,-1
+memory,recollection,,[],0,7.987022399902344e-05,False,False,False,0.0,0.0,0.0,-1
+"gender studies, theology",feminist theology,gender theology,"[""gender theology"", ""gender disparities"", ""feminist theology"", ""doctrinal theology"", ""cross-cultural theology""]",5,0.00023794174194335938,False,True,True,0.5,0.5,0.3333333333333333,3
+health care economics,health economics,health economics,"[""health economics"", ""health care administration"", ""Health Care Usage"", ""health care quality"", ""health policy""]",5,0.00023627281188964844,True,True,True,1.0,1.0,1.0,1
+health care management,health services management,Health Care Usage,"[""Health Care Usage"", ""health care quality"", ""health care administration"", ""health services management"", ""health psychology""]",5,0.00024271011352539062,False,False,True,0.0,0.43067655807339306,0.25,4
+health care policy,health policy,health policy,"[""health policy"", ""Health Care Usage"", ""health care administration"", ""health care quality"", ""antitrust policy""]",5,0.00024628639221191406,True,True,True,1.0,1.0,1.0,1
+"divinity, contemporary themes of",modern theological themes,divinity studies,"[""divinity studies"", ""contemporary Judaism"", ""contemporary piety"", ""contemporary philosopher"", ""modern theological themes""]",5,0.0002868175506591797,False,False,True,0.0,0.38685280723454163,0.2,5
+gregorian,plainchant,,[],0,7.939338684082031e-05,False,False,False,0.0,0.0,0.0,-1
+growth theories,development theories,organizational growth,"[""organizational growth"", ""social theories"", ""development theories"", ""local economic growth"", ""John Rawls' theories""]",5,0.0001919269561767578,False,True,True,0.5,0.5,0.3333333333333333,3
+trade policy,commercial policy,budgetary policy,"[""budgetary policy"", ""antitrust policy"", ""employment policy"", ""ecological policy"", ""financial policy""]",5,0.00018453598022460938,False,False,False,0.0,0.0,0.0,-1
+heart and vascular diseases,cardiovascular diseases,cardiovascular diseases,"[""cardiovascular diseases"", ""persistent heart failure"", ""well-being after cardiovascular diseases"", ""egoism and guilt"", ""heritage and progress""]",5,0.00028443336486816406,True,True,True,1.0,1.0,1.0,1
+cerebral/brain haemorrhage,brain bleed,,[],0,0.00012946128845214844,False,False,False,0.0,0.0,0.0,-1
+brain,cerebrum,brain bleed,"[""brain bleed"", ""brain injury"", ""brain wave test""]",3,0.00015401840209960938,False,False,False,0.0,0.0,0.0,-1
+human resource management,personnel management,human development,"[""human development"", ""European Human Rights Charter"", ""non-profit management"", ""global management"", ""corporate management""]",5,0.00023698806762695312,False,False,False,0.0,0.0,0.0,-1
+ict in education,educational technology,elementary education,"[""elementary education"", ""linguistic education"", ""religious education theory"", ""native language education"", ""Muslim Communities in the Netherlands""]",5,0.00023484230041503906,False,False,False,0.0,0.0,0.0,-1
+imf,international financial institution,,[],0,7.891654968261719e-05,False,False,False,0.0,0.0,0.0,-1
+industrial organization,industrial economics,mixed organization,"[""mixed organization"", ""industrial psychology"", ""industrial economics"", ""industrial connections""]",4,0.00018978118896484375,False,True,True,0.5,0.5,0.3333333333333333,3
+computer science law,IT law,speech-enabled computer,"[""speech-enabled computer"", ""language science"", ""neurobehavioral science"", ""brain-behavior science"", ""social science""]",5,0.00023508071899414062,False,False,False,0.0,0.0,0.0,-1
+information law,data law,information processing,"[""information processing"", ""information exchange"", ""information search"", ""information modeling"", ""information technology""]",5,0.00018596649169921875,False,False,False,0.0,0.0,0.0,-1
+information systems,data management systems,collaborative information systems,"[""collaborative information systems"", ""information systems management"", ""Collaborative Information Systems Development"", ""information processing"", ""information technology""]",5,0.0001857280731201172,False,False,False,0.0,0.0,0.0,-1
+effort,exertion,cognitive effort,"[""cognitive effort""]",1,0.00013780593872070312,False,False,False,0.0,0.0,0.0,-1
+instructive texts (*),instructional materials,philosophical texts,"[""philosophical texts"", ""early Christian texts""]",2,0.00018525123596191406,False,False,False,0.0,0.0,0.0,-1
+intelligent interfaces,smart interfaces,smart interfaces,"[""smart interfaces""]",1,0.0001804828643798828,True,True,True,1.0,1.0,1.0,1
+intercultural theologie,cross-cultural theology,intercultural psychology,"[""intercultural psychology"", ""intercultural research"", ""intercultural research methods""]",3,0.0001811981201171875,False,False,False,0.0,0.0,0.0,-1
+intergenerational risk sharing,cross-generational risk distribution,risk management,"[""risk management"", ""cross-generational risk distribution"", ""risk assessment models""]",3,0.0002377033233642578,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+intergroup relationships,group interactions,inter-firm relationships,"[""inter-firm relationships""]",1,0.000179290771484375,False,False,False,0.0,0.0,0.0,-1
+international labour law,global employment law,international integration,"[""international integration"", ""international financial institution"", ""international legal history"", ""financial law"", ""employment law""]",5,0.0002346038818359375,False,False,False,0.0,0.0,0.0,-1
+international human resource management,global HR management,human development,"[""human development"", ""international integration"", ""international legal history"", ""international financial institution"", ""European Human Rights Charter""]",5,0.0002810955047607422,False,False,False,0.0,0.0,0.0,-1
+international management,global management,international integration,"[""international integration"", ""international legal history"", ""international financial institution"", ""risk management"", ""global management""]",5,0.0001900196075439453,False,False,True,0.0,0.38685280723454163,0.2,5
+international competition law,global antitrust law,international integration,"[""international integration"", ""international financial institution"", ""international legal history"", ""financial law"", ""employment law""]",5,0.0002315044403076172,False,False,False,0.0,0.0,0.0,-1
+international environmental law,global environmental law,global environmental law,"[""global environmental law"", ""environmental protection law"", ""international integration"", ""environmental assessment"", ""international legal history""]",5,0.0002346038818359375,True,True,True,1.0,1.0,1.0,1
+intuitionistic mathematics,constructivist mathematics,combinatorial mathematics,"[""combinatorial mathematics"", ""statistical mathematics"", ""constructivist mathematics"", ""computational mathematics""]",4,0.00018286705017089844,False,True,True,0.5,0.5,0.3333333333333333,3
+islam in the netherlands,Muslim Communities in the Netherlands,Muslim Communities in the Netherlands,"[""Muslim Communities in the Netherlands"", ""the web"", ""John the Apostle"", ""the English language"", ""Didache and the Gospel of Matthew""]",5,0.0003223419189453125,True,True,True,1.0,1.0,1.0,1
+annual reporting,Yearly report,financial reporting,"[""financial reporting""]",1,0.0001964569091796875,False,False,False,0.0,0.0,0.0,-1
+youth assistance,youth support,assistance,"[""assistance"", ""youth support"", ""youth ministry""]",3,0.00018167495727539062,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+"judaism and christianity, relationship between",interfaith relations,relationship between anthropology and religious philosophy,"[""relationship between anthropology and religious philosophy"", ""early Christian teachings and Judaism"", ""contemporary Judaism"", ""heritage and progress"", ""egoism and guilt""]",5,0.0003376007080078125,False,False,False,0.0,0.0,0.0,-1
+"judaism, early/ancient",ancient Jewish religion,contemporary Judaism,"[""contemporary Judaism"", ""early Christian teachings and Judaism""]",2,0.00018024444580078125,False,False,False,0.0,0.0,0.0,-1
+johannes,John the Apostle,,[],0,7.677078247070312e-05,False,False,False,0.0,0.0,0.0,-1
+devotion/piety and non-practising,religious observance and secularism,self-governance and ethics,"[""self-governance and ethics"", ""egoism and guilt"", ""heritage and progress"", ""Regional language and society"", ""Matthew, James, and Didache""]",5,0.00023126602172851562,False,False,False,0.0,0.0,0.0,-1
+Integrated care,coordinated care,coordinated care,"[""coordinated care"", ""psychological care"", ""end-of-life care"", ""spiritual care"", ""care models""]",5,0.0001862049102783203,True,True,True,1.0,1.0,1.0,1
+artificial intelligence,machine intelligence,machine intelligence,"[""machine intelligence"", ""cross-cultural intelligence"", ""artificial neural networks""]",3,0.0001823902130126953,True,True,True,1.0,1.0,1.0,1
+quality of care,health care quality,health care quality,"[""health care quality"", ""quality of worklife"", ""quality of life"", ""obligation of care"", ""sociology of pastoral care""]",5,0.0002338886260986328,True,True,True,1.0,1.0,1.0,1
+lifestyle,way of life,,[],0,7.867813110351562e-05,False,False,False,0.0,0.0,0.0,-1
+organisational learning,organizational knowledge acquisition,automated learning,"[""automated learning"", ""autonomous learning"", ""learning disabilities"", ""cooperative learning"", ""language learning""]",5,0.00018334388732910156,False,False,False,0.0,0.0,0.0,-1
+literature,written works,scriptural literature,"[""scriptural literature"", ""theological literature"", ""cinematic literature"", ""19th-century British literature""]",4,0.00013899803161621094,False,False,False,0.0,0.0,0.0,-1
+liturgy (contemporary),modern worship,contemporary philosopher,"[""contemporary philosopher"", ""contemporary Judaism"", ""contemporary piety"", ""contemporary philosophy history""]",4,0.0001838207244873047,False,False,False,0.0,0.0,0.0,-1
+liturgic music,sacred music,sacred music,"[""sacred music""]",1,0.00017905235290527344,True,True,True,1.0,1.0,1.0,1
+locke,John Locke,John Locke,"[""John Locke""]",1,0.00013065338134765625,True,True,True,1.0,1.0,1.0,1
+power,authority,power sources,"[""power sources""]",1,0.00012993812561035156,False,False,False,0.0,0.0,0.0,-1
+power in organisations,organizational influence,power sources,"[""power sources"", ""Muslim Communities in the Netherlands""]",2,0.00023627281188964844,False,False,False,0.0,0.0,0.0,-1
+marketing management,marketing strategy,marketing strategy,"[""marketing strategy"", ""ethical marketing"", ""global management"", ""ethical management"", ""personnel management""]",5,0.00018548965454101562,True,True,True,1.0,1.0,1.0,1
+media ethics,journalistic ethics,mixed media,"[""mixed media"", ""media comparison"", ""ministerial ethics"", ""corporate ethics"", ""professional ethics""]",5,0.0001811981201171875,False,False,False,0.0,0.0,0.0,-1
+multilingualism,polyglotism,,[],0,7.748603820800781e-05,False,False,False,0.0,0.0,0.0,-1
+man-machine interaction,human-computer interaction,human-computer interaction,"[""human-computer interaction"", ""textual interaction"", ""church-state interaction"", ""strategic interaction theory""]",4,0.00018858909606933594,True,True,True,1.0,1.0,1.0,1
+cross-cultural research methodology,intercultural research methods,Civil law methodology,"[""Civil law methodology"", ""intercultural research"", ""research methods"", ""basic research"", ""cross-cultural support""]",5,0.00023293495178222656,False,False,False,0.0,0.0,0.0,-1
+medieval philosophy; history of,medieval thought,medieval history,"[""medieval history"", ""contemporary philosophy history"", ""philosophy of psychology"", ""philosophy of action"", ""philosophy of beauty""]",5,0.0002868175506591797,False,False,False,0.0,0.0,0.0,-1
+history of middle ages,medieval history,Middle Ages theology,"[""Middle Ages theology"", ""history of constitutional law"", ""medieval history"", ""economic history"", ""local history""]",5,0.0002894401550292969,False,True,True,0.5,0.5,0.3333333333333333,3
+environmental economics,ecological economics,environmental assessment,"[""environmental assessment"", ""global environmental law"", ""environmental protection law"", ""EU environmental regulations"", ""global economics""]",5,0.000186920166015625,False,False,False,0.0,0.0,0.0,-1
+monetary economics,financial economics,monetary authority,"[""monetary authority"", ""national economics"", ""retirement economics"", ""health economics"", ""transformation economics""]",5,0.00018405914306640625,False,False,False,0.0,0.0,0.0,-1
+multi level analysis,hierarchical analysis,literary analysis,"[""literary analysis"", ""data analysis"", ""decision analysis"", ""ritual analysis"", ""critical analysis""]",5,0.0002346038818359375,False,False,False,0.0,0.0,0.0,-1
+narcissism and shame,egoism and guilt,self-governance and ethics,"[""self-governance and ethics"", ""egoism and guilt"", ""heritage and progress"", ""Regional language and society"", ""Matthew, James, and Didache""]",5,0.00024080276489257812,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+natality/birth rate,birth rate,birth rate,"[""birth rate""]",1,0.0001850128173828125,True,True,True,1.0,1.0,1.0,1
+dutch as a second language,Dutch language acquisition,Dutch language,"[""Dutch language"", ""Dutch language acquisition"", ""Second Vatican Council"", ""body language"", ""language cognition""]",5,0.0003604888916015625,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+network industries,interconnected industries,interconnected industries,"[""interconnected industries"", ""network analysis""]",2,0.00018167495727539062,True,True,True,1.0,1.0,1.0,1
+neural networks,artificial neural networks,artificial neural networks,"[""artificial neural networks"", ""neural physiology"", ""social networks"", ""collaborative networks""]",4,0.0001850128173828125,True,True,True,1.0,1.0,1.0,1
+nietzsche,Nietzschean philosophy,,[],0,7.987022399902344e-05,False,False,False,0.0,0.0,0.0,-1
+nonresponse,no response,,[],0,8.0108642578125e-05,False,False,False,0.0,0.0,0.0,-1
+entrepreneurship,business creation,,[],0,8.0108642578125e-05,False,False,False,0.0,0.0,0.0,-1
+company law,corporate law,company tax,"[""company tax"", ""global law"", ""financial law"", ""Asylum law"", ""employment law""]",5,0.0001876354217529297,False,False,False,0.0,0.0,0.0,-1
+research,investigation,intercultural research,"[""intercultural research"", ""basic research"", ""research methods"", ""intercultural research methods"", ""research methods and statistics""]",5,0.0001404285430908203,False,False,False,0.0,0.0,0.0,-1
+ontology,metaphysical study,,[],0,0.00013113021850585938,False,False,False,0.0,0.0,0.0,-1
+cooperative information system development,Collaborative Information Systems Development,information retrieval system,"[""information retrieval system"", ""cooperative learning"", ""Collaborative Information Systems Development"", ""development"", ""voting system""]",5,0.0002815723419189453,False,True,True,0.5,0.5,0.3333333333333333,3
+public finance,government finance,public involvement,"[""public involvement"", ""public policy"", ""public management"", ""business finance; global finance"", ""quantitative finance""]",5,0.0001850128173828125,False,False,False,0.0,0.0,0.0,-1
+option pricing,option valuation,option valuation,"[""option valuation""]",1,0.0001850128173828125,True,True,True,1.0,1.0,1.0,1
+organisational development,organizational growth,development,"[""development"", ""development theories"", ""economic development"", ""employee development"", ""Capability development""]",5,0.00018405914306640625,False,False,False,0.0,0.0,0.0,-1
+organisations,institutions,,[],0,7.867813110351562e-05,False,False,False,0.0,0.0,0.0,-1
+mergers,consolidations,,[],0,7.748603820800781e-05,False,False,False,0.0,0.0,0.0,-1
+minor mental disorders,emotional exhaustion,psychological disorders,"[""psychological disorders"", ""mental philosophy"", ""mental processes"", ""mental science"", ""baby mental health""]",5,0.000232696533203125,False,False,False,0.0,0.0,0.0,-1
+pastoral theology,spiritual care theology,liturgical theology,"[""liturgical theology"", ""cross-cultural theology"", ""gender theology"", ""applied theology"", ""doctrinal theology""]",5,0.0001876354217529297,False,False,False,0.0,0.0,0.0,-1
+pastoral assistance,spiritual support,assistance,"[""assistance"", ""Catholic pastoral care"", ""Pastoral Counseling Psychology"", ""sociology of pastoral care""]",4,0.00018405914306640625,False,False,False,0.0,0.0,0.0,-1
+Ecclesiastical Latin New Testament Greek,Patristic studies,ecclesiastical Latin,"[""ecclesiastical Latin"", ""New Testament studies"", ""Koine Greek"", ""ecclesiastical history"", ""ecclesiastical authority""]",5,0.00032973289489746094,False,False,False,0.0,0.0,0.0,-1
+perception,awareness,sight perception,"[""sight perception"", ""hearing perception""]",2,0.0001316070556640625,False,False,False,0.0,0.0,0.0,-1
+political and administrative crisis,governance crisis,governance crisis,"[""governance crisis"", ""administrative organisation"", ""administrative litigation"", ""Political Groups"", ""political theory""]",5,0.0002880096435546875,True,True,True,1.0,1.0,1.0,1
+professionalisation,skill development,,[],0,7.891654968261719e-05,False,False,False,0.0,0.0,0.0,-1
+psychotherapy,talk therapy,,[],0,7.963180541992188e-05,False,False,False,0.0,0.0,0.0,-1
+judiciary system,judiciary,judiciary,"[""judiciary"", ""welfare system"", ""voting system"", ""sound system study"", ""information retrieval system""]",5,0.00018310546875,True,True,True,1.0,1.0,1.0,1
+sociology of law,legal sociology,sociology of organizations,"[""sociology of organizations"", ""sociology of culture"", ""sociology of pastoral care"", ""family sociology"", ""legal sociology""]",5,0.00023627281188964844,False,False,True,0.0,0.38685280723454163,0.2,5
+psychology of advertising,advertising psychology,advertising psychology,"[""advertising psychology"", ""philosophy of psychology"", ""basics of psychology"", ""work psychology"", ""cross-cultural psychology""]",5,0.00024008750915527344,True,True,True,1.0,1.0,1.0,1
+reductionism,simplification,,[],0,7.867813110351562e-05,False,False,False,0.0,0.0,0.0,-1
+regulation of new technologies,technology oversight,financial regulation,"[""financial regulation"", ""New Testament studies"", ""Epistle of James"", ""philosophy of psychology"", ""philosophy of action""]",5,0.0002815723419189453,False,False,False,0.0,0.0,0.0,-1
+relations law (*),family law,domestic relations law,"[""domestic relations law"", ""employment relations"", ""Judeo-Christian relations"", ""interfaith relations"", ""economic law""]",5,0.00018525123596191406,False,False,False,0.0,0.0,0.0,-1
+religious communication,faith-based communication,faith-based communication,"[""faith-based communication"", ""cross-cultural communication"", ""communication channels"", ""religious ceremonies"", ""religious extremism""]",5,0.0001900196075439453,True,True,True,1.0,1.0,1.0,1
+religious market,faith marketplace,stock market,"[""stock market"", ""employment market"", ""market strategy"", ""market analysis"", ""religious philosophy""]",5,0.0001842975616455078,False,False,False,0.0,0.0,0.0,-1
+catholic care and its tradition,Catholic pastoral care,Catholic pastoral care,"[""Catholic pastoral care"", ""religious tradition"", ""modern Catholic history"", ""end-of-life care"", ""care models""]",5,0.0003311634063720703,True,True,True,1.0,1.0,1.0,1
+creation (stories of the),origin myths,business creation,"[""business creation"", ""the web"", ""Didache and the Gospel of Matthew"", ""the English language"", ""John the Apostle""]",5,0.0002913475036621094,False,False,False,0.0,0.0,0.0,-1
+guilt and sin,moral culpability,egoism and guilt,"[""egoism and guilt"", ""self-governance and ethics"", ""heritage and progress"", ""Regional language and society"", ""Matthew, James, and Didache""]",5,0.00023317337036132812,False,False,False,0.0,0.0,0.0,-1
+semiotics,sign theory,,[],0,7.82012939453125e-05,False,False,False,0.0,0.0,0.0,-1
+social capital,social networks,capital markets,"[""capital markets"", ""social unity"", ""Social understanding"", ""social linguistics"", ""social science""]",5,0.00018334388732910156,False,False,False,0.0,0.0,0.0,-1
+social justice,equitable justice,equitable justice,"[""equitable justice"", ""Social understanding"", ""social unity"", ""social exclusion"", ""social networks""]",5,0.00018930435180664062,True,True,True,1.0,1.0,1.0,1
+sociolinguistics,social linguistics,,[],0,7.843971252441406e-05,False,False,False,0.0,0.0,0.0,-1
+Sociology,social science,family sociology,"[""family sociology"", ""educational sociology"", ""religious sociology"", ""legal sociology"", ""sociology of culture""]",5,0.00013327598571777344,False,False,False,0.0,0.0,0.0,-1
+soft law,non-binding guidelines,global law,"[""global law"", ""financial law"", ""employment law"", ""Asylum law"", ""fiscal law""]",5,0.00018262863159179688,False,False,False,0.0,0.0,0.0,-1
+urban history,city history,economic history,"[""economic history"", ""city history"", ""local history"", ""medieval history"", ""textual history""]",5,0.00018310546875,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+statistical methods,statistical techniques,statistical techniques,"[""statistical techniques"", ""statistical mathematics"", ""electoral methods"", ""research methods"", ""study methods""]",5,0.0001881122589111328,True,True,True,1.0,1.0,1.0,1
+terminal care,end-of-life care,coordinated care,"[""coordinated care"", ""psychological care"", ""end-of-life care"", ""spiritual care"", ""care models""]",5,0.00018262863159179688,False,True,True,0.5,0.5,0.3333333333333333,3
+law of criminal procedure/criminal adjective law,criminal procedural law,ecological criminal law,"[""ecological criminal law"", ""criminal procedural law"", ""transnational criminal law"", ""history of constitutional law"", ""Asylum law""]",5,0.0003814697265625,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+stratification,social hierarchy,,[],0,7.724761962890625e-05,False,False,False,0.0,0.0,0.0,-1
+stress,tension,stress management,"[""stress management"", ""stress control""]",2,0.00013566017150878906,False,False,False,0.0,0.0,0.0,-1
+Supply Chain Management,logistics management,non-profit management,"[""non-profit management"", ""stock management"", ""risk management"", ""ethical management"", ""corporate management""]",5,0.00023174285888671875,False,False,False,0.0,0.0,0.0,-1
+system dynamics,Systems modeling,team dynamics,"[""team dynamics"", ""group dynamics"", ""voting system"", ""welfare system"", ""sound system study""]",5,0.00018167495727539062,False,False,False,0.0,0.0,0.0,-1
+language and computers,computational linguistics,Regional language and society,"[""Regional language and society"", ""language skills"", ""language learning"", ""language science"", ""language psychology""]",5,0.00023221969604492188,False,False,False,0.0,0.0,0.0,-1
+linguistics,language science,social linguistics,"[""social linguistics"", ""practical linguistics"", ""computational linguistics""]",3,0.0001366138458251953,False,False,False,0.0,0.0,0.0,-1
+temperament,disposition,,[],0,7.891654968261719e-05,False,False,False,0.0,0.0,0.0,-1
+theology,divinity studies,cross-cultural theology,"[""cross-cultural theology"", ""liturgical theology"", ""gender theology"", ""applied theology"", ""doctrinal theology""]",5,0.00013399124145507812,False,False,False,0.0,0.0,0.0,-1
+theology,religious studies,cross-cultural theology,"[""cross-cultural theology"", ""liturgical theology"", ""gender theology"", ""applied theology"", ""doctrinal theology""]",5,0.00013303756713867188,False,False,False,0.0,0.0,0.0,-1
+Thomas Aquinas,Scholastic philosopher,,[],0,0.0001277923583984375,False,False,False,0.0,0.0,0.0,-1
+temporary work,short-term employment,collaborative work,"[""collaborative work"", ""work psychology"", ""work quality"", ""work motivation""]",4,0.0001819133758544922,False,False,False,0.0,0.0,0.0,-1
+tradition and innovation/modernization,heritage and progress,religious tradition,"[""religious tradition"", ""self-governance and ethics"", ""egoism and guilt"", ""heritage and progress"", ""Regional language and society""]",5,0.0002410411834716797,False,False,True,0.0,0.43067655807339306,0.25,4
+transport,conveyance,,[],0,7.82012939453125e-05,False,False,False,0.0,0.0,0.0,-1
+Resurrection,rebirth,,[],0,7.772445678710938e-05,False,False,False,0.0,0.0,0.0,-1
+reporting,financial reporting,financial reporting,"[""financial reporting""]",1,0.00013136863708496094,True,True,True,1.0,1.0,1.0,1
+trust,confidence,,[],0,7.867813110351562e-05,False,False,False,0.0,0.0,0.0,-1
+Victorian Literature,19th-century British literature,scriptural literature,"[""scriptural literature"", ""theological literature"", ""cinematic literature"", ""19th-century British literature""]",4,0.00018787384033203125,False,False,True,0.0,0.43067655807339306,0.25,4
+history of international law,international legal history,international legal history,"[""international legal history"", ""history of constitutional law"", ""international integration"", ""international financial institution"", ""economic history""]",5,0.0002884864807128906,True,True,True,1.0,1.0,1.0,1
+forecasting,prediction,,[],0,7.987022399902344e-05,False,False,False,0.0,0.0,0.0,-1
+questionnaires,surveys,,[],0,7.891654968261719e-05,False,False,False,0.0,0.0,0.0,-1
+perception,sensory awareness,sight perception,"[""sight perception"", ""hearing perception""]",2,0.00013136863708496094,False,False,False,0.0,0.0,0.0,-1
+invalidity benefits shortfall/wao shortfall,disability benefits gap,retirement benefits,"[""retirement benefits"", ""disability benefits gap""]",2,0.0002944469451904297,False,True,True,0.6309297535714575,0.6309297535714575,0.5,2
+interpretation,meaning-making,Bible interpretation,"[""Bible interpretation"", ""legal interpretation""]",2,0.00013327598571777344,False,False,False,0.0,0.0,0.0,-1
+care,assistance,coordinated care,"[""coordinated care"", ""psychological care"", ""end-of-life care"", ""spiritual care"", ""care models""]",5,0.0001342296600341797,False,False,False,0.0,0.0,0.0,-1
+Duty of care,obligation of care,obligation of care,"[""obligation of care"", ""sociology of pastoral care"", ""psychological care"", ""spiritual care"", ""care models""]",5,0.0002353191375732422,True,True,True,1.0,1.0,1.0,1

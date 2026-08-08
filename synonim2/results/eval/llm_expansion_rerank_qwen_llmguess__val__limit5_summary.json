@@ -1,0 +1,15 @@
+{
+  "method": "llm_expansion_rerank_qwen_llmguess",
+  "rows": 5,
+  "hit@1": 0.8,
+  "hit@3": 1.0,
+  "hit@5": 1.0,
+  "n_hit@1": 4,
+  "n_hit@3": 5,
+  "n_hit@5": 5,
+  "ndcg@3": 0.9261859507142916,
+  "ndcg@5": 0.9261859507142916,
+  "mrr": 0.9,
+  "avg_time_seconds": 18.28687515258789,
+  "split": "val"
+}

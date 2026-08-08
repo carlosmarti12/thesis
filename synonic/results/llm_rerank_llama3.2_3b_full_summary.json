@@ -1,0 +1,14 @@
+{
+  "rows": 100,
+  "avg_num_candidates_returned": 5.0,
+  "exact_top1": 0.05,
+  "exact_any": 0.26,
+  "recall_at_3": 0.19,
+  "recall_at_5": 0.26,
+  "precision_at_5": 0.05200000000000001,
+  "mean_mrr": 0.12366666666666667,
+  "mean_fuzzy_similarity": 0.7535314408454521,
+  "mean_semantic_similarity": 0.7870978057384491,
+  "avg_time_seconds": 1.0422661638259887,
+  "method": "llm_rerank_llama3.2_3b_full"
+}

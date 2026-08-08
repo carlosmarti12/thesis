@@ -1,0 +1,16 @@
+{
+  "method": "llm_expansion_weighted_t0_rerank_qwen",
+  "rows": 969,
+  "hit@1": 0.8224974200206399,
+  "hit@3": 0.9318885448916409,
+  "hit@5": 0.9453044375644994,
+  "n_hit@1": 797,
+  "n_hit@3": 903,
+  "n_hit@5": 916,
+  "ndcg@3": 0.8889482854083764,
+  "ndcg@5": 0.8946357443900859,
+  "mrr": 0.8771757825937393,
+  "avg_time_seconds": 11.844037626549925,
+  "split": "full",
+  "reranker_fallback_count": 0
+}

@@ -1,0 +1,6 @@
+term,ground_truth,prediction,candidates,num_candidates,time_seconds,hit@1,hit@3,hit@5,ndcg@3,ndcg@5,mrr,rank
+recommender system,recommendation engine,recommendation engine,"[""recommendation engine"", ""information retrieval system"", ""document search"", ""information search"", ""information processing""]",5,5.169155836105347,True,True,True,1.0,1.0,1.0,1
+stocks,shares,shares,"[""shares"", ""capital markets"", ""investing"", ""stock management"", ""stock market""]",5,1.104062795639038,True,True,True,1.0,1.0,1.0,1
+equity market,stock market,stock market,"[""stock market"", ""capital markets"", ""market analysis"", ""market strategy"", ""energy markets""]",5,0.8563642501831055,True,True,True,1.0,1.0,1.0,1
+africa,Sub-Saharan region,Sub-Saharan region,"[""Sub-Saharan region"", ""developing countries"", ""emerging economies"", ""East Europe"", ""development""]",5,1.0693528652191162,True,True,True,1.0,1.0,1.0,1
+general econometrics,economic statistics,individual econometrics,"[""individual econometrics"", ""economic modeling"", ""economic statistics"", ""practical econometrics"", ""economic science""]",5,0.8700761795043945,False,True,True,0.5,0.5,0.3333333333333333,3

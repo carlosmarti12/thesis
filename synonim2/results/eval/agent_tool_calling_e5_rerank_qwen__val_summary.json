@@ -1,0 +1,16 @@
+{
+  "method": "agent_tool_calling_e5_rerank_qwen",
+  "rows": 194,
+  "hit@1": 0.8298969072164949,
+  "hit@3": 0.9072164948453608,
+  "hit@5": 0.9072164948453608,
+  "n_hit@1": 161,
+  "n_hit@3": 176,
+  "n_hit@5": 176,
+  "ndcg@3": 0.8766554486745232,
+  "ndcg@5": 0.8766554486745232,
+  "mrr": 0.865979381443299,
+  "avg_time_seconds": 18.9589032807301,
+  "split": "val",
+  "reranker_fallback_count": 0
+}

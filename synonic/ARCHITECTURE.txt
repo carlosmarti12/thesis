@@ -1,0 +1,237 @@
+================================================================================
+ARCHITECTURE JUSTIFICATION — Open Synonym Discovery (synonic/)
+================================================================================
+
+TASK
+----
+Given an academic term (e.g. "stocks"), find its synonyms or alternative
+labels as they would appear in an academic taxonomy or database. The ground
+truth is the column en_synonym from the TU-Expert-Collection-Topic-Synonyms
+dataset.
+
+This is OPEN synonym discovery: en_synonym may only be used to score a
+method's output, never to help produce it. See "THE LEAKAGE FIX" below —
+this is the central design constraint of this folder and the reason it
+exists as a separate rebuild of the `new/` iteration.
+
+
+THE LEAKAGE FIX
+---------------
+The prior iteration (new/src2/) built several methods' search index directly
+from df['en_synonym'] — i.e. the system searched inside the answer column.
+That inflates every metric because the correct answer is always a member of
+the candidate pool being searched, which is not true in a realistic
+deployment (no access to the answer).
+
+Fix: every method here draws its candidate vocabulary from WordNet
+(src/open_vocab.py, via nltk) instead — a resource with no relationship to
+this dataset or its en_synonym column. en_synonym is read in exactly one
+place in the codebase: src/run_experiment.py and src/run_comparison.py,
+inside the main loop, strictly after a method has already produced its
+candidates. Grep `src/` for en_synonym at any time to confirm this still
+holds.
+
+
+PIPELINE OVERVIEW (MAS variants, src/graph.py + src/agents.py)
+----------------------------------------------------------------
+
+  mas_base (v1):
+    Input term
+        │
+        ├──────────────┬───────────────┐
+        ▼               ▼
+    [generator_agent] [retrieval_agent]      (parallel-ish: no data dependency
+        │  LLM-proposed  │  embedding search   between the two, run sequentially
+        │  candidates    │  over WordNet       for simplicity)
+        └──────┬─────────┘
+               ▼
+        [merge_agent]           dedup + combine
+               ▼
+        [verification_agent]    0.75*semantic + 0.25*fuzzy per candidate
+               ▼
+        [ranking_agent]         sort by score, top 5
+               ▼
+        Output: final_candidates
+
+  mas_llm_ranker (v2):
+    retrieval_agent → generator_agent → merge_agent (capped at 20) →
+    llm_ranking_agent (LLM re-orders the full list, omitted items appended
+    back to protect recall) → top 5.
+
+  mas_safe_hybrid (v3):
+    same as v2 up to merge_agent → llm_ranking_agent (returns only the LLM's
+    valid ordered subset, no append) → safe_finalizer_agent
+    (0.9*embedding_sim + 0.10*llm_rank_bonus — bonus-only, can't hurt recall)
+    → top 5.
+
+
+WHY THESE THREE VARIANTS (ablation, not three unrelated designs)
+------------------------------------------------------------------
+v1 → v2 → v3 is a deliberate ablation chain testing one question: does
+LLM-based ranking help over deterministic embedding-based ranking?
+
+  v1 (base): ranks purely by a fixed formula (semantic + fuzzy). No LLM
+  judgment involved in the final ordering.
+
+  v2 (llm_ranker): replaces that fixed ranker with an LLM asked to reorder
+  the list. Confirmed NEGATIVE ablation in the original new/src2 experiments
+  — worse than v1 and v3. Kept here for comparison, not because it's
+  expected to win; a thesis needs the negative result documented, not hidden.
+
+  v3 (safe_hybrid): keeps the LLM's ranking signal but makes it a bonus term
+  (10% weight) on top of embedding similarity (90% weight) rather than the
+  sole ranking criterion — so an unreliable local LLM ranker can only help,
+  never actively demote a good candidate. Recovers most of v2's loss.
+
+This is why the three variants share agents.py functions instead of being
+three unrelated files: the whole point is to isolate exactly one variable
+(how much the LLM controls the final ranking) across otherwise identical
+pipelines.
+
+
+WHY WORDNET AS THE CANDIDATE VOCABULARY
+------------------------------------------
+Needed a candidate pool for the embedding/retrieval-based methods
+(embedding_wordnet, llm_expansion, and every MAS variant's retrieval_agent)
+that is NOT the answer column. WordNet was chosen because:
+  - It is a general-purpose English lexical resource, fully independent of
+    this dataset.
+  - It is large (~147k phrases after filtering to <=4 words), giving
+    retrieval methods a realistically-sized open vocabulary to search,
+    rather than a small closed set.
+  - It is local/offline (via nltk), so no extra network dependency for
+    every run.
+
+
+THE SUPERVISOR ARCHITECTURE (src/supervisor/) — dynamic vs. fixed control flow
+-------------------------------------------------------------------------------
+Every MAS variant above (v1/v2/v3) is a FIXED graph: the node order is
+hard-coded in graph.py regardless of the term or the intermediate results.
+`supervisor/` replaces that fixed order with a single supervisor LLM that
+observes an explicit state after every step and decides, one action at a
+time, what to run next:
+
+    Supervisor LLM
+          |  decides one action: retrieve / generate / merge / score /
+          v  finalize / finish
+    Deterministic tool executes (executor.py -> agents.py functions)
+          |
+          v  result merged into SupervisorState (runner.apply_tool_result)
+    Supervisor observes the new state, decides again
+          |
+          v
+    ... up to MAX_ITERATIONS=10, then forced finalize+finish
+
+This is NOT a multi-agent system: there is exactly one LLM decision-maker
+(supervisor_agent) choosing among deterministic tools that are themselves
+reused unchanged from agents.py (retrieval_agent, generator_agent,
+merge_agent, verification_agent, ranking_agent). The only new deterministic
+piece is tools.evaluate_candidate_quality, a sufficiency/confidence signal
+computed from scored candidates. Going further (splitting sense-detection /
+generation / critique into separate cognitive agents) was deliberately
+deferred - it would add LLM calls, latency and variance without first
+establishing that a single dynamic decision-maker already beats the fixed
+v1/v2/v3 graphs; see this project's cross-cutting finding (embedding
+retrieval already matches or beats every fixed MAS pipeline tried) before
+assuming more agents autonomy = better results.
+
+Guardrails (what stops an 8B-or-smaller local LLM from breaking the loop):
+  - SupervisorDecision (schemas.py) is a validated Pydantic object; the LLM
+    can only pick one of 6 named actions, never free-form code.
+  - executor.py clamps every LLM-supplied numeric parameter (top_k, n, cap)
+    to a safe range before calling the underlying agents.py function.
+  - fallback_decision (agent.py) is a fully deterministic
+    retrieve->generate->merge->score->finalize->finish state machine, gated
+    on which actions were already *attempted* (action_history), not on
+    whether they returned non-empty results - so it always makes forward
+    progress even if every LLM call in a run fails or returns malformed
+    JSON.
+  - repeated_action blocks the supervisor from re-running an identical
+    (action, parameters) pair; can_finish blocks `finish` until
+    final_candidates actually exist (produced by `finalize`, not merely
+    asserted by the LLM).
+  - _pipeline_freshness (agent.py): merge/score/finalize are only considered
+    "done" if they last ran AFTER every stage that feeds them, purely by
+    order of appearance in action_history. Fixes a real bug found in the
+    first 100-term comparison run: the LLM sometimes chose the order
+    retrieve -> merge -> generate -> score -> finalize, so the freshly
+    generated candidates never entered merged_candidates/scored_candidates
+    (merge had already taken its "photo" before generate ran) and were
+    silently discarded. can_finish/fallback_decision now detect that merge
+    is stale relative to generate and force a re-merge -> re-score ->
+    re-finalize before allowing `finish`, without ever having to physically
+    clear state - staleness is derived purely from history ordering.
+  - MAX_ITERATIONS=10 (raised from 8 to give the re-merge/re-score/
+    re-finalize correction above room to complete) with a forced
+    finalize-then-finish (runner.force_finish) guarantees the loop always
+    terminates and always returns candidates if any were ever scored.
+
+Empirically (llama3.2:3b, smoke runs on "stocks"): the fallback-only path
+and the real supervisor-LLM path converge on the same top candidates
+(stock, stock market, stocking, stock issue, ...).
+
+CAUGHT-AND-FIXED PLANNING BUG (worth citing as-is in the writeup): the first
+full 100-term `supervisor` vs. other-methods comparison scored far below
+mas_base (mrr 0.091 vs 0.119, recall@5 0.13 vs 0.20). Diffing per-term
+results showed 7 terms where mas_base found the gold synonym and supervisor
+didn't - and in every one, the gold answer was an LLM-style generated
+phrase ("Strategic Partnerships", "Recommendation Engine", "Working Time",
+...) that supervisor's own generate() call had actually produced, but which
+never reached scoring. Root cause: the 3B model chose the order
+retrieve -> merge -> generate -> score -> finalize - merge took its "photo"
+of candidates before generate ran, so the newly generated candidates were
+silently orphaned. This is exactly the class of bug _pipeline_freshness
+above was added to catch; before that fix, neither fallback_decision nor
+can_finish could detect it because merge/score/finalize had all technically
+already been "attempted" once. Left here as a documented example of what a
+small local model's autonomous planning gets wrong, and why the guardrails
+need to reason about *order*, not just *presence*, of prior actions.
+
+
+NON-AGENTIC BASELINES (src/baselines.py)
+-------------------------------------------
+  wordnet_direct_baseline  — direct WordNet synset lookup on the term itself
+                             (symbolic, no ML, no LLM).
+  embedding_wordnet_baseline — embed term, nearest neighbors in the WordNet
+                             index (no LLM).
+  llm_zero_shot_baseline   — single LLM call, no retrieval.
+  llm_expansion_baseline   — LLM generates paraphrase/expansion queries,
+                             each searched against the WordNet index,
+                             aggregated by max similarity.
+
+These give four points of comparison against the MAS pipelines: no method,
+symbolic-only, embedding-only, and LLM-only, before combining them.
+
+
+EVALUATION (src/evaluation.py)
+----------------------------------
+Every method returns 5 candidates (num_final_candidates recorded per row).
+Metrics, all against a single gold en_synonym per term:
+  exact_top1     — candidate #1 matches exactly.
+  exact_any      — gold appears anywhere in the returned candidates.
+  recall_at_3/5  — gold appears in the top 3 / top 5 (same as exact_any
+                   restricted to a shorter prefix).
+  precision_at_5 — capped at 0.2 by construction (only one gold synonym
+                   exists); reported for completeness, not as a primary
+                   metric.
+  mrr            — 1/rank of the correct answer (0 if absent).
+  fuzzy_similarity    — rapidfuzz.fuzz.ratio, lexical/spelling closeness.
+  semantic_similarity — all-MiniLM-L6-v2 cosine similarity, meaning-based.
+
+Every metric's exact formula is documented as a docstring in evaluation.py.
+
+
+KNOWN LIMITATIONS
+------------------
+  - Some ground truths in the dataset are highly idiosyncratic editorial
+    choices that no architecture can reliably predict from the term alone.
+  - The LLM (llama3.2:3b via Ollama) is small; a larger model would likely
+    improve every LLM-dependent method without any architectural change.
+  - WordNet does not contain every domain-specific academic term the
+    dataset expects, so methods anchored to the WordNet index (retrieval,
+    MAS) have a coverage ceiling that generative-only methods (llm_zero_shot)
+    don't share — worth reporting alongside accuracy numbers.
+  - mas_llm_ranker (v2) is a known negative ablation - do not read a low
+    score there as a bug; it is the expected, documented result.
+
+================================================================================

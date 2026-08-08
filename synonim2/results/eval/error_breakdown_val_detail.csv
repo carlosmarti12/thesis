@@ -1,0 +1,195 @@
+term,ground_truth,prediction,category,gold_rank,hit@1
+recommender system,recommendation engine,recommendation engine,compound,1.0,True
+stocks,shares,shares,single_word,1.0,True
+equity market,stock market,stock market,compound,1.0,True
+africa,Sub-Saharan region,Sub-Saharan region,single_word,1.0,True
+general econometrics,economic statistics,individual econometrics,compound,3.0,False
+americanization,Americanisation,Americanisation,single_word,1.0,True
+arabic,Arabian,Arabian,single_word,1.0,True
+reasoning,logical argumentation,logical argumentation,single_word,1.0,True
+business studies,business administration,organizational studies,compound,2.0,False
+Firm relocation,business relocation,business relocation,compound,1.0,True
+information systems management,IT management,IT management,multi_word_phrase,1.0,True
+investment,investing,funding,single_word,2.0,False
+occupational ethics,professional ethics,professional ethics,compound,1.0,True
+decision making,decision process,decision process,compound,1.0,True
+administrative procedural law,administrative litigation,administrative litigation,multi_word_phrase,1.0,True
+consciousness,awareness,awareness,single_word,1.0,True
+"Blanchot, Maurice (1907-2003)",literary philosopher,literary philosopher,compound,1.0,True
+brabant,Brabant region,Brabant region,single_word,1.0,True
+citizenship,nationality,nationality,single_word,1.0,True
+business transactions,commercial dealings,commercial dealings,compound,1.0,True
+collective labour agreements,union contracts,union contracts,multi_word_phrase,1.0,True
+cognitive linguistics,language cognition,language cognition,compound,1.0,True
+communication,information exchange,textual interaction,single_word,,False
+computer crime,cybercrime,cybercrime,compound,1.0,True
+computer models,computational models,computational models,compound,1.0,True
+computer simulation,computational modeling,computational modeling,compound,1.0,True
+constitutional issues,constitutional challenges,constitutional challenges,compound,1.0,True
+corporate governance,corporate management,governance,compound,2.0,False
+Economics of art and culture,cultural economics,cultural economics,multi_word_phrase,1.0,True
+culture,cultural practices,way of life,single_word,3.0,False
+culture in brabant,Brabant heritage,Brabant heritage,multi_word_phrase,1.0,True
+cultural and social history,social and cultural history,social and cultural history,multi_word_phrase,1.0,True
+cultural sociology,sociology of culture,sociology of culture,compound,1.0,True
+data warehouse,data repository,data repository,compound,1.0,True
+databases,data repositories,data repositories,single_word,1.0,True
+democracy,popular government,Consensus-based democracy,single_word,2.0,False
+demography,population studies,population studies,single_word,1.0,True
+depression,melancholy,melancholy,single_word,1.0,True
+depression during pregnancy,prenatal depression,prenatal depression,multi_word_phrase,1.0,True
+Derrida,Jacques Derrida,Jacques Derrida,single_word,1.0,True
+Didache and Matthew's gospel,Didache and the Gospel of Matthew,Didache and the Gospel of Matthew,multi_word_phrase,1.0,True
+"Didache, Matthew's gospel and James's letter",early Christian texts,Didache and the Gospel of Matthew,multi_word_phrase,4.0,False
+fallacies and unfair methods of discussion,logical fallacies,logical fallacies,multi_word_phrase,1.0,True
+sustainable tourism,eco-friendly tourism,eco-tourism,compound,2.0,False
+dynamic game theory,evolving game theory,evolving game theory,multi_word_phrase,1.0,True
+e-commerce,online retail,online retail,single_word,1.0,True
+EEG,brainwave recording,brain wave test,abbreviation_like,,False
+Electronic Business,e-commerce,online business,compound,2.0,False
+emotions,feelings,feelings,single_word,1.0,True
+empirical finance,Experimental finance,quantitative finance,compound,3.0,False
+jurisprudence,legal theory,legal philosophy,single_word,2.0,False
+energy economics,energy markets,energy markets,compound,1.0,True
+energy sources,power sources,power sources,compound,1.0,True
+European Administrative Law,EU administrative law,EU administrative law,multi_word_phrase,1.0,True
+european convention on human rights,European Human Rights Charter,European Human Rights Charter,multi_word_phrase,1.0,True
+euthanasia,mercy killing,end-of-life care,single_word,2.0,False
+extreme value theory,extreme value analysis,extreme value analysis,multi_word_phrase,1.0,True
+feminism,women's liberation,women's liberation,single_word,1.0,True
+fiscal policy,budgetary policy,budgetary policy,compound,1.0,True
+fundamental research,basic research,basic research,compound,1.0,True
+behaviour,conduct,conduct,single_word,1.0,True
+infant mental health,baby mental health,baby mental health,multi_word_phrase,1.0,True
+spiritual counseling,spiritual guidance,spiritual guidance,compound,1.0,True
+data banks,data repositories,data repositories,compound,1.0,True
+memory,recollection,recollection,single_word,1.0,True
+"gender studies, theology",feminist theology,gender theology,multi_word_phrase,2.0,False
+health care economics,health economics,health economics,multi_word_phrase,1.0,True
+health care management,health services management,health services management,multi_word_phrase,1.0,True
+health care policy,health policy,health policy,multi_word_phrase,1.0,True
+"divinity, contemporary themes of",modern theological themes,modern theological themes,multi_word_phrase,1.0,True
+gregorian,plainchant,ecclesiastical Latin,single_word,,False
+growth theories,development theories,development theories,compound,1.0,True
+trade policy,commercial policy,commercial policy,compound,1.0,True
+heart and vascular diseases,cardiovascular diseases,cardiovascular diseases,multi_word_phrase,1.0,True
+cerebral/brain haemorrhage,brain bleed,brain bleed,compound,1.0,True
+brain,cerebrum,cerebrum,abbreviation_like,1.0,True
+human resource management,personnel management,personnel management,multi_word_phrase,1.0,True
+ict in education,educational technology,educational technology,multi_word_phrase,1.0,True
+imf,international financial institution,international financial institution,abbreviation_like,1.0,True
+industrial organization,industrial economics,organizational structure,compound,3.0,False
+computer science law,IT law,data law,multi_word_phrase,2.0,False
+information law,data law,data law,compound,1.0,True
+information systems,data management systems,computing systems,compound,,False
+effort,exertion,cognitive effort,single_word,2.0,False
+instructive texts (*),instructional materials,instructional materials,multi_word_phrase,1.0,True
+intelligent interfaces,smart interfaces,smart interfaces,compound,1.0,True
+intercultural theologie,cross-cultural theology,cross-cultural theology,compound,1.0,True
+intergenerational risk sharing,cross-generational risk distribution,cross-generational risk distribution,multi_word_phrase,1.0,True
+intergroup relationships,group interactions,group interactions,compound,1.0,True
+international labour law,global employment law,global employment law,multi_word_phrase,1.0,True
+international human resource management,global HR management,global HR management,multi_word_phrase,1.0,True
+international management,global management,global management,compound,1.0,True
+international competition law,global antitrust law,global antitrust law,multi_word_phrase,1.0,True
+international environmental law,global environmental law,global environmental law,multi_word_phrase,1.0,True
+intuitionistic mathematics,constructivist mathematics,constructivist mathematics,compound,1.0,True
+islam in the netherlands,Muslim Communities in the Netherlands,Muslim Communities in the Netherlands,multi_word_phrase,1.0,True
+annual reporting,Yearly report,Yearly report,compound,1.0,True
+youth assistance,youth support,youth support,compound,1.0,True
+"judaism and christianity, relationship between",interfaith relations,early Christian teachings and Judaism,multi_word_phrase,,False
+"judaism, early/ancient",ancient Jewish religion,ancient Jewish religion,compound,1.0,True
+johannes,John the Apostle,Christ,single_word,2.0,False
+devotion/piety and non-practising,religious observance and secularism,contemporary piety,compound,,False
+Integrated care,coordinated care,coordinated care,compound,1.0,True
+artificial intelligence,machine intelligence,machine intelligence,compound,1.0,True
+quality of care,health care quality,health care quality,multi_word_phrase,1.0,True
+lifestyle,way of life,way of life,single_word,1.0,True
+organisational learning,organizational knowledge acquisition,organizational knowledge acquisition,compound,1.0,True
+literature,written works,literary analysis,single_word,2.0,False
+liturgy (contemporary),modern worship,contemporary piety,compound,3.0,False
+liturgic music,sacred music,sacred music,compound,1.0,True
+locke,John Locke,John Locke,abbreviation_like,1.0,True
+power,authority,authority,abbreviation_like,1.0,True
+power in organisations,organizational influence,organizational influence,multi_word_phrase,1.0,True
+marketing management,marketing strategy,marketing strategy,compound,1.0,True
+media ethics,journalistic ethics,journalistic ethics,compound,1.0,True
+multilingualism,polyglotism,polyglotism,single_word,1.0,True
+man-machine interaction,human-computer interaction,human-computer interaction,compound,1.0,True
+cross-cultural research methodology,intercultural research methods,intercultural research methods,compound,1.0,True
+medieval philosophy; history of,medieval thought,medieval thought,multi_word_phrase,1.0,True
+history of middle ages,medieval history,medieval history,multi_word_phrase,1.0,True
+environmental economics,ecological economics,ecological economics,compound,1.0,True
+monetary economics,financial economics,financial economics,compound,1.0,True
+multi level analysis,hierarchical analysis,hierarchical analysis,multi_word_phrase,1.0,True
+narcissism and shame,egoism and guilt,egoism and guilt,multi_word_phrase,1.0,True
+natality/birth rate,birth rate,birth rate,compound,1.0,True
+dutch as a second language,Dutch language acquisition,Dutch language,multi_word_phrase,2.0,False
+network industries,interconnected industries,interconnected industries,compound,1.0,True
+neural networks,artificial neural networks,artificial neural networks,compound,1.0,True
+nietzsche,Nietzschean philosophy,Nietzschean philosophy,single_word,1.0,True
+nonresponse,no response,social exclusion,single_word,,False
+entrepreneurship,business creation,business creation,single_word,1.0,True
+company law,corporate law,corporate law,compound,1.0,True
+research,investigation,investigation,single_word,1.0,True
+ontology,metaphysical study,metaphysics,single_word,,False
+cooperative information system development,Collaborative Information Systems Development,Collaborative Information Systems Development,multi_word_phrase,1.0,True
+public finance,government finance,government finance,compound,1.0,True
+option pricing,option valuation,option valuation,compound,1.0,True
+organisational development,organizational growth,organizational growth,compound,1.0,True
+organisations,institutions,institutions,single_word,1.0,True
+mergers,consolidations,consolidations,single_word,1.0,True
+minor mental disorders,emotional exhaustion,psychological disorders,multi_word_phrase,,False
+pastoral theology,spiritual care theology,applied theology,compound,4.0,False
+pastoral assistance,spiritual support,assistance,compound,2.0,False
+Ecclesiastical Latin New Testament Greek,Patristic studies,ecclesiastical Latin,multi_word_phrase,,False
+perception,awareness,awareness,single_word,1.0,True
+political and administrative crisis,governance crisis,governance crisis,multi_word_phrase,1.0,True
+professionalisation,skill development,skill development,single_word,1.0,True
+psychotherapy,talk therapy,talk therapy,single_word,1.0,True
+judiciary system,judiciary,judiciary,compound,1.0,True
+sociology of law,legal sociology,legal sociology,multi_word_phrase,1.0,True
+psychology of advertising,advertising psychology,advertising psychology,multi_word_phrase,1.0,True
+reductionism,simplification,simplification,single_word,1.0,True
+regulation of new technologies,technology oversight,technology oversight,multi_word_phrase,1.0,True
+relations law (*),family law,domestic relations law,multi_word_phrase,,False
+religious communication,faith-based communication,faith-based communication,compound,1.0,True
+religious market,faith marketplace,faith marketplace,compound,1.0,True
+catholic care and its tradition,Catholic pastoral care,Catholic pastoral care,multi_word_phrase,1.0,True
+creation (stories of the),origin myths,origin myths,multi_word_phrase,1.0,True
+guilt and sin,moral culpability,remorse,multi_word_phrase,3.0,False
+semiotics,sign theory,sign theory,single_word,1.0,True
+social capital,social networks,social networks,compound,1.0,True
+social justice,equitable justice,equitable justice,compound,1.0,True
+sociolinguistics,social linguistics,social linguistics,single_word,1.0,True
+Sociology,social science,social science,single_word,1.0,True
+soft law,non-binding guidelines,non-binding guidelines,compound,1.0,True
+urban history,city history,city history,compound,1.0,True
+statistical methods,statistical techniques,statistical techniques,compound,1.0,True
+terminal care,end-of-life care,end-of-life care,compound,1.0,True
+law of criminal procedure/criminal adjective law,criminal procedural law,penal law,multi_word_phrase,2.0,False
+stratification,social hierarchy,marginalization,single_word,,False
+stress,tension,workload pressure,single_word,2.0,False
+Supply Chain Management,logistics management,logistics management,multi_word_phrase,1.0,True
+system dynamics,Systems modeling,Systems modeling,compound,1.0,True
+language and computers,computational linguistics,computational linguistics,multi_word_phrase,1.0,True
+linguistics,language science,language science,single_word,1.0,True
+temperament,disposition,disposition,single_word,1.0,True
+theology,divinity studies,religious philosophy,single_word,5.0,False
+theology,religious studies,religious philosophy,single_word,,False
+Thomas Aquinas,Scholastic philosopher,Scholastic philosopher,compound,1.0,True
+temporary work,short-term employment,short-term employment,compound,1.0,True
+tradition and innovation/modernization,heritage and progress,heritage and progress,multi_word_phrase,1.0,True
+transport,conveyance,conveyance,single_word,1.0,True
+Resurrection,rebirth,rebirth,single_word,1.0,True
+reporting,financial reporting,assessment,single_word,5.0,False
+trust,confidence,confidence,abbreviation_like,1.0,True
+Victorian Literature,19th-century British literature,19th-century British literature,compound,1.0,True
+history of international law,international legal history,international legal history,multi_word_phrase,1.0,True
+forecasting,prediction,prediction,single_word,1.0,True
+questionnaires,surveys,surveys,single_word,1.0,True
+perception,sensory awareness,awareness,single_word,,False
+invalidity benefits shortfall/wao shortfall,disability benefits gap,disability benefits gap,multi_word_phrase,1.0,True
+interpretation,meaning-making,legal interpretation,single_word,,False
+care,assistance,assistance,abbreviation_like,1.0,True
+Duty of care,obligation of care,obligation of care,multi_word_phrase,1.0,True
