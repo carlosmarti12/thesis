@@ -1,0 +1,169 @@
+\chapter{Conclusions}
+\label{chap:conclusions}
+
+\section{Executive summary}
+
+This chapter synthesizes the project's findings from an applied software-engineering perspective. It restates the research questions in terms of the experiments actually performed, reviews the methodological choices that defined the final system, interprets the quantitative results together with their latency and reproducibility implications, and discusses the principal limitations and future work.
+
+The project addressed synonym identification for English academic and domain-specific terms as a closed-pool ranking problem: given an input term, the system ranks candidates from a predefined vocabulary and places the corresponding gold synonym as high as possible. This formulation differs from unrestricted synonym generation because the final answer must belong to the fixed candidate vocabulary; even methods that free-generate a proposal with a language model ultimately use that text as a retrieval query and return a candidate from the controlled vocabulary.
+
+Under these conditions, the strongest configuration was not the one with the greatest agent autonomy. The best-performing system combined a fixed-role, centrally orchestrated multi-agent pipeline with deterministic semantic retrieval and a constrained LLM reranking stage: a local generator based on Llama 3.2 3B, semantic representations from intfloat/e5-base-v2, weighted multi-query fusion, and Qwen3-32B as an external reranker. On the fallback-verified held-out test evaluation, this configuration achieved Hit@1 = 0.830, Hit@3 = 0.938, Hit@5 = 0.948, and MRR = 0.884.
+
+The main engineering conclusion is therefore more specific than ``LLMs improve synonym ranking.'' LLMs were useful when assigned narrow, well-controlled responsibilities, while deterministic retrieval remained responsible for candidate grounding: LLM-based query expansion improved the retrieval stage, and a sufficiently capable reranker improved the ordering of already-retrieved candidates. Weaker rerankers, wider candidate pools, lexical fusion, and increased agent autonomy did not consistently improve the system. This is compatible with prior work showing that LLM-generated query expansions can strengthen dense retrieval, and supports the broader principle that tool use and generation should be evaluated as components rather than assumed to be beneficial by themselves.
+
+These conclusions are bounded by the evaluated setting: one dataset, one predefined candidate vocabulary, one grouped split with a single fixed random seed, and a partially nondeterministic external reranking service. Paired significance testing (Section~\ref{sec:results-interpretation}) supports the largest observed differences; smaller differences, including the fixed-versus-dynamic architecture comparison, should be read with the corresponding caveats rather than as proven general superiority.
+
+\section{Objectives and research questions}
+
+The overall objective was to design and evaluate a practical system for identifying the intended synonym of an academic or domain-specific English term from a predefined vocabulary, investigating whether increasingly sophisticated retrieval and LLM-based components could improve ranking quality while maintaining explicit control over leakage, latency, and reproducibility. Approximately forty candidate configurations were explored through a common evaluation harness (Section~\ref{sec:ablations} of the Results chapter) rather than through isolated demonstrations.
+
+Table~\ref{tab:research-questions} restates, as an operational summary, what the experiments tested and the conclusion each one supports.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{5.6cm}p{7.4cm}}
+\toprule
+\textbf{Research question} & \textbf{Conclusion supported by the experiments}\\
+\midrule
+Can semantic retrieval and LLM-assisted query expansion improve closed-pool synonym ranking compared with a simple embedding baseline? & Yes, under the tested conditions. Replacing MiniLM with E5 improved the baseline substantially, and adding weighted LLM query expansion produced a further large improvement.\\
+Does LLM reranking improve the ordering of retrieved synonym candidates, and does reranker capability matter? & Yes, but not universally. The local 2-billion-parameter reranker reduced performance, whereas the 32-billion-parameter Qwen3-32B reranker produced the strongest observed results.\\
+Does a dynamic tool-calling agent outperform a fixed-role pipeline when downstream retrieval and reranking components are matched? & No, in the reported validation comparison. The dynamic agent recovered some complementary candidates but had lower aggregate accuracy and approximately twice the latency of the fixed-role pipeline.\\
+\bottomrule
+\end{tabular}
+\caption{Research questions and the conclusions supported by the experiments.}
+\label{tab:research-questions}
+\end{table}
+\endgroup
+
+\subsection{Retrieval and query expansion}
+
+This question is supported by a clear experimental progression. The original all-MiniLM-L6-v2 baseline reached test Hit@1 = 0.536. Replacing it with e5-base-v2 increased Hit@1 to 0.603. LLM query expansion combined with weighted E5 retrieval then increased Hit@1 to 0.768 in the best local-only configuration; a strong reranker further increased the fallback-verified result to 0.830. The use of E5 is consistent with its design as a general-purpose dense retrieval model, and the use of LLM-generated query variants is consistent with prior work showing that generated expansions can improve dense retrieval.
+
+\subsection{Reranker capability}
+
+This question produced a positive result together with an important negative one: a reranker is not beneficial simply because it is LLM-based. In the controlled validation comparison, a local, 2-billion-parameter reranker (Qwen3.5-2B) reduced Hit@1 from 0.784 to 0.768 on the same upstream retrieval configuration, whereas Qwen3-32B increased it to 0.851. The useful contribution was not reranking in the abstract, but reranking with a model sufficiently capable of distinguishing strict synonymy from broader semantic relatedness.
+
+\subsection{Fixed-role pipeline versus dynamic tool-calling agent}
+
+The dynamic tool-calling architecture allowed a controller agent to decide how often retrieval should be invoked and which paraphrases to search, in the spirit of tool-selection behavior studied in ReAct and Toolformer. When both architectures were evaluated with E5 retrieval and the same Qwen3-32B reranker, the fixed-role pipeline reached Hit@1 = 0.851 and MRR = 0.882 on validation, compared with 0.830 and 0.866 for the dynamic agent, at average latencies of 9.08 and 18.96 seconds per term respectively.
+
+This comparison should be read precisely. The fixed architecture is a fixed-role, centrally orchestrated multi-agent pipeline: a Generator Agent and a Verifier/Reranker Agent perform specialized LLM-based tasks, but orchestration is centralized and deterministic -- the agents do not negotiate, allocate tasks among themselves, or dynamically define the execution graph. The project therefore demonstrates the value of specialized agents embedded in a controlled pipeline for this task, not a general advantage of decentralized multi-agent reasoning over agentic control in general.
+
+\section{Methodological synthesis}
+
+Four methodological decisions are particularly important for interpreting the results: the task was formulated as closed-pool, transductive synonym ranking; data partitions were grouped by input term; the candidate vocabulary was separated conceptually from row-specific ground truth; and system selection was performed on validation rather than directly on test results.
+
+The evaluation dataset contained 969 rows after one degenerate identity pair was removed, partitioned into 581 training, 194 validation, and 194 test rows with a fixed seed of 42, grouped by unique input term rather than independently by row. This grouping prevents a duplicated input term with more than one valid synonym from appearing across different partitions with different gold labels.
+
+The global candidate vocabulary was constructed from synonym values across the prepared dataset. Under the closed-pool task as defined, this is not label leakage: the system is allowed to know the vocabulary of possible answers, and what is prohibited is consulting the gold synonym belonging to the specific row being predicted before producing its ranking. This distinction is methodologically defensible only because the task is explicitly closed-pool; it would not be valid under a claim of unconstrained open-vocabulary synonym discovery.
+
+The selected system applies four stages. A local generator produces up to nine query variants at temperature zero, retaining the original term; all queries are encoded with e5-base-v2 using the expected query-prefix convention; cosine-similarity scores against the candidate vocabulary are fused with a weighted average that gives the original query three times the weight of each generated variant; and the resulting top five candidates are sent to Qwen3-32B, which may reorder them but not introduce new candidates or access the ground-truth synonym. This structure keeps the source of each improvement traceable: expansion increases semantic coverage before retrieval, weighted fusion prevents generated variants from overwhelming the original input, and reranking is applied only after the search space has been reduced to five controlled candidates.
+
+The dynamic alternative instead let one LLM decide, through a tool interface, which retrieval queries to issue -- a design motivated by the same tool-use principles as ReAct and Toolformer. Additional autonomy introduced additional planning calls and a greater opportunity for semantic query drift: the dynamic agent recovered some candidates missed by the fixed pipeline, but those gains were offset by more regressions, and overall accuracy remained lower. One of the project's clearest methodological findings is that control flow itself became an experimental variable: the fixed pipeline produced more stable and efficient behavior because the division of responsibilities was explicit, while the dynamic architecture produced genuinely different retrieval behavior and occasionally improved recall at the cost of more variability. This does not establish that fixed architectures are universally superior to dynamic agents; it establishes that, for this closed-pool ranking task under the tested conditions, additional autonomy did not compensate for its computational and precision costs.
+
+\section{Results and interpretation}
+\label{sec:results-interpretation}
+
+Table~\ref{tab:conclusions-main} summarizes the principal held-out test results. The final row is the fallback-verified execution, treated throughout this thesis as the primary reported test result (Section~\ref{sec:threats} of the Results chapter); an earlier, nominally identical execution obtained Hit@1 = 0.851 and MRR = 0.892, and is discussed below as evidence of reranker nondeterminism rather than as a competing result.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{4.3cm}p{0.9cm}p{0.9cm}p{0.9cm}p{0.9cm}p{1.6cm}p{2.6cm}}
+\toprule
+\textbf{Configuration} & \textbf{Hit@1} & \textbf{Hit@3} & \textbf{Hit@5} & \textbf{MRR} & \textbf{Latency/term} & \textbf{Cost note}\\
+\midrule
+MiniLM embedding baseline & 0.536 & 0.722 & 0.773 & 0.629 & $\sim$0.022 s & Local\\
+E5 retrieval, single query & 0.603 & 0.789 & 0.871 & 0.704 & $\sim$0.025 s & Local\\
+Local expansion + weighted fusion & 0.768 & 0.902 & 0.933 & 0.835 & $\sim$0.72 s & Local, no paid API\\
+Fixed-role pipeline + Qwen3-32B (verified) & 0.830 & 0.938 & 0.948 & 0.884 & 13.32 s & Qwen3-32B via OpenRouter, $\sim$\$0.03 / 194 rows\\
+\bottomrule
+\end{tabular}
+\caption{Main held-out test progression (Results chapter, Section~\ref{sec:main-results}).}
+\label{tab:conclusions-main}
+\end{table}
+\endgroup
+
+Relative to the original MiniLM baseline, the verified system improved Hit@1 by 29.4 percentage points and MRR by 25.5 points. Relative to E5 without LLM assistance, the improvements were 22.7 and 18.0 points. Relative to the best local-only configuration, the final system improved Hit@1 by 6.2 points and MRR by 4.9 points. These differences show that the final gain did not originate from a single component: it accumulated through stronger semantic retrieval, query expansion, fusion, and finally reranking.
+
+On the full 969-row dataset (used only for descriptive reporting, not model selection), the final system obtained Hit@1 = 0.822, Hit@3 = 0.932, Hit@5 = 0.945, MRR = 0.877, at an average latency of 11.84 seconds per term; 797 of 969 rows were correct at rank one. The Hit@1/Hit@5 gap is informative: Hit@5 = 0.945 shows that retrieval already placed the correct synonym in the shortlist for the large majority of rows, while the remaining failures split into 119 ranking errors (gold retrieved but not ranked first) and 53 retrieval misses (gold absent from the shortlist). Ranking and retrieval are therefore separate engineering problems: a reranker can improve the former, but by construction cannot recover a synonym that was never retrieved.
+
+This separation also explains the measured effect of reranking. Among the 916 full-dataset rows where the gold synonym had already been retrieved before reranking, 136 improved in rank, 732 were unchanged, and 48 worsened; 43 of those 48 regressions had already been correct at rank one before reranking. Reranking produced a clear positive net movement in gold rank, but it was not monotonically beneficial -- a distinction that matters for not describing the reranker as an infallible semantic judge.
+
+The reranker-size comparison reinforces this point: on the same upstream validation shortlist, the local 2-billion-parameter reranker reduced Hit@1 from 0.784 to 0.768, while Qwen3-32B reached 0.851; an intermediate 9-billion-parameter model was abandoned before a usable comparison could be obtained, due to upstream provider-availability failures rather than a measured accuracy result. Reranking should therefore be adopted only after empirical validation at the intended model scale, not assumed beneficial by default.
+
+The architecture comparison shows a similarly concrete trade-off: with matched E5 retrieval and Qwen3-32B reranking, the fixed-role pipeline obtained Hit@1 = 0.851, Hit@5 = 0.923, MRR = 0.882 on validation, against 0.830, 0.907, 0.866 for the dynamic tool-calling agent, at 9.08 versus 18.96 seconds per term. Additional planning autonomy was not cost-effective under the tested configuration.
+
+Paired significance testing supports two of these comparisons directly: an exact two-sided McNemar test for the validation expansion-versus-reranking comparison (16 rows moving from incorrect to correct, 3 in the opposite direction, $p \approx 0.0044$), and for a test-split comparison between the reranked pipeline and the reranker-free baseline (21 versus 5, $p \approx 0.0025$), both indicating the improvements are unlikely to be explained by symmetric paired sampling noise alone. The fixed-versus-dynamic architecture difference (0.851 versus 0.830 on validation, a 2.1-point gap over 194 rows) has not been tested this way; candidate-set inspection provides mechanistic evidence that the difference is real rather than a reranker-sampling artifact, but this is not equivalent to a formal significance test, and the difference should be read as observed under the tested conditions rather than as proven significant.
+
+Two nominally identical executions of the final configuration -- an original run (Hit@1 = 0.851) and a later, fallback-verified run (Hit@1 = 0.830) -- differ by about two Hit@1 percentage points despite temperature-zero decoding throughout. This difference is attributed to nondeterminism in the externally hosted reranker rather than to a code or configuration change, and it is the reason the fallback-verified execution is treated as the primary reported test result throughout this thesis, with the earlier execution retained as direct evidence of this variability.
+
+\section{Limitations and threats to validity}
+\label{sec:threats}
+
+\textbf{Task definition.} The candidate vocabulary is built from the dataset's complete synonym column. Under the closed-pool formulation this is an intended property of the task, not leakage, because the system never inspects a row's own answer before ranking it. It does, however, restrict external validity: the reported results demonstrate the ability to rank a known vocabulary, not to discover synonyms outside it. In a setting where a correct answer may fall outside the predefined vocabulary, the current architecture cannot return it.
+
+\textbf{Sample size and split variance.} The held-out test split contains 194 rows, and only one grouped partition (seed 42) was evaluated. Grouping by unique input term is a strong protection against direct overlap between partitions, but one particular split may still be easier or harder for a given method by chance; the observed validation-to-test differences for several configurations are consistent with non-negligible sampling variance.
+
+\textbf{LLM nondeterminism.} The local generator produced slightly different outputs across independent processes even at temperature zero, and repeated evaluations of the same Qwen3-32B reranking configuration produced different candidate orders and approximately two Hit@1 percentage points of variation between two nominally identical test executions. Temperature zero should therefore not be described as guaranteeing full reproducibility for either component.
+
+\textbf{External-service dependence.} The best-performing configuration depends on a remotely hosted, provider-routed reranker. Provider selection and fallback behavior are not fully within the project's control, and an initially selected 9-billion-parameter model was abandoned after repeated availability failures. The evaluation harness records whether reranking actually occurred for each row and refuses to report a result while unresolved fallback rows remain, but infrastructure state remains part of the experimental conditions whenever an external LLM service is used.
+
+\textbf{Hardware variability.} Local experiments ran on a 6~GB laptop GPU, with contention observed when multiple local workloads executed concurrently; the local 2-billion-parameter reranker was also observed to be slower than the remotely hosted 32-billion-parameter model, showing that parameter count alone does not predict end-to-end latency in this environment. Latency figures should be read as observed system measurements rather than intrinsic model properties.
+
+\textbf{Incomplete analyses.} The 581-row training partition was reserved but not used to fit or calibrate any component. No systematic prompt-sensitivity experiment was completed, despite prompt wording being a plausible source of configuration sensitivity. One otherwise relevant embedding model could not be evaluated due to an environment compatibility issue. These gaps do not invalidate the reported comparisons, but they bound the scope of the conclusions.
+
+\textbf{Single-gold-label evaluation.} The dataset provides one designated gold synonym per row. Failure analysis found cases where the top-ranked prediction was a plausible near-synonym that did not match the recorded label -- for example \emph{funding} versus the gold \emph{investing}, or near-equivalent phrasings of \emph{conflict resolution}. A single-reference exact-match evaluation can classify such linguistically defensible alternatives as failures; this limits how the absolute accuracy figures should be interpreted, without invalidating the closed-pool ranking comparison itself.
+
+\section{Engineering recommendations}
+
+The project's evaluation harness, per-run logs, per-row result files, explicit reranker-fallback tracking, and grouped splits already provide a solid basis for a reproducible experimental record.
+
+A first recommendation is to preserve more than one operating profile rather than treating the most accurate configuration as the only useful output of the project. E5-only retrieval requires a few hundredths of a second per term and no external API. The local query-expansion configuration reaches substantially higher accuracy at approximately 0.72 seconds per term while remaining local and free of paid inference. The Qwen3-32B-reranked system provides the best accuracy but increases latency to roughly 9--13 seconds per term and introduces an external-service dependency. A deployment should therefore expose a deliberate accuracy--latency--cost policy rather than defaulting to one configuration universally.
+
+A second recommendation concerns the external API dependency. Because routing can depend on current provider availability and configured policy, the latency figures measured in this thesis should not be treated as a permanent service-level guarantee. Retries and explicit failure handling should remain mandatory in any deployment, and a fallback to the unreranked order should be reported as a degraded execution path rather than silently treated as equivalent to a normal prediction -- the same principle already implemented in the evaluation harness used for this thesis.
+
+\section{Future work}
+
+Future work should prioritize robustness and understanding of the existing result before further Hit@1 optimization: the system already improved substantially over the original baseline, and small further accuracy gains are difficult to interpret without first separating them from API variation and data-split variance. Table~\ref{tab:future-work} summarizes recommended directions.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{1.6cm}p{6.4cm}p{5.0cm}}
+\toprule
+\textbf{Priority} & \textbf{Proposed work} & \textbf{Purpose}\\
+\midrule
+High & Repeat the final configuration several times on validation without further tuning, and complete a paired significance test for the fixed-versus-dynamic architecture comparison. & Quantify reranker run-to-run variability and separate effect size from statistically supported differences.\\
+High & Repeat grouped evaluation across several random seeds. & Estimate sensitivity to the particular 60/20/20 partition.\\
+Medium & Combine the fixed and dynamic architectures' candidate sets before a single shared reranking pass. & Test whether the dynamic agent's complementary recall can be retained without its regressions.\\
+Medium & Use the unused training partition to calibrate fusion or confidence-gating parameters. & Replace manually selected values with a fitted component.\\
+Medium & Evaluate one or more mid-sized rerankers under matched conditions. & Investigate whether most of the 32B gain can be retained at lower latency and cost.\\
+Medium & Run a controlled prompt-sensitivity experiment. & Quantify dependence on generator and reranker prompt wording.\\
+Long term & Evaluate on another dataset or an open-vocabulary synonym task. & Measure external validity beyond the known candidate pool.\\
+Long term & Introduce expert or multi-reference evaluation for ambiguous synonyms. & Separate dataset-label ambiguity from genuine ranking errors.\\
+\bottomrule
+\end{tabular}
+\caption{Recommended future work, in priority order.}
+\label{tab:future-work}
+\end{table}
+\endgroup
+
+The architecture follow-up follows directly from Section~\ref{sec:results-interpretation}: the dynamic agent recovered gold synonyms the fixed pipeline missed, showing the two retrieval strategies carry complementary information, but also produced more regressions and roughly doubled latency. Rather than replacing the fixed pipeline with the dynamic one, a natural next design is to let both contribute candidates to a shared, deduplicated pool before a single reranking pass, testing whether the dynamic agent's additional recall can be retained without giving it control over the final ranking.
+
+A second high-value direction concerns the 53 full-dataset retrieval misses, which no reranker can address because they never reach the reranking stage. Widening the candidate pool, injecting direct LLM guesses, applying abbreviation expansion, and mixing in lexical retrieval were all tried and did not produce reliable aggregate improvements (Results chapter, Section~\ref{sec:ablations}); future work should investigate mechanisms meaningfully different from those already tested, such as domain-specific lexical resources, retrieval learned on the training partition, alternative dense representations, or an explicit open-vocabulary fallback.
+
+A third direction concerns statistical robustness. The repeated Qwen3-32B executions show that a single evaluation run is not sufficient to estimate small system differences reliably; a future study should report repeated-run distributions for stochastic components and paired uncertainty estimates for close method comparisons, following standard practice in NLP evaluation.
+
+\section{Final takeaways}
+
+The principal scientific takeaway is that the project achieved a substantial improvement in closed-pool synonym ranking by progressively replacing weak components with better-targeted ones, rather than by increasing architectural complexity indiscriminately: E5 provided a stronger semantic retrieval basis than the original embedding model; LLM query expansion increased the probability that the correct synonym entered a useful part of the ranking; weighted fusion prevented generated variants from dominating the original term; and a capable LLM reranker substantially improved the ordering of the top candidates.
+
+Equally important were the negative results. Lexical (BM25) fusion did not improve the task, generic cross-encoders frequently preferred related concepts over strict synonyms, a larger embedding model was not automatically better, a weaker LLM reranker actively decreased accuracy, widening the reranker's candidate pool introduced harmful distractors, and the dynamic tool-calling agent did not outperform the fixed-role pipeline under matched downstream conditions. Model scale, agent autonomy, and pipeline complexity were not useful objectives by themselves in this project; each component had to demonstrate measurable, task-specific value.
+
+The final architecture is best characterized as a controlled hybrid system: deterministic retrieval provides grounding and defines the permitted candidate space, while LLM agents perform bounded tasks for which generative semantic reasoning provides measurable benefit, and the final reranker cannot invent an answer outside its shortlist. Under the tested closed-pool conditions, the fixed-role pipeline produced the best observed balance of accuracy and controllability, at a substantial latency and external-dependency cost relative to local retrieval alternatives. Ranking errors remain partly addressable through better semantic discrimination, retrieval misses require improvement before the reranking stage, and some apparent errors reflect genuine ambiguity between multiple plausible synonyms rather than an unambiguous system failure -- three distinct problems that call for different engineering responses rather than a single further round of accuracy tuning.

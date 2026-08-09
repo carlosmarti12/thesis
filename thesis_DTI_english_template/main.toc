@@ -1,0 +1,57 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{1}{}%
+\contentsline {chapter}{\numberline {2}Data}{17}{}%
+\contentsline {section}{\numberline {2.1}Executive summary}{17}{}%
+\contentsline {section}{\numberline {2.2}Dataset origin and scope}{17}{}%
+\contentsline {section}{\numberline {2.3}Project-specific dataset construction}{18}{}%
+\contentsline {section}{\numberline {2.4}Unit of observation}{19}{}%
+\contentsline {section}{\numberline {2.5}Candidate vocabulary}{20}{}%
+\contentsline {subsection}{\numberline {2.5.1}Task formulation}{20}{}%
+\contentsline {section}{\numberline {2.6}Preprocessing and normalization}{21}{}%
+\contentsline {subsection}{\numberline {2.6.1}Stored representation}{21}{}%
+\contentsline {subsection}{\numberline {2.6.2}Equality representation}{21}{}%
+\contentsline {subsection}{\numberline {2.6.3}Model-specific formatting}{22}{}%
+\contentsline {subsection}{\numberline {2.6.4}Stemming and lemmatization}{22}{}%
+\contentsline {section}{\numberline {2.7}Dataset composition}{22}{}%
+\contentsline {subsection}{\numberline {2.7.1}Term-type distribution}{22}{}%
+\contentsline {subsection}{\numberline {2.7.2}Domain and frequency distributions}{23}{}%
+\contentsline {section}{\numberline {2.8}Train, validation, and test partitioning}{23}{}%
+\contentsline {section}{\numberline {2.9}Leakage and task boundaries}{24}{}%
+\contentsline {section}{\numberline {2.10}Data limitations and ethical considerations}{25}{}%
+\contentsline {subsection}{\numberline {2.10.1}Data-quality limitations}{25}{}%
+\contentsline {subsection}{\numberline {2.10.2}Ethical considerations}{26}{}%
+\contentsline {subsubsection}{\numberline {2.10.2.1}Future deployment considerations}{26}{}%
+\contentsline {chapter}{\numberline {3}Models}{27}{}%
+\contentsline {section}{\numberline {3.1}Executive summary and roadmap}{27}{}%
+\contentsline {section}{\numberline {3.2}Baseline model families}{30}{}%
+\contentsline {section}{\numberline {3.3}Fixed-role, centrally orchestrated multi-agent pipeline}{32}{}%
+\contentsline {section}{\numberline {3.4}Verifier/Reranker Agent}{35}{}%
+\contentsline {section}{\numberline {3.5}Dynamic tool-calling architecture}{36}{}%
+\contentsline {section}{\numberline {3.6}Prompt and interface contracts}{38}{}%
+\contentsline {paragraph}{\numberline {3.6.0.0.1}Generator Agent contract.}{38}{}%
+\contentsline {paragraph}{\numberline {3.6.0.0.2}Verifier/Reranker Agent contract.}{39}{}%
+\contentsline {paragraph}{\numberline {3.6.0.0.3}Dynamic tool-calling agent contract.}{39}{}%
+\contentsline {section}{\numberline {3.7}Engineering trade-offs and selection guidance}{41}{}%
+\contentsline {section}{\numberline {3.8}Chapter summary}{43}{}%
+\contentsline {chapter}{\numberline {4}Results}{45}{}%
+\contentsline {section}{\numberline {4.1}Executive summary}{45}{}%
+\contentsline {section}{\numberline {4.2}Experimental context}{46}{}%
+\contentsline {subsection}{\numberline {4.2.1}Dataset, splits, and evaluation protocol}{46}{}%
+\contentsline {subsection}{\numberline {4.2.2}Metrics}{46}{}%
+\contentsline {subsection}{\numberline {4.2.3}Execution environment}{46}{}%
+\contentsline {section}{\numberline {4.3}Main quantitative results}{47}{}%
+\contentsline {subsection}{\numberline {4.3.1}Progression from baseline to final system}{47}{}%
+\contentsline {section}{\numberline {4.4}Validation ablations}{48}{}%
+\contentsline {section}{\numberline {4.5}Fixed-role multi-agent pipeline versus dynamic tool-calling architecture}{50}{}%
+\contentsline {section}{\numberline {4.6}Accuracy--latency trade-off}{52}{}%
+\contentsline {section}{\numberline {4.7}Error analysis}{53}{}%
+\contentsline {subsection}{\numberline {4.7.1}Failure decomposition}{53}{}%
+\contentsline {subsection}{\numberline {4.7.2}Failure rate by term type and lexical overlap}{53}{}%
+\contentsline {subsection}{\numberline {4.7.3}Effect of reranking}{54}{}%
+\contentsline {subsection}{\numberline {4.7.4}Representative examples}{54}{}%
+\contentsline {section}{\numberline {4.8}Statistical interpretation}{56}{}%
+\contentsline {subsection}{\numberline {4.8.1}Confidence intervals}{56}{}%
+\contentsline {subsection}{\numberline {4.8.2}Significance testing}{57}{}%
+\contentsline {section}{\numberline {4.9}Threats to validity}{57}{}%
+\contentsline {section}{\numberline {4.10}Chapter summary}{58}{}%
+\contentsline {chapter}{\numberline {5}Conclusions}{61}{}%

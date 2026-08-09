@@ -1,0 +1,10 @@
+\babel@toc {english}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Fixed-role, centrally orchestrated multi-agent pipeline. The candidate-vocabulary branch on the right is encoded once and cached; only the query branch on the left is recomputed per input term.}}{33}{}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Dynamic tool-calling retrieval architecture. The agent may call \texttt {retrieve\_candidates} repeatedly before calling \texttt {finalize}; the downstream reranker is a fixed stage shared with the pipeline of Figure~\ref {fig:fixed-pipeline} in the matched comparison.}}{37}{}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Experimental evolution of the system. Solid arrows indicate the sequence of retained improvements (Table~\ref {tab:test-progression}); dashed branches indicate alternatives investigated at each stage (Table~\ref {tab:ablations}, Section~\ref {sec:architectures}) that were not selected.}}{50}{}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Gold-rank movement after Qwen3-32B reranking, on the 916 full-dataset rows where the gold candidate had already been retrieved. 43 of the 48 worsened rows had been correct at rank one before reranking.}}{55}{}%
+\addvspace {10\p@ }

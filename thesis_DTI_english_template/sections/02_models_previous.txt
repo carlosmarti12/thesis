@@ -1,0 +1,448 @@
+\chapter{Models}
+
+
+Models
+Executive summary and roadmap
+
+This chapter presents the models and software components evaluated for closed-pool synonym ranking. First, the baseline model families are introduced to establish the progression from lexical retrieval to dense semantic retrieval and Large Language Model (LLM)-assisted methods. Subsequently, the fixed-role multi-agent pipeline is described, including the generator agent, embedding-based retrieval module, weighted fusion mechanism, and reranker agent. The dynamic single-agent tool-calling architecture is then presented as an alternative in which the retrieval strategy is controlled at runtime. Finally, the implementation parameters, reproducibility requirements, engineering trade-offs, and remaining configuration gaps are discussed.
+
+The selected system is a fixed-role, two-agent retrieve-then-rerank pipeline. A local generator agent expands an input term into a small set of related queries. These queries are encoded with intfloat/e5-base-v2 and compared against the closed candidate vocabulary. The resulting similarity scores are combined through weighted fusion, after which the five highest-ranked candidates are reordered by qwen/qwen3-32b through the OpenRouter API. The generator and reranker perform distinct LLM-based roles, while retrieval and fusion are deterministic software components. Consequently, the architecture can be described as a constrained Multi-Agent System (MAS), although it does not implement decentralized planning, negotiation, or dynamic task allocation.
+
+The project also includes a dynamic architecture in which one local LLM decides how many times the retrieval tool should be called and which query should be submitted at each step. Under the tested conditions, this greater autonomy produced some complementary candidates but did not improve the overall evaluation result. The fixed pipeline achieved higher validation accuracy and approximately half the average latency of the dynamic alternative when both architectures used the same embedding model and final Qwen reranker.
+
+An earlier draft of this chapter, and the reproducibility table in particular, left a long list of implementation details as "unspecified." Direct inspection of the source code (src/agents/*, src/tools/*, ollama_client.py, openrouter_client.py), of the local Ollama installation (ollama show), and of the development machine itself (nvidia-smi, lscpu, the virtual environment) resolves nearly all of them: every agent's exact system prompt, the tool-calling agent's full JSON tool schemas, the retrieval backend, the embedding normalization method, the cache format and invalidation key, the local models' exact quantization, the hardware, and the installed library versions are all reported below with their source. A small number of items remain genuinely open - most notably a committed, versioned dependency lock file and an explicit output-token cap and provider pin for the API reranker - and are carried forward as open items at the end of the chapter rather than left ambiguous.
+
+Table 3.1 provides a concise overview of the principal components and baselines. The latency classes used in the table are project-relative: low indicates less than approximately 0.1 seconds per term, medium indicates approximately 0.1-2 seconds, and high indicates more than 2 seconds. Where a stage was not timed independently, its class was inferred from the closest complete method that isolated its contribution.
+Component	Model family	Model size or identifier	Determinism	Latency class	Cost implication	Primary failure modes
+Original embedding baseline	Dense embedding model	sentence-transformers/all-MiniLM-L6-v2; 384-dimensional output	Deterministic in the project	Low	Low, local	Prefers lexical or topical neighbors instead of strict synonyms
+Selected embedding model	Dense retrieval embedding model	intfloat/e5-base-v2; 12 layers, 768-dimensional output	Deterministic in the project	Low	Low, local	May overgeneralize toward semantically associated candidates
+Alternative BGE embedder	Dense retrieval embedding model	BAAI/bge-base-en-v1.5; approximately 0.1B parameters, 768 dimensions	Deterministic in the project	Low	Low, local	Lower synonym-ranking precision than E5 in the evaluated dataset
+Alternative Mixedbread embedder	Dense retrieval embedding model	mixedbread-ai/mxbai-embed-large-v1; project-side size unspecified	Deterministic in the project	Medium	Low, local	Did not improve the expansion pipeline over E5
+Generator agent	Instruction-tuned LLM	Ollama llama3.2:3b, quantization Q4_K_M, local model ID a80c4f17acd5 (confirmed via ollama show)	Stochastic in practice, despite temperature 0	Medium	Low, local	Semantic drift, redundant variants, incomplete or malformed lists
+Retrieval and fusion module	Dense matrix retrieval and deterministic score fusion	No learned model; brute-force NumPy dot-product over cached embeddings, no ANN index library present in the project	Deterministic	Low	Low	Noisy variants can distort fused scores; cannot recover candidates outside the pool
+Production reranker agent	Causal LLM accessed by API	OpenRouter qwen/qwen3-32b; approximately 32.8B parameters	Stochastic in practice	High	Medium, paid API	Can demote an already-correct candidate; API and provider variability
+Local reranker baseline	Local causal LLM	Ollama qwen3.5:2b, quantization Q8_0, local model ID 324d162be6ca (confirmed via ollama show)	Stochastic in practice	High on the available hardware	Low, local	Insufficient ranking capability; actively misorders strong retrieval results
+Dynamic retrieval controller	Tool-calling instruction-tuned LLM	Ollama llama3.2:3b, same Q4_K_M build as the generator agent	Stochastic in practice	Medium without final rerank; high end-to-end	Low locally; paid if Qwen reranking is added	Query drift, unnecessary tool calls, inconsistent candidate coverage
+Lexical baseline	BM25 sparse retrieval	rank_bm25.BM25Okapi, library-default k1/b (not overridden in code); tokenization via the project's normalize() function then whitespace split	Deterministic	Low	Low	Fails when synonyms share few or no tokens
+Cross-encoder baselines	Pairwise sequence-classification models	cross-encoder/stsb-roberta-base and cross-encoder/quora-distilroberta-base	Deterministic in the project	Low to medium	Low, local	Scores general similarity or duplicate-question likelihood rather than strict synonymy
+
+The official model cards confirm that all-MiniLM-L6-v2 produces 384-dimensional vectors, while e5-base-v2 produces 768-dimensional embeddings and requires task-specific input prefixes. The BGE base model also produces 768-dimensional representations. The Qwen model card identifies Qwen3-32B as a dense 32.8-billion-parameter causal model, and the Ollama catalogue identifies Llama 3.2 as an instruction-tuned family available in a 3B configuration. The project-relative latency, cost, and failure classifications in Table 3.1 were derived from the recorded experiments rather than from general model benchmarks. The two local model digests and quantization levels (Q4_K_M for llama3.2:3b, Q8_0 for qwen3.5:2b) were read directly from the Ollama installation used for this project via ollama show, rather than assumed from the bare model tag.
+Baseline model families
+
+The baseline systems were used to determine whether each additional model or orchestration stage contributed measurable value. In particular, the project did not assume that an LLM-based architecture would necessarily outperform a simpler retrieval method. Instead, lexical retrieval, dense embeddings, direct LLM generation, cross-encoder reranking, and multi-stage pipelines were compared under the same evaluation protocol. This progression made it possible to separate improvements caused by the embedding model from improvements caused by query expansion or reranking.
+
+The original dense embedding baseline used sentence-transformers/all-MiniLM-L6-v2. A sentence embedding model converts a text sequence into a fixed-length numerical vector intended to represent its semantic content. Candidate synonyms can then be ranked according to the cosine similarity between the input vector and each candidate vector. all-MiniLM-L6-v2 maps text to a 384-dimensional vector space and is intended for applications such as semantic search and sentence similarity. Its small architecture made it suitable as an initial low-latency baseline.
+
+The input to this baseline was one academic or domain term, and the output was an ordered list of candidate-pool entries. No text was generated, and no pairwise reranking was applied. The principal benefit was therefore operational simplicity: candidate embeddings could be computed once, stored, and reused for every query. However, the results indicated that the model often selected a term that was related to the input without being its intended synonym. For example, lexical resemblance or broad topical association could dominate the stricter equivalence required by the evaluation task. The baseline reached a test Hit@1 of 0.536 with an average latency of approximately 0.022 seconds per term.
+
+The stronger dense embedding baseline replaced MiniLM with intfloat/e5-base-v2. E5 is a retrieval-oriented embedding model trained through weakly supervised contrastive learning. Its official model card specifies 12 transformer layers and a 768-dimensional embedding space. It also requires prefixes that indicate the role of each text, such as query: and passage:. Omitting these prefixes can reduce retrieval performance because they form part of the model's expected input representation.
+
+In the implemented system, input terms and generated search variants were encoded as queries, while entries in the candidate vocabulary were encoded as passages - confirmed directly in src/tools/embedding_retrieval.py, which maps every supported embedder name to an explicit (query_prefix, passage_prefix) pair (e.g. "query: "/"passage: " for the e5 family) rather than inferring it, and applies no prefix at all for embedders, such as the original all-MiniLM-L6-v2 baseline, that were not trained with one. The model returned one normalized vector for every text - every encode() call in the codebase passes normalize_embeddings=True, i.e. the L2 normalization is sentence-transformers' own built-in step, applied explicitly rather than left implicit - after which cosine similarity (a plain dot product of the normalized vectors) was used to rank the candidates. E5 was selected because it produced a substantial improvement without materially increasing latency: the test Hit@1 increased from 0.536 to 0.603, while average latency remained approximately 0.025 seconds per term. Therefore, E5 served both as a strong standalone baseline and as the retrieval foundation for the final pipelines.
+
+The BM25 lexical baseline represented each term through token occurrence rather than a dense semantic vector. BM25 is a sparse ranking method that rewards shared terms while correcting for document length and token frequency. The project's implementation (src/tools/bm25_retrieval.py) uses the rank_bm25 library's BM25Okapi variant with its library-default parameters (the code never overrides k1 or b), and tokenizes every term with the same normalize() function used throughout the rest of the project (lowercase, strip, drop non-alphanumeric characters, collapse whitespace) followed by a plain whitespace split - not a separate BM25-specific tokenizer. Its input was the original term, and its output was a ranking of candidate strings according to lexical matching. This method was inexpensive and deterministic. However, its engineering limitation was directly related to the task: valid synonyms frequently have no shared tokens. Consequently, BM25 achieved substantially lower accuracy than the dense embedding systems, and combining its rankings with E5 through Reciprocal Rank Fusion or normalized weighted fusion did not improve the selected embedding baseline.
+
+The zero-shot LLM baseline used llama3.2:3b to generate a proposed synonym without first exposing the model to the candidate vocabulary. However, the generated text was not used as the final output. It was instead embedded and matched back to the closed candidate pool, ensuring that all evaluated methods returned valid pool entries. Therefore, this method remained a ranking system rather than a fully open synonym-generation system. Its purpose was to test whether the internal lexical knowledge of the LLM could produce a better retrieval query than the original input term.
+
+This design was motivated by research showing that LLM-generated query expansions can improve both sparse and dense retrieval by adding disambiguating or semantically informative text. Nevertheless, this evidence was treated as a general motivation rather than a guarantee for the present synonym-ranking task. In the project, direct zero-shot generation was less effective than multi-query expansion and weighted fusion because a single generated proposal could select an incorrect sense and provide no independent retrieval evidence with which to correct it.
+
+Alternative embedding models were evaluated to determine whether the E5 result was specific to a single checkpoint. These alternatives included BAAI/bge-base-en-v1.5, intfloat/e5-large-v2, an E5-BGE ensemble, and mixedbread-ai/mxbai-embed-large-v1. BGE base produces 768-dimensional embeddings and is explicitly designed for retrieval and semantic representation, while the Mixedbread model requires a retrieval-specific query instruction for its intended use. Under the tested conditions, none of these alternatives improved the priority metrics over e5-base-v2. In particular, the larger E5 checkpoint was both slower and less accurate, illustrating that parameter count alone was not a reliable model-selection criterion for this domain-specific task.
+
+Cross-encoder baselines were evaluated as local pairwise rerankers. A cross-encoder receives the query and one candidate together and returns a relevance or similarity score. Unlike a bi-encoder, it does not calculate reusable independent vectors; instead, every query-candidate pair is jointly processed. This normally allows richer token-level interactions but increases computation in proportion to the number of candidates. The project tested the top 20 retrieved candidates with models trained for Semantic Textual Similarity and Quora duplicate-question detection - confirmed in src/tools/cross_encoder_rerank.py and src/methods.py, which define both model identifiers as named constants (CROSS_ENCODER_STSB = "cross-encoder/stsb-roberta-base", CROSS_ENCODER_QUORA = "cross-encoder/quora-distilroberta-base") rather than leaving them implicit. The official model cards confirm that cross-encoder/stsb-roberta-base predicts sentence-level semantic similarity, while cross-encoder/quora-distilroberta-base estimates whether two questions are duplicates.
+
+These cross-encoders were not trained specifically for strict synonym equivalence between short academic noun phrases. Consequently, they frequently promoted a broadly related concept over the annotated synonym. This behavior was observed in cases where the original E5 top-ranked candidate was correct but was displaced by a thematically associated term. Therefore, cross-encoder reranking was discarded despite its relatively low latency.
+Fixed-role multi-agent pipeline
+
+The final architecture was implemented as a fixed sequence of specialized components. First, a generator agent produces alternative search expressions. Subsequently, the original term and generated expressions are embedded and scored against the complete candidate vocabulary. The scores are then combined deterministically. Finally, a reranker agent receives only the highest-ranked candidates and returns their revised order.
+
+The term multi-agent is used in a constrained sense. Two separate LLM components perform specialized roles and are configured with different models, prompts, and execution environments. However, the agents do not negotiate with each other, dynamically allocate tasks, or modify the execution plan. Instead, deterministic orchestration code transfers structured outputs from one stage to the next. For this reason, the architecture is more precisely characterized as a fixed-role multi-agent pipeline than as a decentralized or autonomous MAS.
+
+Figure 3.1 shows the complete data flow. The gold synonym is not available to any component in this diagram. It is accessed only after prediction for evaluation.
+
+evaluation only
+
+Input academic or domain term
+
+Generator agent
+llama3.2:3b
+temperature = 0
+
+Up to 9 generated variants
+
+Original query
+
+Query set
+original plus variants
+
+E5 query encoder
+intfloat/e5-base-v2
+query prefix
+
+Closed candidate vocabulary
+all allowed synonym strings
+
+E5 candidate encoder
+passage prefix
+
+Cached candidate matrix
+
+Cosine similarity
+each query against each candidate
+
+Weighted score fusion
+original query weight = 3
+variant weight = 1
+
+Top-5 candidate shortlist
+
+Reranker prompt
+
+Reranker agent
+qwen/qwen3-32b
+temperature = 0
+
+Ordered top-5 prediction
+
+Compare with gold synonym
+
+The generator agent is an LLM-based query-expansion component. Query expansion is the process of transforming one search expression into several semantically related expressions so that different lexical realizations of the same concept can be retrieved. The generator receives one English academic or domain term and returns up to nine short paraphrases or related expressions. The original term is prepended by the orchestration code, producing at most ten retrieval queries.
+
+The generator was implemented with llama3.2:3b through Ollama. The 3B Llama 3.2 model is intended for instruction-following, rewriting, tool use, and related local applications, which makes it suitable for constrained query expansion. A local model was selected to avoid a paid API call for every generated variant set and to preserve acceptable latency during repeated validation experiments. In addition, the relatively small model could be executed on the available hardware - confirmed to run at Q4_K_M quantization on the project's Ollama installation (2.0 GB on disk, 131,072-token context length per ollama show).
+
+The generator temperature was initially set to 0.3. However, repeated runs showed approximately one to two percentage points of Hit@1 variation. It was therefore reduced to 0.0 so that comparisons between fusion weights and candidate counts would be less affected by sampling variation. Despite this setting, cross-process runs were not perfectly identical. Consequently, the generator must be described as nominally deterministic but empirically variable rather than strictly deterministic. This is confirmed precisely, not merely inferred: no seed parameter is ever included in the Ollama API request payload built by ollama_client.py, for the generator, the local reranker, or the tool-calling agent - Ollama's options dictionary only ever carries temperature and num_predict in this project - so no component relies on, or could rely on, a fixed sampling seed for cross-run reproducibility.
+
+The benefit of query expansion is improved lexical and semantic coverage. A synonym that is distant from the original term in embedding space may become close to one of the generated variants. However, every additional query also introduces an opportunity for semantic drift. For example, a generated phrase may represent a related concept, a broader category, or a different sense of the original term. For this reason, the generated queries were not treated as equally reliable to the original input.
+
+The retrieval and fusion module is the deterministic center of the pipeline. It receives the original query and the generated variants and converts each string into a 768-dimensional E5 vector. Candidate-pool entries are encoded separately and cached. A similarity matrix is then calculated in which each row corresponds to one query and each column corresponds to one candidate. This structure makes it possible to reuse the same matrix while comparing alternative fusion strategies.
+
+The concrete retrieval backend, previously recorded as unspecified, is confirmed by direct inspection of src/tools/embedding_retrieval.py::_aggregate_scores: it is a brute-force NumPy dot product between the (already L2-normalized) query-embedding matrix and the (already L2-normalized) candidate-embedding matrix - scores = np.dot(query_embeddings, index_embeddings.T) - which is mathematically exact cosine similarity, not an approximation. No FAISS, HNSW, IVF, Annoy, or any other approximate-nearest-neighbor index class is used anywhere in this project - confirmed by a repository-wide search that returns no matches for any of those library names. At the current candidate-pool scale (921 entries), exhaustive comparison is an appropriate engineering choice because it avoids approximation errors and index-tuning parameters entirely, at negligible extra cost. FAISS documentation similarly distinguishes exact flat search from approximate indexes such as HNSW and notes that direct or flat search is appropriate when exact results or relatively few searches are required.
+
+Four multi-query fusion strategies were evaluated: maximum score, arithmetic mean, Reciprocal Rank Fusion, and a weighted mean. Maximum fusion allowed one poor generated query to dominate the result. Reciprocal Rank Fusion similarly gave excessive influence to high-ranked but unreliable candidates because it operates on rank positions rather than score magnitudes. The weighted mean produced the strongest result. Under this method, the original term receives weight 3, while each generated variant receives weight 1. The fused candidate score can therefore be expressed as:
+
+[ S(c)= \frac{ 3s(q_0,c)+\sum_{i=1}^{m}s(q_i,c) }{ 3+m }, ]
+
+where (q_0) is the original term, (q_i) is a generated variant, (m) is the number of variants, (c) is a candidate synonym, and (s(q,c)) is the cosine-similarity score. The denominator does not affect candidate ordering when the number of queries is fixed, but it preserves the interpretation of the result as a weighted mean.
+
+This method was selected because it preserves query diversity without allowing one generated variant to outvote the original term. The original input therefore remains the principal source of evidence, while the LLM-generated variants act as supporting retrieval signals. The module outputs the five candidates with the highest fused scores. Increasing this shortlist to 10 or 15 candidates improved candidate recall slightly but reduced Hit@1 after reranking because the larger lists introduced more plausible distractors.
+
+The candidate vectors were cached because the candidate vocabulary remains fixed across queries. Only the incoming term and its generated variants therefore require new embedding computation. This design reduces repeated work and makes the retrieval latency largely independent of prior queries. The cache format, precision, and invalidation key, previously unspecified, are confirmed directly: cache files are plain NumPy .npy arrays (data/cache/*.npy), verified by loading one directly - float32 precision, e.g. a shape (921, 384) array for the all-MiniLM-L6-v2 baseline's 384-dimensional space. The cache key (src/tools/embedding_retrieval.py::get_solution_index) is a truncated SHA-1 hash of the embedder's model-name string combined with the deduplicated candidate-pool size (921) - not a hash of the model's weights or an HF revision hash. In practice, this means the cache correctly invalidates whenever the embedder name changes or the candidate-pool size changes, but it would not detect an in-place weight update to a model kept under the same name and the same pool size - a real, specific limitation worth stating precisely rather than leaving open.
+Reranker agent
+
+The reranker agent is a listwise ranking component. It receives the original term and exactly five candidates, and it returns the same candidates ordered from most to least likely synonym. Unlike retrieval, which evaluates candidates through independent vector similarity, listwise reranking allows the model to compare the candidates with each other in the context of the input term. The agent is not allowed to introduce new strings, and it is not shown the gold synonym. If its output omits one of the supplied candidates, the missing candidate is appended according to its previous order so that retrieval recall is not silently reduced.
+
+The selected reranker is qwen/qwen3-32b, accessed through OpenRouter. The official model card describes Qwen3-32B as a 32.8-billion-parameter causal LLM with instruction-following, reasoning, multilingual, and agent capabilities. OpenRouter exposes the model under the identifier qwen/qwen3-32b and routes requests among several hosting providers. Provider routing is confirmed not to be explicitly pinned anywhere in the project's OpenRouter client (openrouter_client.py issues a plain client.chat.completions.create(model=..., messages=..., temperature=...) call with no extra_body provider-routing block), so the physical inference provider may vary between calls by design, not merely by omission.
+
+This model was selected after a controlled comparison with a local qwen3.5:2b reranker. When the two models were applied to the same upstream top-five lists, the 2B model reduced validation Hit@1 from 0.784 to 0.768, whereas Qwen3-32B increased it to 0.851. The smaller model was also slower on the available machine, requiring approximately 13.2 seconds per term compared with approximately 9.1 seconds for the API-hosted model in the validation run. This result does not imply that all larger models are inherently faster or more accurate. Instead, it indicates that the available local hardware and the ranking capability of the selected checkpoint jointly determined the observed outcome. The local model runs at Q8_0 quantization (confirmed via ollama show qwen3.5:2b; 2.7 GB on disk, 262,144-token context length), and its Ollama capability listing includes a "thinking" mode alongside completion and tool use; neither the local reranker's agent configuration (src/agents/reranker_agent_local.py) nor the API reranker's (src/agents/reranker_agent.py) explicitly enables or disables model-level "thinking" - both only set temperature=0.0 - so this remains a provider/model default in both cases, not a project decision.
+
+The reranker's principal limitation is that it cannot repair a retrieval miss. If the correct synonym is absent from the five candidates, reordering cannot introduce it. In addition, reranking can damage an already-correct result. On the complete dataset, 136 retrieved cases improved after reranking, while 48 worsened; 43 of the 48 regressions were candidates that had already been correct at rank one before being demoted. Therefore, the reranker was net beneficial, but its decisions were not uniformly reliable.
+Dynamic tool-calling architecture
+
+The alternative architecture replaced fixed query generation and fusion with a tool-calling agent. Tool calling allows an LLM to invoke an external function, inspect the returned data, and decide whether another function call is required. Ollama supports this pattern through function schemas and multi-turn agent loops in which tool results are added to the conversation before the next model decision.
+
+The implemented agent received an input term and access to a retrieve_candidates tool. At runtime, it decided how many retrieval calls to perform and which query paraphrase to pass with each call. It then called finalize to return an ordered top-five list. This architecture follows the general principle explored by ReAct and Toolformer: an LLM can interleave internal decision-making with calls to external systems rather than producing a final answer in one step.
+
+The term single-agent refers specifically to control of the retrieval process. One LLM selects and executes the search actions. In the controlled architecture comparison, its resulting candidate list was subsequently sent to the same Qwen3-32B reranker used by the fixed pipeline. The reranker did not decide which tools to call and did not participate in the dynamic search loop. It was retained only to ensure that the two retrieval architectures were compared with an identical downstream ranking stage.
+
+Figure 3.2 illustrates this distinction. The central loop is controlled by one dynamic agent, while the optional final reranker remains a fixed post-processing component.
+
+Call retrieval tool
+
+Finish search
+
+No
+
+Yes
+
+evaluation only
+
+evaluation only
+
+Input academic or domain term
+
+Dynamic retrieval agent
+llama3.2:3b
+
+Choose next action
+
+retrieve_candidates
+agent-selected query
+
+E5 encoding and exact candidate retrieval
+
+Tool result
+ranked candidates
+
+Update conversation and candidate memory
+
+finalize
+agent-selected top-5
+
+Matched evaluation mode?
+
+Return dynamic-agent top-5
+
+Fixed downstream reranker
+qwen/qwen3-32b
+
+Return reranked top-5
+
+Compare with gold synonym
+
+The input to the dynamic controller was the same term used by the fixed system. Its intermediate outputs were tool calls containing model-selected query strings, while its final output was a top-five candidate list. A deterministic safety mechanism ensured that the candidate set did not remain empty and that the agent could not finalize arbitrary strings that had never been returned by a real retrieval call: confirmed in src/agents/tool_agent.py, the very first retrieval call (with the unmodified input term) is always executed deterministically before the model is given a turn, and finalize only accepts strings previously returned by a real retrieve_candidates call (matched via the same normalize() equality check used throughout the project) - anything else is silently dropped, and if the model never successfully calls finalize within the turn budget, the accumulated pool of everything retrieved so far is returned instead of an empty list. The turn budget itself is a fixed, named constant, max_turns=4 (buscar_sinonimo_con_tools's default parameter) - not unspecified.
+
+The principal engineering benefit was adaptability. The agent could issue no additional search, repeat retrieval with a paraphrase, or explore a different interpretation depending on the term. This behavior recovered five gold synonyms that were missed by the fixed pipeline during the matched validation comparison. For example, self-selected paraphrases sometimes identified candidate regions that were not reached by the fixed set of generated variants.
+
+However, the same flexibility introduced less predictable control flow. The agent sometimes moved toward a plausible but incorrect sense, returned a weaker candidate set, or used additional planning calls without producing a corresponding accuracy improvement. With the same E5 retriever and Qwen3-32B final reranker, the dynamic architecture achieved validation Hit@1 of 0.830 and average latency of 18.96 seconds per term. The fixed pipeline achieved Hit@1 of 0.851 at 9.08 seconds. The comparison therefore suggests that the dynamic search capability was real but did not provide a positive net trade-off for this dataset.
+Prompt and interface contracts
+
+An earlier draft of this chapter reported every agent's system prompt, the tool-calling agent's JSON tool schemas, and its turn budget as unspecified. All of them are, in fact, stored verbatim as named Python constants in the source code and are reproduced below exactly as written, with their file location. Nothing in this section required inference or reconstruction.
+
+The generator prompt is stored in src/agents/generator_agent.py as the dict AGENTE_GENERADOR (temperature-zero variant: AGENTE_GENERADOR_T0, identical prompt text, temperature overridden to 0.0):
+
+text
+
+Generator agent contract (verbatim, src/agents/generator_agent.py:19-31)
+
+Model:
+    llama3.2:3b through Ollama
+
+System prompt (exact text):
+    "You are a domain terminology expert. Generate English synonyms or
+    closely related semantic variants for the given academic/domain term.
+    These variants will be used as search queries against a vocabulary
+    index, so include broader, narrower, and near-equivalent phrasings.
+    Return only a JSON list of short variants. Do not explain."
+
+User message template:
+    Term: "{term}"
+
+Production parameters:
+    temperature = 0.3 (AGENTE_GENERADOR) or 0.0 (AGENTE_GENERADOR_T0,
+    used by the final pipeline)
+    n = 9 for the final reranked pipeline
+    n = 3 for the faster local-only fallback
+    original input term is prepended by orchestration code, not by the LLM
+    num_predict = 300 (DEFAULT_NUM_PREDICT, ollama_client.py)
+    no sampling seed is ever set
+
+The production reranker prompt is stored in src/agents/reranker_agent.py as AGENTE_RERANKER:
+
+text
+
+Reranker agent contract (verbatim, src/agents/reranker_agent.py:27-39)
+
+Model:
+    qwen/qwen3-32b through OpenRouter
+
+System prompt (exact text):
+    "You are a strict semantic ranking agent for domain terminology. You
+    receive one input term and a list of candidate synonyms. Your task is
+    to ORDER the candidates from best to worst according to semantic
+    equivalence. Do not invent new candidates. Do not remove candidates
+    unless they are completely invalid. Use the exact candidate strings
+    from the provided list. Return only a JSON list of candidate strings
+    ordered from best to worst."
+
+User message template:
+    Term: "{term}"
+
+    Candidate synonyms:
+    1. {candidate_1}
+    2. {candidate_2}
+    ...
+
+Output constraints:
+    return only candidates present in the input list
+    do not generate new candidate strings
+    do not consult or infer from an exposed gold label
+    omitted candidates are appended back in their previous order
+
+Production parameters:
+    temperature = 0.0
+    no explicit max-output-token cap (the OpenRouter call carries no
+    max_tokens argument - confirmed absent, not merely unreported)
+    no sampling seed is ever set
+    provider routing is not pinned (OpenRouter auto-routes)
+    "thinking" mode is not explicitly toggled either way
+
+The local reranker baseline, used for the model-size comparison in Table 3.1 but not covered in the earlier draft's prompt inventory, uses an almost identical prompt, stored in src/agents/reranker_agent_local.py as AGENTE_RERANKER_LOCAL - the only differences from the production prompt above are the model (qwen3.5:2b through Ollama instead of qwen/qwen3-32b through OpenRouter) and, consequently, the num_predict=300 cap that applies to every local Ollama call.
+
+The dynamic-agent prompt and tool schema are stored in src/agents/tool_agent.py as AGENTE_TOOL and TOOLS:
+
+text
+
+Dynamic tool-calling agent contract (verbatim, src/agents/tool_agent.py:32-96)
+
+Controller model:
+    llama3.2:3b through native Ollama tool calling
+
+System prompt (exact text):
+    "You are a synonym-finding agent. You must find the best synonym for
+    a given term, choosing ONLY from a fixed vocabulary you can search
+    with the retrieve_candidates tool - you cannot invent candidates.
+    Call retrieve_candidates one or more times (try the term itself and,
+    if you think it will help, a paraphrase or a broader/narrower
+    phrasing) to gather good candidates. When you are confident, call
+    finalize with your final top 5 candidates ordered from best to worst,
+    using the exact candidate strings returned by retrieve_candidates.
+    Do not answer in plain text."
+
+Production parameters:
+    temperature = 0.2
+    max_turns = 4 (buscar_sinonimo_con_tools default)
+    the first retrieve_candidates call (with the unmodified input term)
+    is always executed deterministically before the model gets a turn
+
+Tool schema - retrieve_candidates:
+    {
+      "type": "function",
+      "function": {
+        "name": "retrieve_candidates",
+        "description": "Search the fixed candidate vocabulary for terms
+            semantically close to a query. Returns up to top_k candidate
+            strings, best match first.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {"type": "string",
+                       "description": "Search query - the term or a
+                           paraphrase of it."},
+            "top_k": {"type": "integer",
+                       "description": "How many candidates to return
+                           (default 5, max 10)."}
+          },
+          "required": ["query"]
+        }
+      }
+    }
+
+Tool schema - finalize:
+    {
+      "type": "function",
+      "function": {
+        "name": "finalize",
+        "description": "Submit the final ranked list of up to 5 candidate
+            synonyms, best first. Must use exact strings previously
+            returned by retrieve_candidates.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "ranked_candidates": {"type": "array",
+                "items": {"type": "string"},
+                "description": "Up to 5 candidate strings, best synonym
+                    first."}
+          },
+          "required": ["ranked_candidates"]
+        }
+      }
+    }
+
+Safety constraints (enforced in code, not just prompted):
+    finalize only accepts strings previously returned by a real
+    retrieve_candidates call; anything else is silently dropped
+    if finalize never succeeds within max_turns, the accumulated pool of
+    everything retrieved so far is returned instead of an empty list
+
+The one item that genuinely remains open, and is not recoverable from the source code alone, is a formal prompt-sensitivity study: models, temperatures, candidate counts, fusion weights, and reranker sizes were varied across the project, but the prompt wording itself (quoted verbatim above for all four agents) was never systematically varied while other variables were held constant. That is a research task still to be done, not a documentation gap - the prompts themselves are no longer unspecified.
+Reproducibility configuration
+
+This section consolidates the implementation parameters required to reproduce the principal model configurations. Every row previously marked "unspecified" has been re-verified against the source code, the local Ollama installation (ollama show), or the development machine itself, and is now reported with its concrete value and source; a small number of rows remain genuinely open and are marked as such with the reason.
+Configuration item	Documented value	Reproducibility status
+Generator model	Ollama llama3.2:3b, Q4_K_M quantization, local ID a80c4f17acd5	Specified (confirmed via ollama show)
+Generator temperature	0.0 in the final pipeline	Specified
+Generator variant count	Up to 9; original term added separately, giving up to 10 queries	Specified
+Fast fallback variant count	Up to 3	Specified
+Local generation token limit	DEFAULT_NUM_PREDICT = 300, applied to every local Ollama call (generator, local reranker, tool agent)	Specified
+Generator prompt text	Verbatim, see "Prompt and interface contracts"	Specified
+Generator quantization and model digest	Q4_K_M, digest a80c4f17acd5	Specified (ollama show llama3.2:3b)
+Selected embedder	intfloat/e5-base-v2	Specified
+Embedding dimensionality	768	Specified by official model card
+Query formatting	query: prefix	Specified
+Candidate formatting	passage: prefix	Specified
+Embedding normalization	normalize_embeddings=True on every encode() call (sentence-transformers built-in L2 normalization)	Specified
+Candidate embedding storage	NumPy .npy cache, float32, keyed by a truncated SHA-1 of the embedder name plus the deduplicated pool size (921)	Specified
+Retrieval similarity	Cosine similarity, computed as a dot product of pre-normalized vectors	Specified
+Retrieval index	Brute-force NumPy dot product (np.dot); no ANN index library used anywhere in the project	Specified
+FAISS/HNSW parameters	Not applicable - confirmed absent from the entire codebase	Confirmed absent, not merely undocumented
+Fusion method	Weighted mean of per-query scores	Specified
+Original-query fusion weight	3.0	Specified
+Generated-query weight	1.0 per variant	Specified
+Retrieval shortlist	Top 5 for the final pipeline	Specified
+Wider shortlist experiments	Top 10 and top 15	Specified as discarded variants
+Cross-encoder experimental shortlist	Top 20	Specified
+Production reranker	OpenRouter qwen/qwen3-32b	Specified
+Reranker temperature	0.0	Specified
+Reranker input size	Five candidates	Specified
+Reranker prompt text	Verbatim, see "Prompt and interface contracts"	Specified
+Reranker maximum output tokens	No max_tokens argument is passed on the OpenRouter call	Confirmed absent, not merely unreported
+Qwen thinking-mode setting	Not explicitly toggled in either the local (qwen3.5:2b) or API (qwen3-32b) reranker configuration	Confirmed absent, relies on provider/model default
+OpenRouter provider	Not pinned - no extra_body provider block in openrouter_client.py	Confirmed absent, OpenRouter auto-routes
+API request timeout	90 seconds	Specified
+SDK automatic retries	3	Specified
+Embedded-error retry handling	Explicit retry added for provider errors returned inside successful HTTP responses (3 attempts, 2s apart)	Specified
+Failed-rerank handling	Per-row fallback flag, automatic retry, and refusal to report corrupted runs	Specified
+Long-run recovery	Incremental checkpointing and --resume support	Specified
+Split seed	42 (numpy.random.default_rng(42), scoped to data/make_splits.py only)	Specified
+NumPy seed (global, model inference)	No global np.random.seed call exists anywhere in the project	Confirmed absent, not merely unreported
+PyTorch seed	No torch.manual_seed call exists anywhere in the project	Confirmed absent, not merely unreported
+Ollama sampling seed	No seed field is ever included in the Ollama API request payload (only temperature and num_predict)	Confirmed absent, not merely unreported
+OpenRouter sampling seed	No seed parameter is passed to chat.completions.create	Confirmed absent, not merely unreported
+Local GPU	NVIDIA GeForce RTX 4050 Laptop GPU, 6141 MiB VRAM	Specified (confirmed via nvidia-smi on the development machine)
+CPU, RAM, and operating system	AMD Ryzen 7 7840HS (16 threads), 14 GiB RAM, Ubuntu 26.04 LTS, kernel 7.0.0-29-generic	Specified (confirmed on the development machine; assumed, not separately logged, to be the same machine used throughout the project - consistent with the GPU figure above, which was already correctly documented)
+Python and library versions	Python 3.14.4; torch 2.13.0, sentence-transformers 5.6.0, transformers 5.14.1, numpy 2.5.1, pandas 3.0.3, openai 2.46.0, datasets 5.0.0, rank-bm25 0.2.2, requests 2.34.2, huggingface_hub 1.24.0	Values now known, but not pinned in a committed lock file (see below)
+
+The E5 dimensionality and input-prefix requirements are confirmed by the official model card. The project-specific generator, fusion, reranker, API, and hardware settings are documented across the experiment log, methodology draft, project README, and - for the items above - direct inspection of the source code and runtime environment.
+
+A local output limit of 300 generated tokens was introduced after an unconstrained Ollama call produced thousands of unnecessary tokens and increased per-term execution time from seconds to more than one minute. In addition, simultaneous local execution of separate LLM experiments overloaded the 6 GB GPU. The experiments were therefore executed serially after this issue was identified. These controls are operationally important because runtime measurements would otherwise depend on accidental generation length and resource contention rather than on the evaluated model configuration.
+
+Two genuine gaps remain in the software environment itself, neither resolvable by reading the existing code:
+
+    No committed dependency lock file. The library versions listed above were read directly from the installed virtual environment (.venv/bin/python3 -m pip list), not from a requirements.txt or pyproject.toml - the project has neither. A future run of pip install inside a fresh environment could silently resolve different versions of any of these libraries.
+    The project's own .venv/bin/pip is broken. Its shebang line still points to /home/carlos/thesis/18_7/.venv/bin/python3 - the folder's name before its 2026-07-19 rename to synonim2 - which no longer exists, so invoking .venv/bin/pip directly fails with "bad interpreter." The Python interpreter itself (.venv/bin/python3) is unaffected and works normally; only the pip launcher script is stale. Running .venv/bin/python3 -m pip instead works around it. This is the same class of staleness already known elsewhere in the project from the rsc/ -> src/ rename (see project history), and should be fixed - by regenerating the virtual environment - before the environment is packaged as a reproducibility artifact.
+
+The dataset split is reproducible through seed 42, but this seed controls only assignment of input terms to train, validation, and test subsets, via a Generator instance scoped to data/make_splits.py - it has no effect on, and shares no state with, any model-inference randomness. It does not guarantee deterministic LLM inference: no seed is ever passed to either the Ollama or the OpenRouter API, and the project observed variation across separate Ollama processes and across repeated OpenRouter calls even when temperature was set to zero. Therefore, exact model digests (now available, see above), provider selection (confirmed unpinned), decoding parameters, and repeated-run statistics remain the limiting factors for stronger reproducibility, not a lack of documentation about what those factors are.
+Engineering trade-offs and selection guidance
+
+The model progression shows that the largest engineering gains did not come from adding complexity indiscriminately. Instead, each useful stage addressed a specific limitation of the previous one. Replacing MiniLM with E5 improved the semantic representation at almost no latency cost. Adding LLM query expansion improved candidate recall and ranking because multiple lexical formulations were searched. Finally, the large Qwen reranker improved ordering among candidates that had already been retrieved.
+
+The following comparison summarizes the principal operating points. The reported test value for the final pipeline is the fallback-verified rerun, because every candidate list in that execution was confirmed to have received a valid reranker response.
+Operating point	Test Hit@1	Test MRR	Approximate latency per term	Monetary API cost	Intended use
+MiniLM embedding baseline	0.536	0.629	0.022 s	None	Minimal-compute baseline
+E5 embedding baseline	0.603	0.704	0.025 s	None	Low-latency local retrieval
+E5 with local query expansion and weighted fusion, no reranker	0.768	0.835	0.72 s	None	Strong local-only configuration
+Fixed pipeline with Qwen3-32B reranking	0.830	0.884	13.32 s in the fallback-verified test run	Approximately $0.03 per 194 terms	Highest confirmed accuracy
+Dynamic tool-calling retrieval with Qwen3-32B reranking	Validation Hit@1 0.830	Validation MRR 0.866	18.96 s	Approximately $0.03 per 194 terms, same reranker call pattern as the fixed pipeline	Experimental adaptive retrieval
+
+These values show a clear accuracy-latency frontier rather than one universally preferable model. The E5 baseline is approximately 30 times faster than the local expansion pipeline, while the expansion pipeline is substantially faster and cost-free compared with API reranking. Conversely, the final reranker produces an important improvement in top-one ordering, particularly when the correct synonym is already present in the shortlist.
+
+The E5-only configuration should be preferred when latency, local execution, and operational simplicity are the principal requirements. It requires no generative model, introduces no sampling variation, and has negligible marginal cost once the candidate vectors are cached. However, its lower Hit@1 indicates that a single vector representation does not cover all lexical forms and domain-specific synonym relations present in the dataset.
+
+The local expansion configuration should be preferred when API independence is required but a moderate latency increase is acceptable. It offers a substantial improvement over E5 alone and can be executed entirely with local models. Its principal risk is generator drift. Therefore, the original-term weight should remain greater than the weight assigned to each generated variant.
+
+The complete fixed-role pipeline should be preferred for offline evaluation, catalogue construction, batch terminology processing, or other settings in which accuracy is more important than interactive response time. It provides the strongest confirmed result and follows a predictable execution sequence. In addition, every intermediate artifact can be logged: generated variants, embedding scores, fused rankings, and final reranker output. This structure improves traceability and makes failures easier to attribute to generation, retrieval, fusion, or reranking.
+
+The dynamic tool-calling agent should be considered when terms vary substantially in difficulty and some inputs may benefit from adaptive search. Its ability to recover candidates missed by the fixed pipeline demonstrates that self-directed retrieval can produce complementary evidence. However, it should not be selected solely because it is more autonomous. Under the tested conditions, additional planning increased latency and produced more regressions than recoveries. The dynamic approach would become more attractive if heterogeneous tools were available, if some queries required external knowledge, or if the system could stop early on easy terms and reserve additional calls for genuinely ambiguous cases. These potential advantages remain engineering hypotheses rather than confirmed results for the present dataset.
+
+The 2B local reranker should not be used in the final architecture. Its addition increased latency while reducing Hit@1 on a controlled upstream shortlist. This result demonstrates that reranking quality depends on model capability and task alignment. A reranker does not provide value merely because it processes the candidates jointly.
+
+Finally, the candidate shortlist should remain small unless the reranker or retrieval strategy is changed. Increasing the pool from five to ten or fifteen candidates increased the probability that the gold synonym was available, but it also exposed the reranker to more semantically plausible distractors and reduced top-one accuracy. Therefore, shortlist width must be optimized jointly with reranker capability rather than treated only as a recall parameter.
+Chapter summary and open items
+
+This chapter presented the model families and software components used for closed-pool synonym ranking. The final system combines local LLM-based query expansion, E5 dense embeddings, deterministic weighted score fusion, and API-based Qwen3-32B reranking. The architecture is considered a fixed-role multi-agent pipeline because separate generator and reranker agents perform specialized tasks, although orchestration remains centralized and deterministic. A dynamic tool-calling alternative was also implemented, but the comparison indicates that its additional autonomy increased latency and reduced aggregate performance under the tested conditions.
+
+Most of the items flagged as open in an earlier draft of this chapter are now resolved by direct inspection of the implementation, the local Ollama installation, and the development machine:
+
+    the verbatim generator, production-reranker, local-reranker, and tool-agent prompts, and the tool-agent's exact JSON tool schemas - all quoted in full above;
+    the exact Ollama model digests and quantization variants - Q4_K_M for llama3.2:3b, Q8_0 for qwen3.5:2b, both confirmed via ollama show;
+    the concrete dense-retrieval implementation - brute-force NumPy dot-product search, no FAISS/HNSW/Annoy anywhere in the project;
+    the final Python and library versions in use - confirmed from the installed virtual environment;
+    the CPU, RAM, operating system, and GPU - confirmed directly on the development machine, with the GPU figure matching what the earlier draft had already stated;
+    the cache format, floating-point precision, and cache-invalidation key - NumPy .npy, float32, keyed by embedder name plus candidate-pool size (not a model-weights hash);
+    the maximum number of dynamic-agent tool calls and the exact JSON schemas of retrieve_candidates and finalize.
+
+A smaller set of items remain genuinely open, either because they are confirmed to be absent from the current configuration (and should be added, not merely documented) or because they require further work rather than further reading:
+
+    No component in the project sets a sampling seed - not the generator, not either reranker, and not at the NumPy or PyTorch level. This is now a confirmed fact about the system, not a documentation gap, and it is the single largest obstacle to bit-for-bit reproducibility of any LLM-dependent number in this thesis.
+    The OpenRouter provider routing and the Qwen "thinking" mode are both confirmed unset, relying on provider/model defaults that could change without notice; pinning both explicitly would remove one source of the run-to-run latency and ordering variance already documented elsewhere in the project.
+    The production reranker call has no explicit output-token cap, unlike every local Ollama call in the project (which share DEFAULT_NUM_PREDICT = 300); adding one would close a small but real asymmetry in the project's own safety controls.
+    There is no committed requirements.txt or pyproject.toml pinning the library versions reported above, and the project's own .venv/bin/pip is currently broken due to a stale shebang left over from the folder's rename - both should be fixed before the environment is distributed as a reproducibility artifact.
+    A versioned prompt-sensitivity analysis and a repeated-run stability study (running the same configuration multiple times and reporting the variance directly, rather than inferring it from unrelated repeat runs) remain future work, not something recoverable from the current codebase.

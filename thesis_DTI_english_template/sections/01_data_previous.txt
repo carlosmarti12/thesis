@@ -1,0 +1,392 @@
+\chapter{Data}
+
+
+
+
+Data
+Executive Summary
+
+This chapter presents the data used to develop and evaluate the closed-pool synonym-ranking system. First, the origin and documented provenance of the source dataset are examined. Subsequently, the composition of the project-specific dataset and the construction of the candidate vocabulary are described. The preprocessing procedure, the train--validation--test partitioning protocol, and the controls introduced to prevent information leakage are then analyzed. Finally, the evaluation subsets, reproducibility requirements, limitations, and ethical considerations are discussed.
+
+The experiments were based on the public TU-Expert-Collection-Topic-Synonyms dataset hosted on Hugging Face (identifier jensjorisdecorte/TU-Expert-Collection-Topic-Synonyms, current Hub revision fb767656de4cb453d3b4d88bcdd060ee17a81f4b, last modified 2024-09-23). The published repository contains 1,266 records and includes English and Dutch terms, English and Dutch synonyms, a topic identifier, and an additional numeric index. The repository's dataset card contains no descriptive fields beyond a bare license declaration (license: apache-2.0) and automatically generated size/format tags (size\_categories:1K<n<10K, format:csv) - there is no prose explaining the original collection process, annotation methodology, quality-control procedure, or relationship with an upstream authoritative resource. The repository is labeled with an Apache-2.0 license, but its upstream provenance remains unspecified.
+
+For this project, only the English input term, represented by en, and its expected synonym, represented by en\_synonym, were retained. The final experimental dataset contains 969 usable rows. One additional row, modernisation-modernisation, was explicitly removed because the input and expected output were identical and the retrieval implementation deliberately excludes the input term from its own candidate list. Ten input terms occur twice with different expected synonyms; consequently, the split was performed by input-term group rather than by individual row.
+
+The task is formulated as closed-pool ranking rather than unrestricted synonym generation. A global candidate vocabulary is constructed from the complete set of retained en\_synonym values. For each input term, the system ranks entries from this vocabulary and is evaluated according to the position of the row-specific gold synonym. The candidate vocabulary is fixed and row-independent, and the gold value of the current row is not accessed before prediction. Nevertheless, because labels from validation and test rows are included in the global vocabulary, the protocol is transductive and closed-world. Therefore, the reported results measure ranking quality within a known terminology inventory, not the ability to produce previously unseen synonyms.
+
+A deterministic grouped partition was generated with random seed 42. The resulting data consists of 581 training rows, 194 validation rows, and 194 test rows. The validation set was used for model selection and configuration decisions, while the test set was reserved for confirmation of configurations selected beforehand. The training set was not used to fit the reported systems, and the combined 969-row dataset was used only for descriptive reporting and error analysis after the final configuration had been selected.
+
+An earlier draft of this chapter flagged several details as undocumented. Direct inspection of the implementation (data/prepare\_dataset.py, data/make\_splits.py, src/tools/embedding\_retrieval.py, src/text\_utils.py, src/evaluation.py, scripts\_error\_breakdown.py, scripts\_failure\_analysis\_v2.py) resolves nearly all of them: the exact filtering rules that reduce the 1,266-row source to 969 usable rows, the final candidate-vocabulary size (921), the string-normalization procedure, and the term-type category definitions are all fully specified in code and are reported with exact figures throughout this chapter. Two items remain genuinely open and are carried forward as required corrections: the project's software environment (exact library versions) was never pinned, and no content-level checksum was computed for the downloaded source file or the final candidate vocabulary.
+Dataset Origin and Scope
+Public source
+
+The source dataset is published on Hugging Face under the identifier jensjorisdecorte/TU-Expert-Collection-Topic-Synonyms. At the current Hub revision (fb767656de4cb453d3b4d88bcdd060ee17a81f4b, last modified 2024-09-23, retrieved for this chapter on 2026-08-08), the repository exposes one split named train, containing 1,266 records. Each record contains the following fields:
+
+    Unnamed: 0, an integer index;
+    topic, a string identifier such as topic-12722;
+    en, an English academic or domain term;
+    nl, a corresponding Dutch term;
+    en\_synonym, an English synonym;
+    nl\_synonym, a Dutch synonym.
+
+The repository is categorized as a text dataset in CSV format and is labeled with the Apache-2.0 license. Its structured card metadata contains only the license declaration and automatically generated size/format tags; it does not contain a substantive description. Consequently, the public source does not document who created the synonym pairs, how the pairs were annotated, whether domain experts validated them, which domains are represented, or how disagreements were resolved.
+
+The name of the dataset suggests a connection with a Tilburg University expert-topic collection. However, no authoritative upstream citation, Digital Object Identifier, version history, or data-generation description is provided by the Hugging Face repository. For this reason, such a connection must not be presented as confirmed solely from the repository name. In the thesis, the Hugging Face repository can be cited as the immediate data source, at the pinned revision above, while the original institutional and annotation provenance should be marked as unspecified unless it can be confirmed by the dataset publisher.
+
+The public data is bilingual and contains heterogeneous terminology. Examples cover fields such as economics, law, psychology, information systems, religion, education, and public policy. The source also contains records in which en is a hyphen or a null value while en\_synonym remains populated: reproducing the project's cleaning step against the current Hub revision shows exactly 284 of the 1,266 rows have an invalid en value (null, empty string, or the placeholder "-") after normalization, and none of the 284 removed rows fail because of en\_synonym - every row with a usable en also has a usable en\_synonym. This fully accounts for the observation that the final project dataset contains substantially fewer rows than the public source (see the reduction breakdown below).
+Project-specific extraction
+
+The project reduced the source data to the two columns required by the ranking task:
+
+    en, which represents the input query term;
+    en\_synonym, which represents the row-specific relevant candidate.
+
+The topic, nl, and nl\_synonym fields were not passed to the evaluated methods. This decision simplified the task to English-only synonym ranking and prevented auxiliary fields from influencing candidate generation or ranking. Confirmed directly in code: data/prepare\_dataset.py subsets the loaded dataframe to df[["en", "en\_synonym"]] immediately after loading, before any other processing step, so topic, nl, nl\_synonym, and the numeric index never reach the downstream methods. A repository-wide search confirms neither Unnamed: 0 nor topic is referenced anywhere else in the codebase.
+
+Table 1 compares the currently published source repository with the final project dataset.
+Characteristic	Public repository	Project dataset	Documentation status
+Total rows	1,266	969	Both counts documented
+Published splits	One train split	Train, validation, test, and derived full set	Documented
+English input field	en	en	Documented
+English synonym field	en\_synonym	en\_synonym	Documented
+Dutch fields	nl, nl\_synonym	Removed	Documented
+Topic identifier	Present	Removed before modeling, never referenced downstream	Documented
+Numeric source index	Present	Discarded during preparation, never persisted or referenced downstream	Documented
+Source-data revision	fb767656de4cb453d3b4d88bcdd060ee17a81f4b (current, retrieved 2026-08-08)	Not yet pinned inside prepare\_dataset.py's load\_dataset() call	Identified; pinning in code still pending
+Final unique input terms	Not reported	960 in the pre-split table (data/synonyms\_clean.csv); 959 after the single degenerate row is removed (data/splits/full.csv)	Computed directly
+Final unique candidate synonyms	Not reported	921 (see "Definition of the closed candidate pool" below)	Computed directly
+License	Apache-2.0 label	Reused under source label	Documented at repository level
+Original annotation process	Not described	Not independently documented	Unspecified (upstream-only; cannot be resolved from the code)
+
+The source-to-project reduction is now fully accounted for. Reproducing data/prepare\_dataset.py against the current Hub revision gives an exact breakdown: of the 1,266 source rows, 284 have an invalid en value after cleaning (null, empty string, or the "-" placeholder; 0 rows are removed for an invalid en\_synonym), leaving 982 rows; a further 12 rows are exact duplicate (en, en\_synonym) pairs and are dropped, leaving the 970 rows stored in data/synonyms\_clean.csv; data/make\_splits.py then removes the single case-insensitive identity row (modernisation/modernisation), leaving the final 969-row evaluation dataset. 284 + 12 + 1 = 297, exactly matching the gap between the 1,266-row public repository and the 969-row evaluation dataset. This breakdown was verified independently by re-downloading the current Hub revision and re-running the equivalent filtering logic outside the committed script; the resulting row count (970) matches the committed data/synonyms\_clean.csv exactly.
+
+One small residual gap remains: prepare\_dataset.py itself only prints the initial row count (1,266) and the final row count (970) to the console - it does not log the 982/970 intermediate breakpoints or the 284/12 split shown above. Reproducing that split required re-running the equivalent logic with added instrumentation rather than reading a stored log. Adding print statements (or a small row-count assertion) after each filtering step in the script itself is a low-cost fix that would make this breakdown available directly from a normal run, without needing to reconstruct it separately.
+Unit of observation and relevance labels
+
+Each retained row represents one evaluation instance. The input is one academic or domain term, and the row-specific target is one expected English synonym. Consequently, the dataset is not a conventional multiclass classification dataset with a small set of balanced classes. Instead, it is a ranking dataset in which each query has one labeled relevant item within a much larger shared candidate vocabulary.
+
+For a candidate vocabulary of size V, each row contains one labeled positive candidate and V-1 candidates treated as negative for that particular row. V = 921. This was computed directly by deduplicating the en\_synonym column of data/synonyms\_clean.csv (970 rows) under the project's normalization function (src/text\_utils.py::normalize: lowercase, strip, remove every character outside \verb+[a-z0-9\s\-]+, collapse whitespace) - the same deduplication logic used at runtime by src/tools/embedding\_retrieval.py::build\_solution\_index to construct the retrieval index. The value was confirmed two independent ways: it matches the row count baked into the cached embedding-index files (data/cache/solution\_pool\_*\_921.npy, present for every embedder used in the project, e.g. all-MiniLM-L6-v2, e5-base-v2, e5-large-v2, bge-base-en-v1.5, mxbai-embed-large-v1), and it matches a plain case-sensitive pandas .nunique() on the same column - no two en\_synonym values in this dataset collide only after normalization, so the case-insensitive and case-sensitive vocabulary sizes happen to coincide here.
+
+A detail worth stating explicitly rather than assuming: the candidate pool used at evaluation time (run\_eval.py) is built from the pre-split, 970-row data/synonyms\_clean.csv, not from the 969-row split-derived data/splits/full.csv. It therefore still contains the en\_synonym value contributed by the excluded modernisation identity row. This is harmless for evaluation - that row is never scored, since it does not appear in any of the train/val/test/full splits - but the exact provenance of the candidate pool should be stated rather than assumed, since it is a different file from the one the splits themselves are derived from.
+
+Ten input terms occur twice and are associated with two different gold synonyms. Given 969 rows and ten terms occurring twice, the project dataset contains 959 distinct input strings - confirmed directly (data/splits/full.csv has 959 unique en values), not merely an arithmetic inference.
+
+The repeated inputs also expose a limitation of single-label evaluation. If a duplicated term has two valid synonyms, each row recognizes only one of them as correct. A system may therefore return the alternative synonym associated with the other row and still be scored as incorrect. More generally, the dataset can contain plausible synonyms that are not recorded as the current row's gold value. The project's error analysis provides several examples in which the top-ranked output is semantically defensible but differs from the single annotated target.
+Dataset Composition and Candidate Space
+Term-type distribution
+
+The full 969-row dataset was divided during error analysis into four mutually exhaustive heuristic term types: abbreviation-like terms, compounds, multi-word phrases, and single words. The resulting counts sum to the full dataset size. The classification rule and its precedence are fully specified in scripts\_error\_breakdown.py::categorize(): a term is abbreviation\_like if it is a single whitespace-separated token that is either fully uppercase or at most 5 characters long; a single token that fails that test is single\_word; among multi-token terms, a term containing a hyphen or consisting of exactly two words is compound; every remaining term (three or more words) is multi\_word\_phrase. No regular expressions are used beyond a whitespace split and a hyphen check, and the precedence is a plain if/elif chain with no ambiguous cases. These remain project-specific analytical categories rather than authoritative linguistic classes - that caveat stands - but the rule itself is deterministic and fully reproducible, not unspecified.
+
+Table 2 summarizes the available distribution. The two failure-rate columns refer to the final full-dataset evaluation of the selected system. A ranking error means that the expected synonym was retrieved within the top five but was not ranked first. A retrieval miss means that the expected synonym was absent from the top five and could not be recovered by the reranking stage.
+Term type	Rows	Dataset share	Ranking-error rate	Retrieval-miss rate
+Abbreviation-like	34	3.5\%	5.9\%	8.8\%
+Compound	432	44.6\%	11.3\%	3.2\%
+Multi-word phrase	250	25.8\%	12.8\%	4.4\%
+Single word	253	26.1\%	14.2\%	9.9\%
+Total	969	100.0\%	-	-
+
+The distribution shows that compounds form the largest category, accounting for approximately 44.6\% of the dataset. Multi-word phrases and single words each represent approximately one quarter, while abbreviation-like inputs form a comparatively small subset. Under the tested conditions, single-word terms were the most difficult category for both ranking and retrieval. Their retrieval-miss rate of 9.9\% was more than twice the corresponding rate for compounds and multi-word phrases.
+
+These rates should not be interpreted as intrinsic properties of single words in general. The categories are not balanced, their definitions are heuristic, and no confidence intervals are reported. In addition, a single word is often more polysemous than a longer technical expression because less lexical context is available to identify the intended sense. This explanation is consistent with the observed error pattern, but it remains an interpretation rather than a causal result established by the experiment.
+Domain and frequency distributions
+
+A formal distribution by academic domain is not available. Although the source provides a topic field, the values shown in the public repository are identifiers such as topic-12722, rather than documented subject categories. Furthermore, the project deliberately removes the field before modeling (confirmed above: it is dropped in the first processing step and never referenced downstream). Consequently, no reliable grouping into economics, law, computing, psychology, or other disciplines can be reconstructed from the supplied files without an additional manual or external classification step.
+
+A frequency-based distribution is also unavailable. Neither the public dataset nor the retained project table contains corpus frequency, document frequency, query frequency, or usage counts, and no such field is computed anywhere in the codebase. Therefore, the terms cannot presently be divided into high-frequency and low-frequency subsets using the dataset alone. Any future frequency analysis would require a defined external corpus, a documented matching procedure, and a fixed corpus version. Otherwise, the meaning of "frequent" would remain dependent on the selected external source.
+
+The absence of explicit domain and frequency metadata limits the interpretation of aggregate results. For example, a method could perform well because the dataset contains many compounds from semantically coherent domains, while performing less effectively on rare terminology from specialized areas. Aggregate Hit@1 would not reveal this behavior. Therefore, the current term-type analysis is useful, but it does not replace domain- or frequency-stratified evaluation.
+Definition of the closed candidate pool
+
+The project adopts a closed-pool ranking formulation. Let the final dataset be
+
+\[ D = \{(q_i, y_i)\}_{i=1}^{N}, \]
+
+where $q_i$ is the English input term, $y_i$ is its recorded English synonym, and $N=969$. The global candidate vocabulary is defined as
+
+\[ C = \operatorname{unique}\left(\{y_i \mid (q_i,y_i)\in D\}\right). \]
+
+For every query $q_i$, the system produces an ordered list of candidates selected from (C). The raw output of any Large Language Model (LLM) used for query expansion is not treated as the final answer unless it corresponds to an entry in this vocabulary. Even the methods described as zero-shot use the generated text as an additional retrieval query and return a vocabulary entry rather than unconstrained text.
+
+The closed-pool formulation provides several engineering advantages. First, every returned value belongs to a controlled terminology inventory. Second, string-match ranking metrics can be computed without introducing a separate semantic-equivalence evaluator - specifically, the project uses normalized string equality (case-insensitive, punctuation-stripped, via the same normalize() function described below), not literal character-for-character equality. Third, different retrieval and reranking architectures can be compared over the same candidate space. Finally, the reranker can be constrained to reorder candidates rather than generate unsupported values.
+
+However, the formulation also narrows the meaning of the task. The system is not required to discover a synonym that is absent from the dataset. Instead, it must identify the expected item from a known inventory that already contains that item. Therefore, the experiment evaluates candidate discrimination and ordering under a closed-world assumption. It does not establish performance for open vocabulary expansion, terminology mining from unseen corpora, or synonym generation for terms whose correct alternatives are outside the original inventory.
+
+The project also excludes the input term itself from its retrieval results. This prevents a system from satisfying the task by returning the original query unchanged. However, it creates a structural problem for identity pairs in which $q_i=y_i$. The documented modernisation-modernisation row was removed for this reason: after self-exclusion, the only labeled correct candidate would become unavailable.
+
+The construction details previously flagged as unspecified have been recovered directly from src/tools/embedding\_retrieval.py::build\_solution\_index (invoked once per embedder, cached to disk under data/cache/) and src/text\_utils.py::normalize:
+
+    Deduplication key: the normalized form of each candidate (normalize() - lowercase, strip, drop every character outside \verb+[a-z0-9\s\-]+, collapse whitespace). The first raw, non-normalized string encountered for a given normalized key is the one retained and displayed.
+    Candidate equality is case-insensitive throughout - for deduplication, for excluding the input term from its own candidate list, and for gold-rank matching in src/evaluation.py. The raw stored strings themselves keep their original casing; only equality checks are case-insensitive.
+    Null/empty handling: rows with a missing en\_synonym are dropped before the pool is built (full\_df["en\_synonym"].dropna(), run\_eval.py); any candidate whose normalized form is an empty string is silently skipped when the index is built.
+    Ordering: the candidate list preserves the source row order of data/synonyms\_clean.csv (first-occurrence order); it is not alphabetically sorted.
+    Tie-breaking: retrieval scores are ranked with Python's stable sort over a dictionary populated in the order candidates were encountered while scanning each query's top matches - deterministic given fixed inputs and processing order, but not a deliberately designed tie-break rule.
+    Source-row identifiers are not retained after deduplication. The pool is a flat list of strings; matching at evaluation time is by normalized string equality against the ground-truth string, not by row id.
+    Cardinality: 921 (see "Unit of observation and relevance labels" above).
+
+One item remains genuinely unresolved: no cryptographic hash of the vocabulary's contents is computed anywhere in the project. The only hash present is a truncated SHA-1 of the embedder's model name, used solely to build a cache filename - it says nothing about the vocabulary contents and would not change if the candidate list changed. A real gap if byte-for-byte reproducibility of the candidate list needs to be asserted formally in the thesis.
+
+A further point is worth stating precisely rather than leaving as "no Unicode normalization documented": normalize() is not an NFC/NFKC-style Unicode normalization. It is a regex character-class filter (\verb+[^a-z0-9\s\-]+) applied after lowercasing, which deletes any character outside basic ASCII letters, digits, whitespace, and hyphens, rather than folding it to an ASCII-equivalent form - for example, an accented word would have its diacritical character removed as a byte, not transliterated (a hypothetical "café" would normalize to "caf", not "cafe"). Since the retained en/en\_synonym columns are English-language academic terminology, the practical impact on this dataset is likely small, but it is a real, specific behavior worth documenting as a limitation rather than as an open question.
+Preparation and Normalization
+Documented preparation pipeline
+
+The preparation procedure was designed to produce an English term-synonym table suitable for retrieval experiments. The following operations are explicitly implemented in data/prepare\_dataset.py and data/make\_splits.py:
+
+    The source dataset was loaded and reduced to the en and en\_synonym columns.
+    Invalid or unusable source rows were removed: clean\_text() treats an empty string or the placeholder "-" as null (after stripping surrounding whitespace), and rows still missing en or en\_synonym after that step are dropped. Applied to the current Hub revision, this removes 284 rows (all for an invalid en; 0 for en\_synonym).
+    Exact duplicate (en, en\_synonym) pairs were removed (12 rows).
+    The identity pair modernisation-modernisation was excluded (1 row, in data/make\_splits.py).
+    Repeated input terms were retained because they represent different recorded synonyms.
+    The full en\_synonym column was deduplicated (via normalize(), see above) to form the shared candidate vocabulary (921 entries).
+    Records were grouped by en before partitioning so that repeated inputs could not cross split boundaries.
+    The same fixed candidate vocabulary was made available to every split.
+
+The resulting logical flow is illustrated in Figure 1; every step shown is now backed by a specific, cited function and, where relevant, an exact row count.
+
+Public Hugging Face dataset
+1,266 rows
+
+Select English fields
+en and en\_synonym
+
+Filter unusable records
+null/empty/"-" in en (284 rows) or en\_synonym (0 rows); 982 rows remain
+
+Remove exact duplicate pairs
+12 rows removed; 970 rows remain (data/synonyms\_clean.csv)
+
+Remove identity pair
+modernisation = modernisation; 969 rows remain
+
+Final project table
+969 rows (data/splits/full.csv)
+
+Extract and deduplicate
+all en\_synonym values from the 970-row pre-split table
+
+Fixed global candidate vocabulary
+921 unique values (normalize()-based deduplication)
+
+Group records by exact en value
+
+Seeded grouped partition
+seed = 42
+
+Train
+581 rows
+
+Validation
+194 rows
+
+Test
+194 rows
+
+Candidate ranking
+
+Read row-specific gold label
+only for evaluation
+
+Figure 1. Dataset preparation, candidate-vocabulary construction, and grouped partitioning. The candidate pool is constructed globally, from the pre-split 970-row table, and remains constant across splits, while the row-specific target is accessed only after a prediction has been produced.
+Tokenization and casing
+
+No project-level tokenization procedure is documented for the retained terms themselves. They are stored and passed as plain text strings, and tokenization is performed internally by whichever embedding or language model consumes them - token boundaries are model-dependent rather than defined once during dataset preparation. This distinction is important because the term-type and lexical-overlap analyses use their own heuristic tokenization (a plain whitespace split), which does not match the subword tokenization used by the retrieval models. The one exception is the project's own normalize() function, used purely for equality checks (deduplication, self-exclusion, gold matching) - it is not a tokenizer and does not affect what text is stored or sent to any model.
+
+No global lowercasing step is applied to the stored data. The public source contains mixed capitalization, including examples such as Firm relocation, Americanisation, and Antarctic, Arctic, Polar Regions, and data/synonyms\_clean.csv preserves this casing exactly as downloaded (clean\_text() only strips whitespace and nulls out empty/placeholder values; it does not call .lower()). However, casing does not affect candidate identity in practice, because every equality check in the project - deduplication, self-exclusion, and gold-rank matching - goes through normalize(), which lowercases internally. So while the stored strings are not lowercased, the system behaves as if candidate identity were case-insensitive throughout; the two properties (storage casing and equality casing) are independent and should be described as such.
+
+Preserving case in the stored data can be beneficial for acronyms and proper names - distinctions involving IT, IdM, or named regions can carry semantic information, and the raw, cased strings are what get shown to the LLM agents and the reranker. Case preservation could in principle cause logically equivalent variants to remain distinct in exact-string deduplication, but this concern is resolved: candidate identity, self-exclusion, and metric computation are all case-insensitive by construction (all three go through the same normalize() call), while the raw stored strings retain their original casing for display and for use as model input.
+Unicode, diacritics, punctuation, and whitespace
+
+No Unicode normalization form, such as NFC or NFKC, is applied to the stored dataset (data/prepare\_dataset.py performs no such step). The equality-check layer (normalize(), used for deduplication, self-exclusion, and evaluation matching, but not for the stored data itself) instead applies a blunter ASCII character-class filter that deletes non-ASCII characters and all punctuation rather than folding them - see "Definition of the closed candidate pool" above for the exact behavior and its implications. These details are particularly relevant because the public source includes multilingual text and visibly heterogeneous punctuation, even though the retained en/en\_synonym columns are themselves English-only.
+
+The Dutch fields, where diacritics are more frequent, are removed before modeling. Nevertheless, English terminology can still contain typographic apostrophes, accented proper names, non-ASCII dashes, or encoding artifacts, and the equality-check layer's character-deleting behavior (rather than proper Unicode folding) means two visually similar strings could in principle be treated as different or as unexpectedly identical if their underlying characters differ only in the deleted range.
+
+The table below reflects the verified status of each normalization decision, replacing the "unspecified" status attributed to several of these in an earlier draft:
+Normalization decision	Status in the implementation	Where
+Trim leading and trailing whitespace	Applied to stored data (str.strip())	prepare\_dataset.py::clean\_text
+Collapse repeated internal whitespace	Not applied to stored data; applied only inside normalize() for equality checks	text\_utils.py::normalize
+Convert empty strings to missing values	Applied (value == "" -> None)	prepare\_dataset.py::clean\_text
+Remove hyphen placeholders	Applied (value == "-" -> None)	prepare\_dataset.py::clean\_text
+Remove null en/en\_synonym rows	Applied (dropna(subset=["en","en\_synonym"]))	prepare\_dataset.py
+Unicode normalization (NFC/NFKC)	Not applied anywhere in the project	-
+Non-ASCII / punctuation character filter (equality checks only)	Applied inside normalize(); deletes rather than folds affected characters	text\_utils.py::normalize
+Lowercasing of stored data	Not applied	prepare\_dataset.py
+Lowercasing for equality checks	Applied (dedup, self-exclusion, gold matching)	text\_utils.py::normalize
+Diacritic removal (stored data)	Not applied	-
+Diacritic removal (equality checks)	Characters deleted (not folded) by the filter above	text\_utils.py::normalize
+Exact duplicate-row removal	Applied (drop\_duplicates(subset=["en","en\_synonym"]), 12 rows removed)	prepare\_dataset.py
+Candidate-string deduplication	Applied; key = normalize(), order = first source occurrence	embedding\_retrieval.py::build\_solution\_index
+Stemming, lemmatization, and morphological processing
+
+Stemming and lemmatization were not adopted as mandatory preprocessing for the selected ranking pipeline. Morphological query variants, including changes related to singular and plural forms, hyphens, spaces, and parenthetical text, were evaluated experimentally. Under the tested conditions, these variants were neutral or slightly detrimental, and the method was discarded.
+
+A stem-sharing indicator was later used as a diagnostic feature during error analysis. However, it did not modify the dataset or the system input. This distinction should be preserved in the chapter: stemming was used to study failure patterns, not to normalize the production data.
+
+The decision not to apply stemming or lemmatization globally is reasonable for this task. Academic terminology often contains meaningful distinctions in number, derivational form, or word composition. Aggressive normalization could merge candidates that should remain separate or reduce the ability to distinguish a synonym from a merely related term. In addition, modern embedding models apply learned subword tokenization and can already represent many morphological relationships without rewriting the source text.
+Model-specific textual preparation
+
+The intfloat/e5-base-v2 embedding model was used with the query and passage prefixes expected by its retrieval formulation. Input queries receive the query: prefix, while candidate entries receive the corresponding passage: prefix - confirmed directly in src/tools/embedding\_retrieval.py, which maps each supported embedder name to an explicit (query\_prefix, passage\_prefix) pair rather than guessing, and applies no prefix at all for embedders (such as the project's original all-MiniLM-L6-v2 baseline) that were not trained with one. These prefixes are model-interface requirements and should not be confused with permanent changes to the stored dataset.
+
+This separation is important for reproducibility. Dataset normalization defines the canonical strings used for candidate identity and evaluation, whereas model-specific preprocessing defines how those strings are presented to a particular model. The canonical data remains unchanged when an embedding model is replaced - only the prefix applied at encoding time differs, per the explicit per-model mapping described above.
+Partitioning, Leakage, and Evaluation Subsets
+Grouped train-validation-test protocol
+
+The final 969 rows were partitioned using data/make\_splits.py. A fixed seed of 42 and a nominal 60/20/20 allocation produced 581 training rows, 194 validation rows, and 194 test rows. The observed proportions are 59.96\%, 20.02\%, and 20.02\%, respectively.
+
+The split was performed by unique en value rather than by row. Therefore, all occurrences of a repeated input term were assigned to the same split. This rule prevents a term with one synonym from appearing in one split while the same input with another synonym appears in another. Without grouping, the system-selection process could benefit from direct exposure to the same query string outside the test set.
+
+Table 4 summarizes the role assigned to each partition.
+Partition	Rows	Percentage	Intended use	Observed project use
+Train	581	59.96\%	Parameter fitting or future calibration	Reserved; not used by the reported methods
+Validation	194	20.02\%	Architecture and hyperparameter selection	Used for model, fusion, threshold, and pipeline decisions
+Test	194	20.02\%	Final evaluation of selected configurations	Used for confirmation after decisions were made
+Full	969	100.00\%	Not an independent split	Derived union used for descriptive reporting and error analysis
+
+Although no neural model was trained from scratch, the separation remains necessary. Selecting an embedding model, fusion strategy, query-expansion setting, candidate-pool width, or reranker according to observed performance constitutes data-dependent model selection. Repeatedly making such decisions on the test set would overfit the experimental process even if no gradient-based parameter update were performed.
+
+The training partition was left unused. This choice protects a substantial subset for future fitting or calibration, but it also means that several manually selected parameters were chosen using validation results rather than estimated from training data. For example, a future version could calibrate fusion weights or confidence thresholds on the training set, use validation for model selection, and reserve test strictly for the final estimate.
+
+The documentation states that the test set was accessed once per already-decided configuration. This is more permissive than a single final test evaluation across the entire project because several successively selected configurations were confirmed on test. Consequently, the test set remained protected from direct parameter optimization, but repeated reporting across experimental cycles can still create indirect familiarity with test performance. The final thesis should distinguish the definitive fallback-verified result from earlier exploratory confirmations.
+Leakage definition
+
+For this project, label leakage is defined narrowly as accessing the current row's en\_synonym before producing that row's ranked output. The full set of synonym strings may be used as a fixed candidate vocabulary, provided that no method performs a row-specific lookup of the expected answer. Ground truth is read only after candidate generation and ranking, when the prediction is evaluated - confirmed directly in run\_eval.py, where the ground\_truth value is read from the row only after get\_candidates() has already produced its output for that row.
+
+This definition is internally consistent with a closed-pool task, but several distinct leakage concepts should be separated:
+Leakage risk	Operational definition	Implemented control	Residual consideration
+Row-label leakage	Reading the current row's gold synonym before prediction	Gold is accessed after ranking (run\_eval.py)	Verified by code inspection; no further residual risk identified
+Input-group leakage	Same en value occurring across different splits	Grouped partition by exact en (data/make\_splits.py)	Near-duplicate or spelling-variant terms across splits are not separately checked - a genuinely untested residual risk, not resolved by this review
+Test-selection leakage	Choosing methods or parameters from test scores	Decisions made on validation	Multiple configuration confirmations were still reported
+Auxiliary-feature leakage	Supplying fields unavailable in the intended use case	Only en is passed as query input	Resolved: the numeric source index and topic are discarded in the first processing step and never reach any method (see "Project-specific extraction")
+Full-data tuning leakage	Using the 969-row union to choose a method	Full set used only after configuration lock	Must be maintained in future experiments
+Candidate-vocabulary exposure	Test labels included in global candidate inventory	Explicitly allowed by task definition	Creates a transductive closed-world setting
+Identity leakage	Input string is also accepted as its synonym	Input candidate excluded; identity row removed	Resolved: identity is checked in make\_splits.py via a simple case-insensitive .strip().lower() comparison - a different, simpler normalization than the normalize() function used elsewhere in the project; worth noting as a minor internal inconsistency, not a correctness issue, since both are case-insensitive and the identity check only needs to catch exact-word identity
+
+The most important residual issue is candidate-vocabulary exposure. Because (C) is constructed from all en\_synonym values before splitting, every test target is guaranteed to exist in the search inventory. This is not leakage under the project's declared ranking task, because the system is intended to rank a predefined terminology pool. However, it would be leakage under an inductive evaluation intended to measure generalization to unseen synonym labels.
+
+Therefore, the task should be described explicitly as transductive closed-pool synonym ranking. The term transductive indicates that the output vocabulary is known globally at evaluation time, while the correct mapping between each test input and a vocabulary item remains hidden. This wording prevents readers from interpreting the results as open-ended synonym-generation accuracy.
+Evaluation subsets
+
+The dataset supports several analytical subsets, although only some have been evaluated quantitatively.
+Subset dimension	Availability	Definition status	Appropriate use
+Term type	Available	Fully specified (see categorize(), above)	Compare single words, phrases, compounds, and abbreviations
+Lexical overlap	Available post hoc	Fully specified: Jaccard similarity over lowercase, whitespace-split tokens; bins none = 0 shared tokens, low = (0, 0.33], high = (0.33, 1.0] (scripts\_failure\_analysis\_v2.py::lexical\_overlap, pd.cut boundaries)	Analyze surface-distance effects
+Ambiguous or duplicated input	Ten input terms identified	Subset metrics not reported	Measure sensitivity to multiple valid labels
+Academic domain	Unavailable	No documented domain labels retained	Requires new annotation or mapping
+Corpus frequency	Unavailable	No frequency field or reference corpus	Requires an external fixed corpus
+Input length	Derivable	No reported bins	Analyze token- or character-length effects
+Retrieval difficulty	Derivable post hoc	Gold present or absent from top five	Distinguish retrieval and ranking failures
+Gold rank before reranking	Available in analysis outputs	Documented for the final system	Measure causal effect of reranking
+
+The lexical-overlap analysis found that rows with no shared tokens between input and gold had a retrieval-miss rate of 8.9\% and a ranking-error rate of 16.0\%, compared with 1.7\% and 6.9\% for the reported high-overlap group. The tokenization and thresholds behind "high overlap" are now fully specified above (Jaccard > 0.33); these figures are reproducible from scripts\_failure\_analysis\_v2.py given the same input files.
+
+The project also separates final errors into ranking errors and retrieval misses. On the full 969-row dataset, 797 predictions were correct at rank one, 119 contained the gold synonym within the top five but not at rank one, and 53 did not retrieve the gold within the top five. These categories help identify whether a failure originates before or after reranking. However, they are outcome-defined groups rather than independent pre-experimental subsets and should not be used as if they were fixed strata for unbiased model selection.
+
+Ambiguity deserves a separate analysis because ten input terms have multiple annotated gold synonyms. Suitable reporting would include the number of those rows for which the alternative recorded synonym was returned, as well as a multi-positive evaluation in which either documented synonym is accepted. These results are currently unspecified and were not computed as part of this review.
+Metrics and Reproducibility
+Ranking metrics
+
+The evaluation module reports Hit@1, Hit@3, Hit@5, Mean Reciprocal Rank (MRR), and Normalized Discounted Cumulative Gain at cutoffs three and five, written as NDCG@3 and NDCG@5. These measures evaluate complementary properties of the ranked candidate list.
+
+Let $r_i$ denote the rank of the gold synonym for row (i), with $r_i=\infty$ when it is absent from the returned list. Hit@\textit{k} is defined as
+
+\[ \operatorname{Hit@}k = \frac{1}{N} \sum_{i=1}^{N} \mathbb{1}[r_i \leq k]. \]
+
+Hit@1 measures exact first-choice accuracy. Hit@3 and Hit@5 measure whether the relevant item is available in a short candidate list. Therefore, the latter metrics are particularly useful for identifying whether errors could be corrected by a stronger reranker or by human review.
+
+MRR is defined as
+
+\[ \operatorname{MRR} = \frac{1}{N} \sum_{i=1}^{N} \begin{cases} 1/r_i, & r_i < \infty, \\ 0, & r_i = \infty. \end{cases} \]
+
+MRR gives full credit to a rank-one result and progressively less credit to lower ranks. Consequently, it distinguishes systems that have the same Hit@5 but place the correct item at different average positions.
+
+NDCG is based on cumulative gain discounted according to rank and normalized against the ideal ranking. It was introduced to reward systems that place more relevant results earlier in a ranked list. In the present dataset, each row has one binary gold item. The implementation (src/evaluation.py::ndcg\_at\_k) was inspected directly and confirmed to use exactly the standard logarithmic-discounting form under this single-relevant-item setup, so NDCG@\textit{k} is exactly
+
+\[ \operatorname{NDCG@}k_i = \begin{cases} 1/\log_2(r_i+1), & r_i \leq k, \\ 0, & r_i > k. \end{cases} \]
+
+The final score is averaged across rows. Under this single-relevant-item formulation, NDCG and MRR are related but not identical because their discount functions differ.
+
+The metrics map to the dataset and its subsets as follows:
+
+    Hit@1 is the primary measure of whether the system selects the row-specific synonym as its final answer.
+    Hit@3 and Hit@5 measure shortlist coverage and are especially relevant to retrieval-stage recall.
+    MRR measures overall sensitivity to the first relevant item's position.
+    NDCG@3 and NDCG@5 provide position-sensitive evaluation within the operational shortlist.
+    Absolute hit counts should accompany proportions, particularly for the 194-row validation and test sets, where one changed prediction corresponds to approximately 0.52 percentage points.
+    Subset metrics should be recomputed independently within each term type or ambiguity group rather than inferred from global results.
+
+Because each row contains only one accepted gold label, the metrics do not reward other valid synonyms. This is a limitation of the annotation scheme rather than of the metric implementation. Rank matching itself is via normalized string equality (src/evaluation.py::\_rank\_of\_gold, using the same normalize() function described earlier), not literal character-for-character equality - a candidate differing from the gold only in casing or punctuation is scored as correct. A future evaluation could use multiple relevance labels per query or graded judgments, but this would require additional annotation.
+Reproducibility controls
+
+The data partition is reproducible in principle because the script name, grouping rule, split ratio, and seed are documented. The primary regeneration command is:
+
+bash
+
+python data/make\_splits.py
+
+The unified evaluation harness is executed through run\_eval.py, and each completed run writes aggregate and row-level outputs. The project maintains a master experiment log containing the method, split, row count, metrics, absolute hit counts, latency, configuration note, timestamp, and reranker fallback count. Per-run JSON summaries and detailed CSV files are also stored.
+
+These controls provide useful traceability. In particular, row-level files make it possible to verify whether a reported improvement results from a changed candidate set or merely from nondeterministic reranking. Nevertheless, data reproducibility is not complete because several environmental and versioning details remain unspecified.
+
+The following items make up a complete reproducibility package; each is marked with its current, verified status rather than left as a blanket "unspecified":
+
+    Source revision - resolved: current Hub revision fb767656de4cb453d3b4d88bcdd060ee17a81f4b (last modified 2024-09-23, retrieved 2026-08-08). Not yet pinned inside prepare\_dataset.py's load\_dataset() call - adding an explicit revision= argument there is a small, recommended fix.
+    Source checksum - still missing: no hash of the downloaded file is computed anywhere in the project.
+    Cleaning audit - resolved: 284 rows removed for an invalid en (0 for en\_synonym), 12 exact-duplicate pairs removed, 1 degenerate identity row removed by make\_splits.py (see "Project-specific extraction" above).
+    Canonical schema - resolved: two columns, en and en\_synonym, both non-null strings after cleaning, UTF-8 CSV.
+    Normalization policy - resolved: see the corrected table in "Unicode, diacritics, punctuation, and whitespace" above.
+    Candidate inventory - resolved for count (921) and ordering (source order, see "Definition of the closed candidate pool"); still missing a content-level checksum.
+    Split manifest - the committed data/splits/*.csv files are themselves the manifest, deterministically regenerable from seed 42; no separate row-identifier or checksum file exists alongside them.
+    Code revision - still missing: no record of which git commit of this repository produced any given reported number.
+    Environment specification - still missing: this project has no requirements.txt or pyproject.toml; only .venv/pyvenv.cfg records the Python interpreter version (3.14.4), with no pinned versions for pandas, sentence-transformers, datasets, or any other library used.
+    Randomness controls - resolved for the split (seed 42, numpy.random.default\_rng); the local generator's and the OpenRouter reranker's run-to-run non-determinism are already extensively documented elsewhere in the project (README.md, "Known risks").
+    Artifact availability - still missing: no explicit redistribution statement for the cleaned dataset.
+    License record - resolved: the Hub's structured card metadata contains only license: apache-2.0, with no other licensing text or upstream rights statement.
+
+The final unique candidate count (921) is particularly important, since it determines the size of the ranking problem and the number of negatives considered for every query. It has now been generated directly from the exact final file and cross-checked against the cached embedding indices, rather than copied from an earlier experiment log.
+Data access and licensing
+
+The immediate source is publicly accessible through Hugging Face at revision fb767656de4cb453d3b4d88bcdd060ee17a81f4b and is labeled Apache-2.0 in its structured card metadata. However, the repository's dataset card provides no upstream license analysis, attribution request, citation recommendation, or explanation of how the synonym pairs were obtained beyond that bare license tag.
+
+For this reason, the thesis should use measured language. It can state that the downloaded repository is labeled Apache-2.0 at the pinned revision above, but it should not claim that the original terminology collection was independently verified as Apache-licensed unless an upstream source is identified.
+Limitations, Ethics, and Required Corrections
+Data-quality limitations
+
+The most significant limitation is incomplete provenance. The source does not explain the collection population, annotation process, annotator qualifications, validation protocol, or intended benchmark task. Consequently, it is not possible to determine whether every pair represents strict synonymy, broader semantic relatedness, translation-mediated equivalence, or a mixture of these relations. This limitation is upstream of the codebase and cannot be resolved by inspecting the implementation - it would require the dataset publisher to document the collection process.
+
+The observed examples and error analyses indicate that some labels are semantically debatable. For instance, a predicted term may be a plausible near-synonym but differ from the single recorded gold label. The dataset also includes relations involving abbreviations, register shifts, named entities, broader concepts, and domain-specific paraphrases. Therefore, exact-match failure cannot always be interpreted as a semantically incorrect system output.
+
+The dataset provides one relevant answer per row, even when several synonyms may be valid. The ten duplicated inputs partially expose this issue but do not solve it, because the rows are still evaluated independently. This annotation incompleteness may underestimate system quality and may also influence comparisons between methods that prefer general synonyms and methods that prefer terminology closer to the dataset's wording.
+
+A further limitation concerns representativeness. The source includes academic and domain terms, but no domain taxonomy or sampling design is documented. It is therefore not possible to claim that the dataset represents academic terminology generally, that disciplines are proportionally sampled, or that results generalize equally across fields.
+Ethical and privacy considerations
+
+The retained project fields contain terminology strings rather than names, contact details, behavioral records, or other direct personal identifiers. On the basis of the supplied schema, no person-level information is used as model input. However, a formal personally identifiable information audit is not documented, and the source's upstream collection process remains unclear. Therefore, the absence of privacy risk should be described as an assessment of the retained fields rather than as a verified property of the complete upstream dataset.
+
+The selected system sends the input term and its candidate shortlist to an external model through OpenRouter during reranking. Although the current data is not expected to contain personal information, this transfer creates an external-processing dependency. The exact provider retention settings, regional processing conditions, and contractual privacy controls used for the experiments are unspecified in the data documentation. This would become a more significant concern if the pipeline were later applied to private institutional terminology, unpublished research topics, employee expertise profiles, or user queries.
+
+Terminology resources can also encode cultural, disciplinary, and temporal assumptions. A synonym accepted within one academic community may be inappropriate or overly broad in another. Similarly, historically collected terminology can contain outdated naming conventions. Because the source lacks annotation dates and governance information, such risks cannot be quantified from the available materials.
+
+The following safeguards are therefore appropriate:
+
+    only non-sensitive terminology should be sent to external APIs unless an approved data-processing arrangement exists;
+    API request logging and provider retention settings should be documented;
+    outputs should be described as ranked candidates rather than authoritative terminological equivalences;
+    dataset errors and contested synonym relations should be preserved in an audit log rather than silently corrected;
+    any manual corrections should be versioned and distinguished from the original source;
+    future deployment in a specific academic domain should include validation by relevant subject-matter experts.
+
+Required corrections before final submission
+
+Most of the items flagged in an earlier draft of this chapter have now been resolved by inspecting the implementation directly, rather than requiring further investigation:
+
+    Source-to-final filtering procedure - resolved. Of the 1,266 source rows, 284 are removed for an invalid en, 12 for exact-duplicate (en, en\_synonym) pairs, and 1 for the degenerate identity row, exactly accounting for the 297-row reduction to 969.
+    Candidate-vocabulary cardinality - resolved. V = 921, computed directly and cross-checked against the cached embedding indices.
+    Canonical string handling - resolved. Whitespace trimming, null/placeholder handling, and exact-duplicate removal are applied to the stored data; casing, punctuation, and non-ASCII characters are left untouched in storage but are normalized (case-insensitively, non-ASCII characters deleted rather than folded) for every equality check (deduplication, self-exclusion, evaluation matching).
+    Term-type classifier - resolved. Fully specified, deterministic precedence rule with no ambiguous cases (see "Term-type distribution").
+
+Four items remain genuinely open and should still be addressed before the chapter is treated as final:
+
+    Source revision pinning in code. The current Hub revision has been identified (fb767656de4cb453d3b4d88bcdd060ee17a81f4b) and should be added as an explicit revision= argument to prepare\_dataset.py's load\_dataset() call, so a future change to the public repository cannot silently change row counts or splits even when seed 42 is reused.
+    Environment specification. No requirements.txt or pyproject.toml exists for this project; only the Python interpreter version (3.14.4) is recorded via the virtual environment. Pinned versions of pandas, sentence-transformers, datasets, and the other libraries used should be captured.
+    Content-level checksums. Neither the downloaded source file nor the final 921-entry candidate vocabulary has a stored hash; adding one would let a future run detect silent content drift even if row counts happen to match.
+    Input-group leakage residual. The split groups by exact en string, but near-duplicate or spelling-variant terms across splits have not been separately checked - this residual risk was flagged but not tested as part of this review.
+
+Finally, the task must consistently be identified as closed-pool, transductive synonym ranking for academic and domain terminology. This formulation accurately reflects the availability of the global candidate inventory, the hidden row-level mapping, and the limits of the conclusions that can be drawn from the reported metrics.

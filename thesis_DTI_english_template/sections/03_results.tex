@@ -1,0 +1,332 @@
+\chapter{Results}
+\label{chap:results}
+
+\section{Executive summary}
+
+This chapter reports the experimental results for the closed-pool synonym-ranking task. It summarizes the evaluation protocol and configurations, presents the progression from the original embedding baseline to the final retrieve-then-rerank pipeline, compares the fixed-role pipeline with the dynamic tool-calling agent under a matched downstream configuration, and analyzes the remaining errors, latency trade-offs, and statistical evidence.
+
+The final fixed-role, centrally orchestrated multi-agent pipeline was executed on the held-out test split (194 rows) on two occasions. The execution treated as primary throughout this chapter is the one performed after explicit reranker-fallback tracking confirmed that every prediction used a genuine reranker response: Hit@1 = 0.830, Hit@3 = 0.938, Hit@5 = 0.948, MRR = 0.884, NDCG@3 = 0.896, NDCG@5 = 0.901. An earlier execution of the identical configuration, performed before fallback tracking existed and therefore not retrospectively verifiable, obtained Hit@1 = 0.851 and MRR = 0.892; it is retained in this chapter as direct evidence of run-to-run variability in the externally hosted reranker, not as a competing result.
+
+On the same held-out split, the observed progression was: the original all-MiniLM-L6-v2 embedding baseline, Hit@1 = 0.536; replacing it with intfloat/e5-base-v2, Hit@1 = 0.603; adding local LLM-based query expansion and weighted multi-query fusion, Hit@1 = 0.768; adding Qwen3-32B reranking (the verified execution above), Hit@1 = 0.830.
+
+On the complete 969-row dataset, used only for descriptive error analysis, the final configuration placed 797 gold synonyms at rank one (82.2\%), left 119 gold synonyms retrievable but not first-ranked (12.3\%), and failed to retrieve 53 gold synonyms at all (5.5\%). A matched downstream comparison, in which a dynamic tool-calling architecture was passed through the same Qwen3-32B reranker as the fixed-role pipeline, found that the fixed-role pipeline reached validation Hit@1 = 0.851 at 9.08 seconds per term, against Hit@1 = 0.830 at 18.96 seconds per term for the dynamic agent.
+
+\section{Experimental context}
+
+\subsection{Dataset, splits, and evaluation protocol}
+
+The experiments use the 969-row evaluation dataset and the closed candidate vocabulary described in the Data chapter, partitioned by unique input term with seed 42 into 581 training, 194 validation, and 194 test rows (Section~\ref{sec:partitioning}). No component of the evaluated systems is trained with gradient descent; nevertheless, selecting an embedding model, fusion strategy, expansion width, reranker, or threshold from observed performance is itself a form of data-dependent decision-making. The validation split was used throughout the project for these decisions. The test split was not used for direct model or hyperparameter selection; several configurations already selected through validation were subsequently evaluated on it at different points during the project, including two executions of the final pipeline, discussed in Section~\ref{sec:threats}. The 969-row full dataset (train, validation, and test combined) is used only for descriptive reporting and error analysis after the final configuration had been selected; it is not an independent held-out sample.
+
+\subsection{Metrics}
+
+Predictions are scored with Hit@1, Hit@3, Hit@5, Mean Reciprocal Rank (MRR), and Normalized Discounted Cumulative Gain at cutoffs three and five (NDCG@3, NDCG@5). Hit@1 and MRR are prioritized in this chapter's interpretation, reflecting that the system's first proposed synonym is the primary intended output; Hit@5 and NDCG are used to separate retrieval-coverage failures from ranking-order failures in the error analysis (Section~\ref{sec:error-analysis}). Formal definitions of these metrics are given in the Methodology and Evaluation Protocol section of the Models chapter.
+
+\subsection{Execution environment}
+
+Local experiments were executed on an NVIDIA RTX 4050 Laptop GPU with approximately 6 GB of VRAM; concurrent local model executions were found to overload this GPU, so computationally intensive local runs were subsequently executed serially. Local query generation and the local reranker baseline ran through Ollama; Qwen3-32B reranking was executed remotely through OpenRouter.
+
+\section{Main quantitative results}
+\label{sec:main-results}
+
+\subsection{Progression from baseline to final system}
+
+Table~\ref{tab:test-progression} reports the main held-out test configurations. The configurations summarized here were selected through the development and validation process described in Section~\ref{sec:ablations}; their test results are reported retrospectively to characterize held-out performance, not as a sequence of decisions made by comparing test scores.
+
+The original embedding baseline (all-MiniLM-L6-v2, single query) achieved test Hit@1 = 0.536, MRR = 0.629. Replacing it with intfloat/e5-base-v2 increased test Hit@1 to 0.603, MRR to 0.704, at an almost unchanged latency of approximately 0.025 seconds per term. Adding local LLM-based query expansion (temperature 0, weighted multi-query fusion) increased test Hit@1 to 0.768, MRR to 0.835, at approximately 0.72 seconds per term. Finally, reordering the resulting shortlist with Qwen3-32B produced the verified result already given in the executive summary (Hit@1 = 0.830, Hit@3 = 0.938, Hit@5 = 0.948, MRR = 0.884), at 13.32 seconds per term.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{4.4cm}p{0.7cm}p{1.0cm}p{1.0cm}p{1.0cm}p{1.0cm}p{1.6cm}}
+\toprule
+\textbf{Configuration} & \textbf{n} & \textbf{Hit@1} & \textbf{Hit@3} & \textbf{Hit@5} & \textbf{MRR} & \textbf{Latency/term}\\
+\midrule
+MiniLM embedding baseline & 194 & 0.536 & 0.722 & 0.773 & 0.629 & 0.022 s\\
+E5 (e5-base-v2), single query & 194 & 0.603 & 0.789 & 0.871 & 0.704 & $\sim$0.025 s\\
+E5 + local expansion + weighted fusion, $n=3$ & 194 & 0.768 & 0.902 & 0.933 & 0.835 & 0.72 s\\
+E5 + expansion, temp.\ 0, $n=9$, no reranker & 194 & 0.747 & 0.907 & 0.948 & 0.827 & 0.72 s\\
+Fixed-role pipeline + Qwen3-32B, original run & 194 & 0.851 & 0.923 & 0.949 & 0.892 & 9.27 s\\
+Fixed-role pipeline + Qwen3-32B, fallback-verified run & 194 & 0.830 & 0.938 & 0.948 & 0.884 & 13.32 s\\
+\bottomrule
+\end{tabular}
+\caption{Main held-out test results and experimental progression. The fallback-verified run is the primary reported test result throughout this chapter (Section~\ref{sec:threats}).}
+\label{tab:test-progression}
+\end{table}
+\endgroup
+
+Relative to the original baseline, the verified final pipeline improved test Hit@1 by approximately 29.4 percentage points (0.536 to 0.830); relative to the E5-only baseline, by approximately 22.7 percentage points. This gain in ranking quality is accompanied by a latency increase from approximately 0.025 seconds (E5 only) to 13.32 seconds (verified final pipeline) per term.
+
+Two rows in Table~\ref{tab:test-progression} report an $n=3$ and an $n=9$ expansion-width configuration; the pre-reranking base of the final pipeline is the $n=9$, temperature-zero configuration, even though the $n=3$ configuration obtained a higher test Hit@1 (0.768 versus 0.747) without a reranker. The available results do not establish the specific reason $n=9$ was retained as the pre-reranking base for the final, reranked pipeline rather than $n=3$; this is an open question, noted here rather than resolved with an unsupported explanation.
+
+\section{Validation ablations}
+\label{sec:ablations}
+
+More than 40 candidate configurations were compared on the validation split before the final configuration was selected, covering alternative embedders, lexical retrieval, Reciprocal Rank Fusion (RRF), multi-query fusion strategies, cross-encoder reranking, local and remote LLM reranking, candidate-shortlist width, confidence gating, and the dynamic tool-calling architecture (Section~\ref{sec:architectures}). Table~\ref{tab:ablations} reports a representative subset.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{4.2cm}p{0.9cm}p{0.9cm}p{0.9cm}p{1.2cm}p{4.0cm}}
+\toprule
+\textbf{Configuration} & \textbf{Hit@1} & \textbf{Hit@5} & \textbf{MRR} & \textbf{Latency} & \textbf{Note}\\
+\midrule
+BM25 only & 0.222 & 0.376 & 0.277 & 0.0002 s & Lexical matching alone is insufficient for this task\\
+MiniLM baseline & 0.546 & 0.804 & 0.642 & 0.019 s & Original dense baseline\\
+e5-base-v2 & 0.691 & 0.907 & 0.773 & 0.024 s & Strong, inexpensive baseline\\
+E5 + BGE, RRF ensemble & 0.670 & 0.918 & 0.767 & 0.048 s & Higher Hit@5, lower Hit@1/MRR than E5 alone\\
+Expansion + max fusion & 0.655 & 0.881 & 0.743 & 0.76 s & A single noisy variant can dominate\\
+Expansion + mean fusion & 0.753 & 0.912 & 0.822 & 0.74 s & Below weighted fusion\\
+Expansion + RRF & 0.629 & 0.887 & 0.728 & 0.72 s & Rank-based fusion underperformed\\
+Expansion + weighted fusion, temp.\ 0.3 & 0.773 & -- & -- & -- & Initially adopted fusion strategy, before the temperature-zero retune\\
+Expansion + weighted fusion, temp.\ 0 & 0.784 & 0.923 & 0.842 & 0.74 s & Strong pre-reranking configuration; base of the final pipeline\\
+Weighted fusion + local 2B reranker & 0.768 & 0.923 & 0.837 & 13.21 s & Local reranker reduced Hit@1 relative to no reranking\\
+Confidence-gated Qwen3-32B reranking & 0.835 & 0.923 & 0.873 & 3.78 s & Faster, but below blanket reranking\\
+Weighted fusion + Qwen3-32B reranking & 0.851 & 0.923 & 0.882 & 9.08 s & Selected validation configuration\\
+\bottomrule
+\end{tabular}
+\caption{Representative validation ablations. Hit@5, MRR, and latency are omitted for the temperature-0.3 weighted-fusion row where the available records report only Hit@1 for that configuration.}
+\label{tab:ablations}
+\end{table}
+\endgroup
+
+Two negative results were particularly informative for scoping the final design. Lexical retrieval alone (BM25) reached only Hit@1 = 0.222, and combining it with E5 consistently reduced Hit@1 relative to E5 alone; cross-encoder rerankers trained for general sentence similarity or duplicate-question detection similarly reduced performance, suggesting that general semantic relatedness was not a sufficient criterion for the stricter equivalence relation required by this task. A larger E5 variant (e5-large-v2) also performed substantially worse than e5-base-v2 under the tested implementation, indicating that embedding-model size alone did not predict task performance.
+
+The multi-query fusion ablation shows that generated variants improved retrieval only when their contribution was controlled: maximum-score fusion (0.655) and RRF (0.629) underperformed the single-query E5 baseline (0.691), while mean fusion (0.753) and weighted fusion recovered and exceeded it. Table~\ref{tab:ablations} reports two weighted-fusion results that must not be read as a single configuration: 0.773 corresponds to the initially adopted weighted-fusion configuration, run with the query-expansion generator at temperature 0.3; 0.784 corresponds to the same fusion strategy after the generator was moved to temperature 0 for later controlled experiments (Section~\ref{sec:threats}), and is the configuration retained as the pre-reranking base of the final pipeline. In both configurations, the fusion weighted the original input term three times more strongly than each generated variant, which prevented an individually noisy paraphrase from dominating the ranking.
+
+The reranker-size comparison is also informative. Reranking the same upstream shortlist, a local 2-billion-parameter reranker (Qwen3.5-2B) decreased validation Hit@1 from 0.784 to 0.768, while the 32-billion-parameter remote reranker (Qwen3-32B) increased it to 0.851. An intermediate 9-billion-parameter OpenRouter model was also attempted but did not yield a usable comparison, because repeated upstream provider-availability failures prevented a complete run; this attempt is not treated as a meaningful three-point model-size comparison in this chapter. Taken together, these results do not support the general claim that ``LLM reranking improves synonym ranking''; reranking was beneficial specifically when the reranking model was sufficiently capable under the tested prompt and candidate set, and harmful otherwise.
+
+Reranker fallback tracking was introduced to ensure that failed API calls could not silently be treated as valid reranking outputs; every result reported in this chapter as ``verified'' or as a full-dataset run has zero recorded fallbacks.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, align=center, minimum width=5.6cm, minimum height=0.9cm, font=\footnotesize, fill=black!3, inner sep=4pt},
+  altbox/.style={draw, dashed, rounded corners, align=center, minimum width=5.0cm, minimum height=0.8cm, font=\footnotesize, inner sep=3pt},
+  arr/.style={-{Latex[length=2.2mm]}, thick},
+  altarr/.style={-{Latex[length=2mm]}, dashed}
+]
+\node[box] (n1) {MiniLM baseline\\ test Hit@1 = 0.536};
+\node[box, below=0.4cm of n1] (n2) {E5 retrieval\\ test Hit@1 = 0.603};
+\node[box, below=0.4cm of n2] (n3) {Local LLM query expansion\\ + weighted fusion\\ test Hit@1 = 0.768};
+\node[box, below=0.4cm of n3] (n4) {Qwen3-32B reranking\\ test Hit@1 = 0.830 (verified)};
+
+\node[altbox, right=2.0cm of n2] (a1) {BM25 / RRF / cross-encoder reranking};
+\node[altbox, right=2.0cm of n3] (a2) {Local 2B reranker};
+\node[altbox, right=2.0cm of n4] (a3) {Dynamic tool-calling agent\\ validation Hit@1 = 0.830};
+
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\draw[arr] (n3) -- (n4);
+\draw[altarr] (n2) -- (a1);
+\draw[altarr] (n3) -- (a2);
+\draw[altarr] (n4) -- (a3);
+\end{tikzpicture}%
+}
+\caption{Experimental evolution of the system. Solid arrows indicate the sequence of retained improvements (Table~\ref{tab:test-progression}); dashed branches indicate alternatives investigated at each stage (Table~\ref{tab:ablations}, Section~\ref{sec:architectures}) that were not selected.}
+\label{fig:evolution}
+\end{figure}
+
+\section{Fixed-role multi-agent pipeline versus dynamic tool-calling architecture}
+\label{sec:architectures}
+
+The final system is a \textbf{fixed-role, centrally orchestrated multi-agent pipeline}. A Generator Agent, an LLM-based component, produces query variants and paraphrases; E5-based retrieval, similarity scoring, and weighted fusion -- deterministic supporting components, not agents -- combine these into a candidate shortlist; a Verifier/Reranker Agent, a second LLM-based component, evaluates and reorders that shortlist to produce the final prediction. The execution order and the role of each component are fixed by deterministic orchestration code. This architecture is referred to as the fixed-role pipeline, or equivalently the centrally orchestrated fixed-role multi-agent system (MAS), throughout the remainder of this chapter.
+
+The dynamic tool-calling architecture is conceptually distinct: a single controller agent decides at runtime how many retrieval calls to issue and which query to submit at each step, rather than following a fixed expansion strategy. Retrieval remains a tool invoked by this controller, not an agent in its own right. In the comparison reported here, the controller's resulting candidate list was subsequently passed through the same Qwen3-32B reranker used by the fixed-role pipeline; this reranker was a fixed downstream stage and did not participate in, or control, the dynamic retrieval loop.
+
+To enable a matched downstream comparison, both architectures used the same E5 retrieval model and the same Qwen3-32B final reranker. This comparison controls the downstream retrieval and reranking models, but it is not compute-matched: the dynamic controller can execute additional decision and tool-calling steps that the fixed pipeline does not perform, which is reflected in its higher latency (Section~\ref{sec:latency}).
+
+On the validation split, the fixed-role pipeline achieved Hit@1 = 0.851, Hit@3 = 0.912, Hit@5 = 0.923, MRR = 0.882 (165/194 exact rank-one predictions); the dynamic architecture achieved Hit@1 = 0.830, Hit@3 = 0.907, Hit@5 = 0.907, MRR = 0.866 (161/194). The candidate sets produced by the two architectures were inspected for the rows where the dynamic architecture regressed relative to the fixed pipeline: none of the ten inspected regressions shared the same candidate set as the fixed pipeline, which is evidence that altered retrieval behavior, rather than reranker sampling variation alone, contributed to the observed differences; this inspection covered ten rows and is not a claim about the cause of every regression.
+
+Four distinct types of row-level change were observed between the two architectures, and are kept terminologically separate here:
+
+\begin{itemize}
+  \item \textbf{Candidate-set recovery}: the gold candidate, absent from the fixed pipeline's shortlist, became present in the dynamic architecture's shortlist. Five such recoveries were observed.
+  \item \textbf{Ranking correction}: the gold candidate was present in both shortlists but reached rank one only under the dynamic architecture. Seven such corrections were observed.
+  \item \textbf{Ranking regression}: a row correct at rank one under the fixed pipeline was no longer correct at rank one under the dynamic architecture. Fourteen such regressions were observed.
+  \item \textbf{Retrieval miss introduced}: a row that was a ranking error under the fixed pipeline (gold present but not rank one) became a retrieval miss under the dynamic architecture (gold absent from the shortlist). One such case was observed.
+\end{itemize}
+
+These four counts are not mutually exclusive contributions to a single arithmetic reconciliation of the aggregate Hit@1 change; they describe different row-level outcomes observed in the same comparison. The net effect is that validation Hit@1 moved from 165/194 (0.851) under the fixed pipeline to 161/194 (0.830) under the dynamic architecture, a net change of four rank-one predictions.
+
+This outcome does not indicate that dynamic tool use is intrinsically inferior to a fixed pipeline. Under the tested dataset, prompts, local generator model, retrieval tool, and latency budget, the fixed expansion strategy produced a better balance between recovering missed candidates and preserving already-correct predictions. The dynamic agent's self-directed paraphrases occasionally reached candidates unavailable to the fixed strategy, but could also drift toward a related, non-equivalent sense of the input term -- a risk that is particularly consequential in closed-pool synonym ranking, where semantically associated but incorrect candidates are frequently available in the pool.
+
+\section{Accuracy--latency trade-off}
+\label{sec:latency}
+
+Table~\ref{tab:latency} reports latency and approximate sequential throughput for the main configurations. Throughput values are the reciprocal of the recorded sequential per-term latency and should not be interpreted as measured parallel-serving capacity.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{4.0cm}p{1.3cm}p{0.9cm}p{0.9cm}p{1.4cm}p{2.6cm}}
+\toprule
+\textbf{Configuration} & \textbf{Split} & \textbf{Hit@1} & \textbf{MRR} & \textbf{Latency/term} & \textbf{Approx.\ sequential throughput}\\
+\midrule
+MiniLM baseline & test & 0.536 & 0.629 & 0.022 s & 45.5 terms/s\\
+E5 only & test & 0.603 & 0.704 & 0.025 s & 40.0 terms/s\\
+Expansion $n=3$, no reranker & test & 0.768 & 0.835 & 0.72 s & 1.39 terms/s\\
+Fixed pipeline + Qwen3-32B, original run & test & 0.851 & 0.892 & 9.27 s & 0.108 terms/s\\
+Fixed pipeline + Qwen3-32B, verified run & test & 0.830 & 0.884 & 13.32 s & 0.075 terms/s\\
+Fixed pipeline + Qwen3-32B & validation & 0.851 & 0.882 & 9.08 s & 0.110 terms/s\\
+Dynamic agent + Qwen3-32B & validation & 0.830 & 0.866 & 18.96 s & 0.053 terms/s\\
+\bottomrule
+\end{tabular}
+\caption{Accuracy--latency trade-off for representative configurations.}
+\label{tab:latency}
+\end{table}
+\endgroup
+
+The dynamic architecture required approximately 2.1 times the wall-clock time per term of the fixed pipeline (18.96 s versus 9.08 s) for slightly lower validation accuracy. The additional latency is consistent with the extra controller decision steps and repeated retrieval interactions performed by the dynamic architecture before the shared final reranking stage; stage-level timings were not separately measured, so this should be read as a plausible attribution rather than a decomposed latency measurement.
+
+The local-versus-remote reranker comparison illustrates that parameter count alone does not predict latency: the local 2-billion-parameter reranker required approximately 13.2 seconds per validation term, more than the remote 32-billion-parameter reranker's approximately 9.1 seconds. The two rerankers ran on different infrastructure (a local 6 GB GPU versus a remote, provider-routed API), so this comparison reflects serving infrastructure and routing at least as much as it reflects model size.
+
+\section{Error analysis}
+\label{sec:error-analysis}
+
+\subsection{Failure decomposition}
+
+The selected configuration was evaluated over the complete 969-row dataset for descriptive error analysis. Table~\ref{tab:failure-decomposition} reports the outcome of every row under two neutral definitions: a \emph{ranking error} is a row in which the gold candidate is present in the final top-five ranking but not at rank one; a \emph{retrieval miss} is a row in which the gold candidate is absent from the top-five shortlist altogether. This decomposition separates failures of shortlist coverage from failures of final candidate ordering, without attributing a ranking error to a specific component by default.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lrrp{5.4cm}}
+\toprule
+\textbf{Outcome} & \textbf{Count} & \textbf{Rate} & \textbf{Definition}\\
+\midrule
+Correct at rank 1 & 797 & 82.2\% & Gold candidate ranked first.\\
+Ranking error & 119 & 12.3\% & Gold candidate present in the top five, not ranked first.\\
+Retrieval miss & 53 & 5.5\% & Gold candidate absent from the top five.\\
+\midrule
+Total & 969 & 100\% & \\
+\bottomrule
+\end{tabular}
+\caption{Failure decomposition on the complete 969-row dataset, selected final configuration.}
+\label{tab:failure-decomposition}
+\end{table}
+\endgroup
+
+Among the 119 ranking errors, the gold candidate was at rank 2 in 87 cases, rank 3 in 19 cases, rank 4 in 11 cases, and rank 5 in 2 cases: most ranking errors are close decisions rather than severe misorderings. Several are consistent with a semantically defensible but non-matching top choice -- for example, \emph{investment} (gold \emph{investing}) ranked first as \emph{funding}, and \emph{mediation} (gold \emph{conflict resolution}) ranked first as \emph{dispute resolution}.
+
+Retrieval misses present a different pattern: examples include \emph{philosophy} $\rightarrow$ \emph{wisdom}, \emph{gospels} $\rightarrow$ \emph{good news}, \emph{information technology} $\rightarrow$ \emph{IT}, and \emph{identity management} $\rightarrow$ \emph{IdM}, spanning register shifts, semantically distant phrasings, and abbreviation-direction effects. Because the gold candidate never reaches the reranking stage in these rows, increasing reranker capability alone cannot resolve them.
+
+\subsection{Failure rate by term type and lexical overlap}
+
+Table~\ref{tab:term-type-failure} reports ranking-error and retrieval-miss rates by the heuristic term-type categories defined in the Data chapter (Section~\ref{sec:normalization}). Single-word terms show the highest rate on both failure types; their retrieval-miss rate (9.9\%) is more than twice that of compound terms (3.2\%) and multi-word phrases (4.4\%). These categories are project-specific heuristics rather than a curated linguistic taxonomy and should be read as exploratory diagnostics.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Term type} & \textbf{Ranking-error rate} & \textbf{Retrieval-miss rate}\\
+\midrule
+Abbreviation-like & 5.9\% & 8.8\%\\
+Compound & 11.3\% & 3.2\%\\
+Multi-word phrase & 12.8\% & 4.4\%\\
+Single word & 14.2\% & 9.9\%\\
+\bottomrule
+\end{tabular}
+\caption{Failure rates by term type, complete 969-row dataset, selected final configuration.}
+\label{tab:term-type-failure}
+\end{table}
+\endgroup
+
+A post-hoc lexical-overlap indicator (Jaccard similarity between the whitespace-separated tokens of the input term and its gold synonym) shows a similar pattern: rows with no shared tokens (Jaccard similarity of 0) had a retrieval-miss rate of 8.9\% and a ranking-error rate of 16.0\%, compared with 1.7\% and 6.9\% respectively for rows with a Jaccard similarity above 0.33. This suggests that surface-level lexical distance between input and gold is associated with both failure types, though the mechanism is not established beyond this observed association.
+
+\subsection{Effect of reranking}
+
+A before-and-after comparison was performed on the 916 full-dataset rows for which the gold candidate had already been retrieved prior to the final Qwen3-32B reranking stage. Of these rows, 136 improved in gold rank, 732 were unchanged, and 48 worsened after reranking: reranking produced a positive net movement in gold rank across these rows. This is a statement about rank movement, not directly about Hit@1 counts, since not every improvement in rank corresponds to a new rank-one success. The regressions are not evenly distributed: 43 of the 48 worsened cases had been correct at rank one before reranking and were demoted afterward.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+\def\scale{0.0068}
+\draw[-{Latex[length=2mm]}] (0,0) -- (0,732*\scale+0.6) node[above,font=\scriptsize]{Rows};
+\draw (0,0) -- (7.5,0);
+\foreach \x/\lbl/\val in {1/Improved/136, 3.5/Unchanged/732, 6/Worsened/48} {
+  \pgfmathsetmacro{\h}{\val*\scale}
+  \draw[fill=black!15,draw=black] (\x,0) rectangle ++(1.6,\h);
+  \node[above] at (\x+0.8,\h) {\val};
+  \node[below] at (\x+0.8,-0.15) {\lbl};
+}
+\end{tikzpicture}
+\caption{Gold-rank movement after Qwen3-32B reranking, on the 916 full-dataset rows where the gold candidate had already been retrieved. 43 of the 48 worsened rows had been correct at rank one before reranking.}
+\label{fig:rerank-movement}
+\end{figure}
+
+This finding is consistent with why confidence-gated reranking did not outperform blanket reranking in validation. The gated configuration invoked Qwen3-32B only when the retrieval margin appeared ambiguous, reducing average validation latency from 9.08 to 3.78 seconds but also reducing Hit@1 from 0.851 to 0.835 (Table~\ref{tab:ablations}). Under the tested gating threshold, retrieval confidence was not sufficiently aligned with the cases in which reranking improved final ordering; this conclusion is limited to the tested threshold and reranker, not a general claim about confidence-gating strategies.
+
+\subsection{Representative examples}
+
+Replacing MiniLM with E5 recovered several rank-one predictions, including \emph{citizenship} $\rightarrow$ \emph{nationality}, \emph{feminism} $\rightarrow$ \emph{women's liberation}, \emph{brain} $\rightarrow$ \emph{cerebrum}, and \emph{fiscal policy} $\rightarrow$ \emph{budgetary policy}. These examples are consistent with E5 better capturing the intended semantic relation than MiniLM in these cases, rather than a lexically or topically related but non-equivalent candidate.
+
+Query expansion produced further recoveries, for example \emph{stocks} $\rightarrow$ \emph{shares}, \emph{consciousness} $\rightarrow$ \emph{awareness}, and \emph{democracy} $\rightarrow$ \emph{popular government}, where a generated variant moved the gold candidate toward rank one. Expansion could also introduce plausible distractors: for \emph{investment}, fusion could favor \emph{funding} over the gold \emph{investing}; for \emph{sustainable tourism}, \emph{eco-tourism} could outrank the gold \emph{eco-friendly tourism}.
+
+Qwen3-32B reranking corrected several such cases on validation, for example \emph{investment} (\emph{funding} $\to$ the gold \emph{investing}) and \emph{jurisprudence} (\emph{legal philosophy} $\to$ the gold \emph{legal theory}). The full-dataset analysis also recorded the reverse: for \emph{computer simulation}, the correct \emph{computational modeling} was demoted after reranking. Taken together, these examples are consistent with the reranking stage acting as a probabilistic ranking component rather than a deterministic arbiter of semantic correctness.
+
+\section{Statistical interpretation}
+
+\subsection{Confidence intervals}
+
+Because Hit@$k$ is a binary outcome per row, 95\% Wilson score intervals were computed directly from the observed hit counts for the principal Hit@1 results (Table~\ref{tab:wilson}). The Wilson interval is appropriate for binomial proportions and behaves better than a normal approximation at finite sample sizes.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{5.0cm}p{1.6cm}p{1.1cm}p{2.0cm}}
+\toprule
+\textbf{Configuration} & \textbf{Correct/n} & \textbf{Hit@1} & \textbf{95\% Wilson CI}\\
+\midrule
+MiniLM baseline, test & 104/194 & 0.536 & [0.466, 0.605]\\
+E5 baseline, test & 117/194 & 0.603 & [0.533, 0.669]\\
+Expansion $n=3$, test & 149/194 & 0.768 & [0.704, 0.822]\\
+Final pipeline, original test run & 165/194 & 0.851 & [0.794, 0.894]\\
+Final pipeline, verified test run & 161/194 & 0.830 & [0.771, 0.876]\\
+Final pipeline, validation & 165/194 & 0.851 & [0.794, 0.894]\\
+Final pipeline, full dataset (descriptive) & 797/969 & 0.822 & [0.797, 0.845]\\
+\bottomrule
+\end{tabular}
+\caption{95\% Wilson confidence intervals for Hit@1. The full-dataset row is a descriptive interval over train, validation, and test combined, not an independent held-out interval.}
+\label{tab:wilson}
+\end{table}
+\endgroup
+
+For the verified test run, Hit@3 (182/194) has an approximate 95\% Wilson interval of [0.895, 0.964], and Hit@5 (184/194) of [0.908, 0.972]; both intervals are clearly above the corresponding Hit@1 interval, reinforcing that candidate-set recall at five items is substantially more reliable than exact rank-one accuracy. Confidence intervals for MRR and NDCG are not reported in this chapter, since a defensible interval for these metrics requires bootstrapping over per-row values rather than the aggregate means alone.
+
+\subsection{Significance testing}
+
+For the validation comparison between the temperature-zero expansion pipeline without reranking and the same pipeline with Qwen3-32B reranking, 16 terms moved from incorrect to correct and 3 moved from correct to incorrect; an exact two-sided McNemar test on these 19 discordant rows gives $p \approx 0.0044$. Because this comparison is performed on the same validation split used throughout the project for configuration selection, this $p$-value is best interpreted as descriptive paired evidence that the two configurations differ, rather than as an independent confirmatory significance test.
+
+A second paired comparison is available between the original execution of the full reranked pipeline and the $n=3$ reranker-free configuration on test: 21 cases improved and 5 regressed, giving an exact two-sided McNemar value of $p \approx 0.0025$. Because these two configurations differ in both the reranking stage and the upstream expansion width (n=9 for the reranked pipeline versus n=3 for the baseline), this result is reported as a paired comparison between the two complete configurations, not as an isolated estimate of the effect of reranking. A corresponding paired significance test for the fallback-verified execution against these baselines is not available from the aggregate results reported here.
+
+The validation difference between the fixed-role pipeline and the dynamic architecture (0.851 versus 0.830, Section~\ref{sec:architectures}) corresponds to approximately four additional rank-one successes over 194 rows. The candidate-set inspection in Section~\ref{sec:architectures} provides mechanistic evidence that the two architectures behave differently, but the available aggregates do not support a formal significance claim for this specific Hit@1 difference. The appropriate reading is that the fixed pipeline performed better under the tested conditions, not that it has been shown to be universally superior to dynamic-agent retrieval.
+
+\section{Threats to validity}
+\label{sec:threats}
+
+\textbf{Sample size.} The held-out test split contains 194 rows, sufficient to distinguish large improvements, such as the change from MiniLM (Hit@1 = 0.536) to the verified final pipeline (Hit@1 = 0.830), but with limited resolution for configurations separated by one or two percentage points, as shown by the overlapping intervals in Table~\ref{tab:wilson}.
+
+\textbf{Repeated use of one validation split.} Approximately 40 configurations were compared on the same 194-row validation split. Repeated experimentation on one split, even without direct test-set optimization, can adapt engineering decisions to peculiarities of that particular sample; this limits confidence in the exact ranking of configurations that differ by only a small margin.
+
+\textbf{Reranker nondeterminism.} The final configuration was nominally identical, including temperature zero, across two separate test executions performed at different times, yet Hit@1 changed from 0.851 to 0.830 and average latency from 9.27 to 13.32 seconds per term. This variability is attributed to the externally hosted, provider-routed reranker rather than to any change in the pipeline code between the two runs, and it is the reason the more recent, fallback-verified execution -- confirmed free of silent reranker fallbacks -- is treated as the primary reported test result, while the earlier execution is retained as evidence of this variability. Future work should repeat this configuration several times to quantify this variability directly, rather than relying on two isolated executions.
+
+\textbf{External-service dependence.} The best-performing configuration requires a paid, remotely hosted reranker (Qwen3-32B via OpenRouter), introducing network availability, provider availability, and pricing as operational dependencies that the E5-only and local-expansion alternatives do not share.
+
+\textbf{Single-gold-label evaluation.} Exact matching against one designated gold synonym per row can penalize plausible alternatives, as seen in ranking errors such as \emph{eco-tourism} versus the gold \emph{eco-friendly tourism}, or \emph{dispute resolution} versus the gold \emph{conflict resolution}. The reported metrics therefore measure agreement with this dataset's specific synonym annotation, within the closed-pool ranking task as defined, rather than an unconstrained human judgment of synonym acceptability.
+
+\textbf{Prompt sensitivity.} The generator and reranker prompt wording was not systematically varied under a controlled design, even though model choice, embedding model, fusion strategy, expansion count, temperature, shortlist width, and reranker strategy were. This remains an unexamined source of configuration sensitivity.
+
+\section{Chapter summary}
+
+Under the tested conditions, stronger dense retrieval, controlled LLM-based query expansion, and Qwen3-32B reranking each contributed to higher observed ranking performance, at the cost of progressively higher latency: test Hit@1 rose from 0.536 (MiniLM) to 0.603 (E5) to 0.768 (local expansion and weighted fusion) to 0.830 (verified fixed-role pipeline with Qwen3-32B reranking), while latency rose from approximately 0.022 seconds to 13.32 seconds per term. On the complete dataset, the final configuration ranked 82.2\% of gold synonyms first, left 12.3\% retrievable but not first-ranked, and failed to retrieve 5.5\%; reranking produced a positive net movement in gold rank but also demoted 43 previously correct rank-one predictions. A matched downstream comparison found that a dynamic tool-calling architecture, using the same retrieval model and reranker, did not exceed the fixed-role pipeline's accuracy and required roughly twice the latency. These conclusions are limited to the evaluated dataset, splits, and configurations described in this chapter.

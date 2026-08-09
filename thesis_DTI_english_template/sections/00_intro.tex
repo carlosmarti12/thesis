@@ -1,0 +1,87 @@
+\chapter{Introduction}
+
+\section{Background and motivation}
+
+Academic and domain-specific terminology often admits multiple valid lexical formulations for the same underlying concept, and semantic relatedness does not necessarily imply strict synonymy: a term can be topically or associatively close to another without being an acceptable substitute for it. Retrieving the specific synonym intended for a given term from a controlled terminology inventory is therefore a non-trivial ranking problem, distinct from general semantic-similarity search. This distinction is not only conceptual -- it is confirmed empirically in this project, where general-purpose semantic similarity models (lexical retrieval, and cross-encoders trained for sentence similarity or duplicate-question detection) consistently underperformed pipelines configured to target the stricter equivalence relation required by the task.
+
+This thesis studies that problem empirically, comparing lexical retrieval, dense embedding retrieval, Large Language Model (LLM)-based query expansion, and LLM-based reranking as different mechanisms for identifying the intended synonym of an English academic or domain term, and comparing a fixed-role multi-agent pipeline against a more autonomous, dynamic tool-calling alternative for orchestrating these mechanisms.
+
+\section{Research problem and task formulation}
+
+Given an input academic or domain term, the system ranks candidates from a fixed terminology inventory and is evaluated according to the position of the row-specific annotated synonym. The task is formulated as \textbf{transductive, closed-pool synonym ranking}: a global candidate vocabulary is available in full at evaluation time, including candidate strings associated with validation and test rows, while the correct mapping between an individual input term and a vocabulary entry remains hidden from the system until after a prediction has been produced. This formulation differs from unrestricted synonym generation, since every returned answer must belong to the fixed inventory; the reported results measure ranking and selection quality within that known inventory and should not be interpreted as evidence of the ability to generate synonyms outside it.
+
+The candidate vocabulary is derived from the dataset as prepared for the task, before one degenerate identity pair (an input term recorded as its own synonym) is removed to form the final evaluation dataset (Chapter~\ref{chap:data}); its verified cardinality is 921 candidate synonyms. The final evaluation dataset itself contains 969 rows.
+
+A related property of the dataset is that each row provides exactly one annotated gold synonym, even though ten input terms occur more than once with a different recorded synonym each time. The evaluation therefore measures agreement with the dataset's row-specific annotation rather than an unrestricted human judgment of synonym acceptability, and a semantically plausible prediction can be scored as incorrect if it does not match the specific gold value recorded for that row.
+
+\section{Research objectives}
+
+The project was structured around the following objectives, each evaluated empirically under a common protocol:
+
+\begin{itemize}
+  \item evaluate lexical retrieval and dense embedding retrieval as baseline approaches to closed-pool synonym ranking;
+  \item evaluate LLM-based query expansion, and deterministic weighted multi-query fusion as a mechanism for controlling its contribution;
+  \item evaluate LLM-based reranking of a retrieved shortlist, including its sensitivity to reranker model capability;
+  \item compare a fixed-role, centrally orchestrated multi-agent architecture against a dynamic, single-agent tool-calling architecture under matched downstream retrieval and reranking components;
+  \item examine the accuracy--latency--cost trade-offs across the resulting configurations.
+\end{itemize}
+
+\section{Proposed approach}
+
+The system evaluated as the primary configuration is a \textbf{fixed-role, centrally orchestrated multi-agent pipeline}. A Generator Agent, an LLM-based component, produces query variants and paraphrases of the input term. Deterministic retrieval and weighted fusion -- supporting software components, not agents -- use these variants to score and shortlist candidates from the closed vocabulary using dense embeddings. A Verifier/Reranker Agent, a second LLM-based component, then evaluates and reorders that shortlist to produce the final prediction. The execution order and the role of each component are fixed by deterministic orchestration code, which is summarized as:
+
+\begin{center}
+\small
+Input term $\rightarrow$ Generator Agent $\rightarrow$ deterministic retrieval $\rightarrow$ deterministic fusion $\rightarrow$ Verifier/Reranker Agent $\rightarrow$ final prediction
+\end{center}
+
+or, in compact form: \emph{fixed-role MAS = Generator Agent + Verifier/Reranker Agent, with retrieval and fusion used as deterministic supporting tools.} Neither retrieval nor fusion negotiates, plans, or allocates tasks; coordination between the two agents is centralized rather than decentralized.
+
+As an alternative, the project also implements and evaluates a \textbf{dynamic tool-calling architecture}, in which a single controller agent decides at runtime, rather than through a fixed expansion strategy, which retrieval queries to issue and how many retrieval calls to perform before finalizing its candidate list. Retrieval remains a tool invoked by this controller, not an agent in its own right. The two architectures are compared experimentally under a matched downstream configuration, sharing the same retrieval model and final reranker (Chapter~\ref{chap:results}).
+
+\section{Dataset and experimental setting}
+
+The experiments use an English subset derived from the public, bilingual TU-Expert-Collection-Topic-Synonyms dataset (Hugging Face), retaining only the input term and its annotated English synonym. The public repository does not provide detailed documentation of the original annotation process or upstream collection methodology beyond a repository-level Apache-2.0 license label; this provenance limitation is discussed further in Section~\ref{sec:intro-limitations}. After removing invalid and duplicate rows and one degenerate identity pair, the resulting evaluation dataset contains 969 instances and uses a fixed vocabulary of 921 candidate synonyms (Chapter~\ref{chap:data}).
+
+The evaluation dataset is partitioned by unique input term, with a fixed random seed (42), into 581 training, 194 validation, and 194 test rows; grouping by input term keeps every occurrence of a repeated term within a single partition. The validation split was used throughout the project for model, fusion, and configuration decisions. The test split was not used for direct model or hyperparameter selection; configurations already selected through validation were subsequently evaluated on it, including two executions of the final pipeline (Chapter~\ref{chap:results}). The full 969-row dataset (all three partitions combined) is used only for descriptive reporting and error analysis after the final configuration had been selected, not as an independent held-out sample.
+
+\section{Evaluation approach}
+
+Performance is evaluated primarily using Hit@1 and Mean Reciprocal Rank (MRR), complemented by shortlist-sensitive metrics including Hit@3, Hit@5, and Normalized Discounted Cumulative Gain (NDCG@3, NDCG@5). Hit@1 reflects the system's primary intended output -- a single first-choice synonym -- while the remaining metrics separate retrieval-coverage failures (the gold synonym is never shortlisted) from ranking-order failures (it is shortlisted but not placed first). Formal definitions of these metrics are given in the Methodology and Evaluation Protocol section of Chapter~\ref{chap:models}.
+
+\section{Main findings}
+
+On the held-out test split, ranking quality improved through a sequence of distinct engineering decisions rather than through a single model replacement: the original all-MiniLM-L6-v2 embedding baseline reached Hit@1 = 0.536; replacing it with intfloat/e5-base-v2 increased Hit@1 to 0.603; adding local LLM-based query expansion with deterministic weighted fusion increased Hit@1 to 0.768 for the strongest reranker-free configuration; and reordering the resulting shortlist with Qwen3-32B produced the fallback-verified final result, Hit@1 = 0.830, Hit@3 = 0.938, Hit@5 = 0.948, MRR = 0.884, treated throughout this thesis as the primary reported test result.
+
+Under a matched downstream comparison on the validation split, sharing the same retrieval model and the same Qwen3-32B reranker, the fixed-role pipeline reached Hit@1 = 0.851 at an average latency of 9.08 seconds per term, against Hit@1 = 0.830 at 18.96 seconds per term for the dynamic tool-calling architecture: additional agent autonomy did not improve accuracy and roughly doubled latency under the tested conditions. Error analysis on the full dataset further shows that remaining failures arise from both shortlist-coverage errors, where the gold synonym is never retrieved, and final-ordering errors, where it is retrieved but not ranked first -- two distinct problems that call for different engineering responses (Chapter~\ref{chap:results}).
+
+\section{Contributions}
+
+This thesis contributes:
+
+\begin{enumerate}
+  \item an empirical comparison of lexical retrieval, dense-retrieval, LLM-based query-expansion, and LLM-based reranking approaches for transductive, closed-pool synonym ranking;
+  \item a fixed-role, centrally orchestrated multi-agent pipeline combining a Generator Agent and a Verifier/Reranker Agent with deterministic E5 retrieval and weighted multi-query fusion;
+  \item an empirical evaluation of local LLM-based query expansion together with deterministic weighted fusion as a control mechanism for generated query variants;
+  \item a matched-downstream comparison between the fixed-role multi-agent pipeline and a dynamic, single-agent tool-calling architecture;
+  \item an error analysis separating shortlist-coverage failures from final-ordering failures, and quantifying the benefits and regressions introduced by reranking.
+\end{enumerate}
+
+These are empirical contributions, evaluated under the specific dataset, splits, and configurations described in this thesis; no methodological novelty beyond this evaluation is claimed.
+
+\section{Scope and limitations}
+\label{sec:intro-limitations}
+
+\textbf{Closed-world scope.} The system ranks candidates within a known inventory and does not evaluate open-vocabulary synonym generation; results should not be generalized to settings where the correct answer may fall outside the predefined vocabulary.
+
+\textbf{Single-label evaluation.} Each row provides exactly one annotated gold synonym, so a plausible alternative synonym can be scored as incorrect if it does not match the row-specific annotation.
+
+\textbf{Dataset provenance.} The source repository provides limited information about the original annotation process, annotator qualifications, or collection methodology.
+
+\textbf{Representativeness.} No domain taxonomy or documented sampling design accompanies the source dataset, so the results should not be read as proportionally representative of academic terminology across disciplines.
+
+\textbf{External reranker dependence.} The best-performing configuration depends on a remotely hosted, provider-routed reranker (Qwen3-32B), which introduces latency, cost, and run-to-run variability that the local-only configurations do not share. The retained data consist of terminology strings rather than person-level records; this external-processing dependency is nonetheless relevant to any future deployment on more sensitive input.
+
+\section{Thesis structure}
+
+The remainder of this thesis is organized as follows. Chapter~\ref{chap:data} (Data) describes the source dataset and its documented provenance, the construction of the project-specific dataset and closed candidate vocabulary, preprocessing and normalization, the train/validation/test partitioning protocol, and the resulting task and leakage boundaries. Chapter~\ref{chap:models} (Models) presents the baseline model families, the fixed-role multi-agent pipeline and the dynamic tool-calling architecture in detail, the prompts and interface contracts used by each agent, engineering trade-offs across configurations, and the formal evaluation protocol. Chapter~\ref{chap:results} (Results) reports the main quantitative results, validation ablations, the fixed-versus-dynamic architecture comparison, the accuracy--latency trade-off, error analysis, and statistical interpretation of the reported differences. Chapter~\ref{chap:conclusions} (Conclusions) revisits the research objectives in light of the experimental evidence, synthesizes the methodological choices and results, discusses limitations and engineering recommendations, and proposes future work.

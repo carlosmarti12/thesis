@@ -1,0 +1,19 @@
+\babel@toc {english}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Fields present in the public repository and fields retained for this project.}}{18}{}%
+\contentsline {table}{\numberline {2.2}{\ignorespaces Source-to-project row reduction. The prepared dataset (970 rows) is the basis for the candidate vocabulary (Section~\ref {sec:candidate-vocab}); the evaluation dataset (969 rows) is the basis for the train/validation/test partition (Section~\ref {sec:partitioning}).}}{19}{}%
+\contentsline {table}{\numberline {2.3}{\ignorespaces Descriptive term-type distribution of the 969-row evaluation dataset. Model performance broken down by these categories is reported in the Results chapter.}}{23}{}%
+\contentsline {table}{\numberline {2.4}{\ignorespaces Role of each partition, as actually used in this project.}}{24}{}%
+\contentsline {table}{\numberline {2.5}{\ignorespaces Leakage concepts relevant to this dataset and how each is addressed.}}{24}{}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{Principal components and baselines used in the closed-pool synonym-ranking system.}}{28}{}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Principal operating points on the accuracy--latency--cost frontier. Values for the dynamic architecture are validation-split figures, as noted, since it was not run on the test split.}}{42}{}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Main held-out test results and experimental progression. The 2026-07-22 verified run is the primary reported test result throughout this chapter (Section~\ref {sec:threats}).}}{47}{}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Representative validation ablations. Hit@5, MRR, and latency are omitted for the temperature-0.3 weighted-fusion row where the available records report only Hit@1 for that configuration.}}{49}{}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Accuracy--latency trade-off for representative configurations.}}{52}{}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Failure decomposition on the complete 969-row dataset, selected final configuration.}}{53}{}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Failure rates by term type, complete 969-row dataset, selected final configuration.}}{54}{}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces 95\% Wilson confidence intervals for Hit@1. The full-dataset row is a descriptive interval over train, validation, and test combined, not an independent held-out interval.}}{56}{}%
+\addvspace {10\p@ }

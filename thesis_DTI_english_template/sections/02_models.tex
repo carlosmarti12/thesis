@@ -1,0 +1,523 @@
+\chapter{Models}
+\label{chap:models}
+
+\section{Executive summary and roadmap}
+
+This chapter presents the models and software components evaluated for closed-pool synonym ranking. First, the baseline model families are introduced to establish the progression from lexical retrieval to dense semantic retrieval and Large Language Model (LLM)-assisted methods. Subsequently, the selected fixed-role, centrally orchestrated multi-agent pipeline is described, including the Generator Agent, embedding-based retrieval component, weighted fusion mechanism, and Verifier/Reranker Agent. The dynamic single-agent tool-calling architecture is then presented as an alternative in which the retrieval strategy is controlled at runtime. The chapter then discusses the main engineering trade-offs and model-selection considerations, and closes by defining the evaluation protocol (Hit@$k$, MRR, NDCG@$k$) used to score every configuration reported in the Results chapter.
+
+The selected system is a fixed-role, centrally orchestrated multi-agent pipeline based on a retrieve-then-rerank workflow. A local Generator Agent expands an input term into a small set of semantically related retrieval queries. These queries are encoded with intfloat/e5-base-v2 and compared against the closed candidate vocabulary using a deterministic retrieval component. The resulting similarity scores are combined through weighted fusion, after which the five highest-ranked candidates are evaluated and reordered by a Verifier/Reranker Agent based on Qwen3-32B through the OpenRouter API.
+
+Within this architecture, the Generator Agent and Verifier/Reranker Agent perform distinct LLM-based roles. Retrieval, embedding computation, similarity scoring, and weighted fusion are deterministic software components rather than agents. Coordination follows a predefined execution sequence controlled by deterministic orchestration code. The architecture is therefore described throughout this chapter as a fixed-role, centrally orchestrated multi-agent pipeline, or equivalently as a centrally orchestrated fixed-role MAS.
+
+Conceptually, the architecture can be represented as:
+
+\begin{center}
+\small
+Input term $\rightarrow$ Generator Agent $\rightarrow$ Deterministic retrieval and fusion components $\rightarrow$ Verifier/Reranker Agent $\rightarrow$ Final prediction
+\end{center}
+
+In compact form:
+
+\begin{quote}
+\textbf{Fixed-role MAS = Generator Agent + Verifier/Reranker Agent, with retrieval and fusion used as deterministic tools.}
+\end{quote}
+
+The project also includes a dynamic architecture in which one local LLM controls the retrieval process at runtime, deciding how many additional retrieval calls to perform and which query to submit at each step. Under the tested conditions, this greater control flexibility produced some complementary candidates but did not improve the overall evaluation result. The fixed-role, centrally orchestrated multi-agent pipeline achieved higher validation accuracy and approximately half the average latency of the dynamic alternative when both architectures used the same embedding model and final Qwen3-32B reranker.
+
+Table~\ref{tab:components} provides a concise overview of the principal components and baselines. The latency classes used in the table are project-relative: low indicates less than approximately 0.1 seconds per term, medium indicates approximately 0.1--2 seconds, and high indicates more than 2 seconds. Where a stage was not timed independently, its class was inferred from the closest complete method that isolated its contribution.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{p{1.85cm}p{1.95cm}p{2.7cm}p{1.6cm}p{1.1cm}p{1.5cm}p{2.5cm}}
+\caption{Principal components and baselines used in the closed-pool synonym-ranking system.}\label{tab:components}\\
+\toprule
+\textbf{Component} & \textbf{Model family} & \textbf{Model size or identifier} & \textbf{Determinism} & \textbf{Latency class} & \textbf{Cost implication} & \textbf{Primary failure modes}\\
+\midrule
+\endfirsthead
+\multicolumn{7}{c}{\tablename\ \thetable{} -- continued from previous page}\\
+\toprule
+\textbf{Component} & \textbf{Model family} & \textbf{Model size or identifier} & \textbf{Determinism} & \textbf{Latency class} & \textbf{Cost implication} & \textbf{Primary failure modes}\\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r}{\textit{Continued on next page}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Original embedding baseline & Dense embedding model & sentence-transformers/all-MiniLM-L6-v2; 384-dimensional output & Deterministic in the project & Low & Low, local & Prefers lexical or topical neighbors instead of strict synonyms\\
+Selected embedding model & Dense retrieval embedding model & intfloat/e5-base-v2; 12 layers, 768-dimensional output & Deterministic in the project & Low & Low, local & May overgeneralize toward semantically associated candidates\\
+Alternative BGE embedder & Dense retrieval embedding model & BAAI/bge-base-en-v1.5; approximately 0.1B parameters, 768 dimensions & Deterministic in the project & Low & Low, local & Lower synonym-ranking precision than E5 in the evaluated dataset\\
+Alternative Mixedbread embedder & Dense retrieval embedding model & mixedbread-ai/mxbai-embed-large-v1 & Deterministic in the project & Medium & Low, local & Did not improve the expansion pipeline over E5\\
+Generator Agent & Instruction-tuned LLM & Llama 3.2 3B, Q4\_K\_M quantization, local model ID a80c4f17acd5 & Stochastic in practice, despite temperature 0 & Medium & Low, local & Semantic drift, redundant variants, incomplete or malformed lists\\
+Retrieval and fusion component & Dense matrix retrieval and deterministic score fusion & Exhaustive NumPy dot-product retrieval over cached embeddings & Deterministic & Low & Low & Noisy variants can distort fused scores; candidates are restricted to the closed pool\\
+Verifier/Reranker Agent & Causal LLM accessed by API & Qwen3-32B; approximately 32.8B parameters & Stochastic in practice & High & Medium, paid API & Can demote an already-correct candidate; API variability\\
+Local reranker baseline & Local causal LLM & Qwen3.5-2B, Q8\_0 quantization, local model ID 324d162be6ca & Stochastic in practice & High on the available hardware & Low, local & Insufficient ranking capability; actively misorders strong retrieval results\\
+Dynamic retrieval controller & Tool-calling instruction-tuned LLM & Llama 3.2 3B, same Q4\_K\_M build as the Generator Agent & Stochastic in practice & Medium without final rerank; high end-to-end & Low locally; paid if Qwen reranking is added & Query drift, unnecessary tool calls, inconsistent candidate coverage\\
+Lexical baseline & BM25 sparse retrieval & BM25Okapi with library-default k1 and b; project normalization followed by whitespace tokenization & Deterministic & Low & Low & Fails when synonyms share few or no tokens\\
+Cross-encoder baselines & Pairwise sequence-classification models & cross-encoder/stsb-roberta-base and cross-encoder/quora-distilroberta-base & Deterministic in the project & Low to medium & Low, local & Scores general similarity or duplicate-question likelihood rather than strict synonymy\\
+\end{longtable}
+\endgroup
+
+The official model cards confirm that all-MiniLM-L6-v2 produces 384-dimensional vectors, while e5-base-v2 produces 768-dimensional embeddings and requires task-specific input prefixes. The BGE base model also produces 768-dimensional representations. The Qwen model card identifies Qwen3-32B as a dense 32.8-billion-parameter causal model, and the Ollama catalogue identifies Llama 3.2 as an instruction-tuned family available in a 3B configuration. The project-relative latency, cost, and failure classifications in Table~\ref{tab:components} were derived from the recorded experiments rather than from general model benchmarks. The two local model digests and quantization levels, Q4\_K\_M for Llama 3.2 3B and Q8\_0 for Qwen3.5-2B, were read directly from the Ollama installation used for this project.
+
+\section{Baseline model families}
+
+The baseline systems were used to determine whether each additional model or orchestration stage contributed measurable value. In particular, the project did not assume that an LLM-based architecture would necessarily outperform a simpler retrieval method. Instead, lexical retrieval, dense embeddings, direct LLM generation, cross-encoder reranking, and multi-stage pipelines were compared under the same evaluation protocol. This progression made it possible to separate improvements caused by the embedding model from improvements caused by query expansion or reranking.
+
+The original dense embedding baseline used sentence-transformers/all-MiniLM-L6-v2. A sentence embedding model converts a text sequence into a fixed-length numerical vector intended to represent its semantic content. Candidate synonyms can then be ranked according to the cosine similarity between the input vector and each candidate vector. all-MiniLM-L6-v2 maps text to a 384-dimensional vector space and is intended for applications such as semantic search and sentence similarity. Its small architecture made it suitable as an initial low-latency baseline.
+
+The input to this baseline was one academic or domain term, and the output was an ordered list of candidate-pool entries ranked directly through embedding similarity. Its principal benefit was operational simplicity: candidate embeddings could be computed once, stored, and reused for every query. However, the results indicated that the model often selected a term that was related to the input without being its intended synonym. For example, lexical resemblance or broad topical association could dominate the stricter equivalence required by the evaluation task. The baseline reached a test Hit@1 of 0.536 with an average latency of approximately 0.022 seconds per term.
+
+The stronger dense embedding baseline replaced MiniLM with intfloat/e5-base-v2. E5 is a retrieval-oriented embedding model trained through weakly supervised contrastive learning. Its official model card specifies 12 transformer layers and a 768-dimensional embedding space. It also requires prefixes that indicate the role of each text, such as \texttt{query:} and \texttt{passage:}. These prefixes form part of the model's expected retrieval input representation.
+
+In the implemented system, input terms and generated search variants were encoded as queries, while entries in the candidate vocabulary were encoded as passages. The retrieval component maps each supported embedder to its corresponding query and candidate formatting. E5 uses the \texttt{query:} and \texttt{passage:} prefixes, while MiniLM uses its standard unprefixed representation.
+
+Every text is encoded as a normalized vector using the normalization functionality provided by sentence-transformers. Cosine similarity is then computed through a dot product between normalized vectors.
+
+E5 was selected because it produced a substantial improvement without materially increasing latency: the test Hit@1 increased from 0.536 to 0.603, while average latency remained approximately 0.025 seconds per term. Therefore, E5 served both as a strong standalone baseline and as the retrieval foundation for the final pipelines.
+
+The BM25 lexical baseline represented each term through token occurrence rather than a dense semantic vector. BM25 is a sparse ranking method that rewards shared terms while correcting for document length and token frequency. The implementation uses the BM25Okapi variant with its library-default parameters and tokenizes every term using the project's standard normalization procedure followed by whitespace splitting. Its input was the original term, and its output was a ranking of candidate strings according to lexical matching.
+
+This method was inexpensive and deterministic. However, its engineering limitation was directly related to the task: valid synonyms frequently have few shared tokens. Consequently, BM25 achieved substantially lower accuracy than the dense embedding systems, and combining its rankings with E5 through Reciprocal Rank Fusion or normalized weighted fusion did not improve the selected embedding baseline.
+
+The zero-shot LLM baseline used Llama 3.2 3B to generate a proposed synonym before mapping the generated representation back to the closed candidate pool through embeddings. This ensured that the evaluated output remained a valid candidate-pool entry. The purpose of this experiment was to test whether the internal lexical knowledge of the LLM could produce a better retrieval query than the original input term.
+
+This design was motivated by research showing that LLM-generated query expansions can improve both sparse and dense retrieval by adding disambiguating or semantically informative text. Nevertheless, this evidence was treated as general motivation rather than a guarantee for the present synonym-ranking task. In the project, direct zero-shot generation was less effective than multi-query expansion and weighted fusion because a single generated proposal could select an incorrect sense and provide no independent retrieval evidence with which to correct it.
+
+Alternative embedding models were evaluated to determine whether the E5 result was specific to a single checkpoint. These alternatives included BAAI/bge-base-en-v1.5, intfloat/e5-large-v2, an E5-BGE ensemble, and mixedbread-ai/mxbai-embed-large-v1. BGE base produces 768-dimensional embeddings and is explicitly designed for retrieval and semantic representation, while the Mixedbread model uses a retrieval-specific query instruction. Under the tested conditions, none of these alternatives improved the priority metrics over e5-base-v2. In particular, the larger E5 checkpoint was both slower and less accurate, illustrating that parameter count alone was not a reliable model-selection criterion for this domain-specific task.
+
+Cross-encoder baselines were evaluated as local pairwise rerankers. A cross-encoder receives the query and one candidate together and returns a relevance or similarity score. Unlike a bi-encoder, it does not calculate reusable independent vectors; instead, every query-candidate pair is jointly processed. This normally allows richer token-level interactions but increases computation in proportion to the number of candidates.
+
+The project tested the top 20 retrieved candidates with cross-encoder/stsb-roberta-base and cross-encoder/quora-distilroberta-base. The former predicts sentence-level semantic similarity, while the latter estimates whether two questions are duplicates.
+
+These cross-encoders were not trained specifically for strict synonym equivalence between short academic noun phrases. Consequently, they frequently promoted a broadly related concept over the annotated synonym. This behavior was observed in cases where the original E5 top-ranked candidate was correct but was displaced by a thematically associated term. Cross-encoder reranking was therefore discarded despite its relatively low latency.
+
+\section{Fixed-role, centrally orchestrated multi-agent pipeline}
+
+The final architecture is implemented as a \textbf{fixed-role, centrally orchestrated multi-agent pipeline}. It contains two specialized LLM-based agents with predefined responsibilities: a Generator Agent and a Verifier/Reranker Agent. Between them, deterministic software components perform retrieval, similarity scoring, and weighted fusion.
+
+The architecture follows a fixed execution sequence controlled by deterministic orchestration code, from the input term through the Generator Agent, deterministic embedding retrieval, deterministic weighted fusion, the Verifier/Reranker Agent, and finally the prediction.
+
+The Generator Agent first produces alternative search expressions. The original term and generated expressions are subsequently processed by the deterministic retrieval component and scored against the complete candidate vocabulary. Their retrieval scores are combined using deterministic weighted fusion. Finally, the Verifier/Reranker Agent receives only the highest-ranked candidates and returns their revised order.
+
+The use of the term multi-agent refers specifically to the presence of two specialized LLM agents with different roles, prompts, models, and execution environments. Their coordination is centralized: deterministic orchestration code determines the execution order and transfers structured outputs between stages. Retrieval, E5 encoding, similarity calculation, and score fusion are supporting deterministic components and are not agents.
+
+Figure~\ref{fig:fixed-pipeline} shows the complete data flow. The gold synonym is accessed only after prediction for evaluation.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, align=center, minimum width=6.4cm, minimum height=0.9cm, font=\footnotesize, fill=black!3, inner sep=4pt},
+  sidebox/.style={draw, rounded corners, align=center, minimum width=4.6cm, minimum height=0.9cm, font=\footnotesize, fill=black!3, inner sep=4pt},
+  evalbox/.style={draw, dashed, rounded corners, align=center, minimum width=5.6cm, minimum height=0.9cm, font=\footnotesize, inner sep=4pt},
+  arr/.style={-{Latex[length=2.2mm]}, thick}
+]
+\node[box] (n1) {Input academic or domain term};
+\node[box, below=0.42cm of n1] (n2) {Generator Agent\\ Llama 3.2 3B, temperature = 0};
+\node[box, below=0.42cm of n2] (n3) {Query set: original term (weight 3) + up to 9 generated variants (weight 1 each)};
+\node[box, below=0.42cm of n3] (n4) {E5 query encoding (\texttt{query:} prefix)};
+\node[box, below=0.42cm of n4] (n5) {Cosine similarity: each query against each cached candidate};
+\node[box, below=0.42cm of n5] (n6) {Weighted score fusion};
+\node[box, below=0.42cm of n6] (n7) {Top-5 candidate shortlist};
+\node[box, below=0.42cm of n7] (n8) {Verifier/Reranker Agent\\ Qwen3-32B, temperature = 0};
+\node[box, below=0.42cm of n8] (n9) {Ordered top-5 prediction};
+\node[evalbox, below=0.55cm of n9] (n10) {Compare with gold synonym\\ \textit{(evaluation only)}};
+
+\node[sidebox, right=1.8cm of n4] (b1) {Closed candidate vocabulary};
+\node[sidebox, below=0.42cm of b1] (b2) {E5 candidate encoding (\texttt{passage:} prefix)};
+\node[sidebox, below=0.42cm of b2] (b3) {Cached candidate matrix};
+
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\draw[arr] (n3) -- (n4);
+\draw[arr] (n4) -- (n5);
+\draw[arr] (n5) -- (n6);
+\draw[arr] (n6) -- (n7);
+\draw[arr] (n7) -- (n8);
+\draw[arr] (n8) -- (n9);
+\draw[arr, dashed] (n9) -- (n10);
+
+\draw[arr] (b1) -- (b2);
+\draw[arr] (b2) -- (b3);
+\draw[arr] (b3.west) -- (n5.east);
+\end{tikzpicture}%
+}
+\caption{Fixed-role, centrally orchestrated multi-agent pipeline. The candidate-vocabulary branch on the right is encoded once and cached; only the query branch on the left is recomputed per input term.}
+\label{fig:fixed-pipeline}
+\end{figure}
+
+The Generator Agent is the first agent in the fixed-role MAS. It is an LLM-based query-expansion component. Query expansion is the process of transforming one search expression into several semantically related expressions so that different lexical realizations of the same concept can be retrieved. The generator receives one English academic or domain term and returns up to nine short paraphrases or related expressions. The original term is prepended by the orchestration code, producing at most ten retrieval queries.
+
+The Generator Agent was implemented with Llama 3.2 3B through Ollama. The 3B Llama 3.2 model is intended for instruction-following, rewriting, tool use, and related local applications, making it suitable for constrained query expansion. A local model was selected to avoid a paid API call for every generated variant set and to preserve acceptable latency during repeated validation experiments. The selected local model runs at Q4\_K\_M quantization on the project's Ollama installation.
+
+The generator temperature was initially set to 0.3. However, repeated runs showed approximately one to two percentage points of Hit@1 variation. It was therefore reduced to 0.0 so that comparisons between fusion weights and candidate counts would be less affected by sampling variation. Despite this setting, cross-process runs were not perfectly identical. Consequently, the Generator Agent is best characterized as nominally deterministic under temperature-zero decoding but empirically variable across independent runs.
+
+The benefit of query expansion is improved lexical and semantic coverage. A synonym that is distant from the original term in embedding space may become close to one of the generated variants. However, every additional query also introduces an opportunity for semantic drift. For example, a generated phrase may represent a related concept, a broader category, or a different sense of the original term.
+
+This is intentional at the generation stage because the generated expressions are retrieval probes rather than final predictions. The closed-pool retrieval and ranking stages determine the final candidate. For this reason, generated queries are not treated as equally reliable to the original input.
+
+The retrieval and fusion stages form the deterministic center of the pipeline and are supporting components of the fixed-role MAS rather than agents. The retrieval component receives the original query and generated variants and converts each string into a 768-dimensional E5 vector. Candidate-pool entries are encoded separately and cached. A similarity matrix is then calculated in which each row corresponds to one query and each column corresponds to one candidate. This structure makes it possible to reuse the same matrix while comparing alternative fusion strategies.
+
+Retrieval is implemented as an exhaustive NumPy dot product between the normalized query-embedding matrix and normalized candidate-embedding matrix. Because the candidate vocabulary contains 921 entries, exhaustive comparison provides exact cosine-similarity scores at low computational cost.
+
+Four multi-query fusion strategies were evaluated: maximum score, arithmetic mean, Reciprocal Rank Fusion, and a weighted mean. Maximum fusion allowed one poor generated query to dominate the result. Reciprocal Rank Fusion similarly gave excessive influence to high-ranked but unreliable candidates because it operates on rank positions rather than score magnitudes. The weighted mean produced the strongest result.
+
+Under this method, the original term receives weight 3, while each generated variant receives weight 1. The fused candidate score is:
+
+\begin{equation}
+S(c) = \frac{3\,s(q_0,c) + \sum_{i=1}^{m} s(q_i,c)}{3+m}
+\label{eq:weighted-fusion}
+\end{equation}
+
+where $q_0$ is the original term, $q_i$ is a generated variant, $m$ is the number of variants, $c$ is a candidate synonym, and $s(q,c)$ is the cosine-similarity score.
+
+The denominator does not affect candidate ordering when the number of queries is fixed, but it preserves the interpretation of the result as a weighted mean.
+
+This method was selected because it preserves query diversity without allowing one generated variant to outvote the original term. The original input therefore remains the principal source of evidence, while the LLM-generated variants act as supporting retrieval signals. The component outputs the five candidates with the highest fused scores. Increasing this shortlist to 10 or 15 candidates improved candidate recall slightly but reduced Hit@1 after reranking because the larger lists introduced more plausible distractors.
+
+Candidate vectors are cached because the candidate vocabulary remains fixed across queries. Only the incoming term and its generated variants therefore require new embedding computation. The cache stores candidate embeddings as float32 NumPy arrays. The cache identifier is derived from the embedder model name and the deduplicated candidate-pool size. This design reduces repeated embedding computation and keeps the marginal retrieval cost per term low after the candidate embeddings have been prepared.
+
+\section{Verifier/Reranker Agent}
+
+The Verifier/Reranker Agent is the second agent in the fixed-role, centrally orchestrated multi-agent pipeline. It acts as a listwise verification and ranking component. It receives the original term and exactly five candidates produced by the deterministic retrieval and fusion stages and returns the same candidates ordered from most to least likely synonym.
+
+Unlike embedding retrieval, which evaluates candidates through vector similarity, listwise reranking allows the agent to compare the candidates jointly in the context of the original term. The Verifier/Reranker Agent is constrained to the supplied shortlist. If its output omits one of the supplied candidates, the missing candidate is appended according to its previous order so that retrieval recall is preserved.
+
+The selected Verifier/Reranker Agent uses Qwen3-32B through OpenRouter. The official model card describes Qwen3-32B as a 32.8-billion-parameter causal LLM with instruction-following, reasoning, multilingual, and agent capabilities.
+
+This model was selected after a controlled comparison with a local Qwen3.5-2B reranker. When the two models were applied to the same upstream top-five lists, the 2B model reduced validation Hit@1 from 0.784 to 0.768, whereas Qwen3-32B increased it to 0.851. The smaller model was also slower on the available machine, requiring approximately 13.2 seconds per term compared with approximately 9.1 seconds for the API-hosted model in the validation run.
+
+This result shows that reranker capability, not merely model presence, drove the outcome: moving from the 2-billion-parameter to the 32-billion-parameter model raised validation Hit@1 by 8.3 percentage points (0.768 to 0.851), a substantially higher accuracy that the larger model's greater ranking capability explains directly. The latency comparison should be read separately from this accuracy result: the available local hardware, not parameter count, explains why the smaller local model was also slower than the API-hosted larger one. The local Qwen3.5-2B model runs at Q8\_0 quantization.
+
+The Verifier/Reranker Agent is limited by the candidate shortlist supplied by the deterministic retrieval stage. Its main contribution is therefore improved ordering among already-retrieved candidates. Reranking can also damage an already-correct result. On the complete dataset, 136 retrieved cases improved after reranking, while 48 worsened; 43 of the 48 regressions were candidates that had already been correct at rank one before being demoted. Therefore, the reranker was net beneficial, but its decisions were not uniformly reliable.
+
+Within the fixed-role MAS, the Verifier/Reranker Agent is conceptually distinct from the retrieval component. Retrieval determines which candidate strings enter the shortlist through deterministic similarity calculations, whereas the Verifier/Reranker Agent performs LLM-based semantic evaluation of that shortlist before the final prediction is produced.
+
+\section{Dynamic tool-calling architecture}
+
+The alternative architecture replaces fixed query generation and fusion with a tool-calling controller. Tool calling allows an LLM agent to invoke an external retrieval function, inspect the returned data, and decide whether another retrieval call is useful.
+
+The implemented architecture contains a single dynamic retrieval-control agent. It receives an input term and access to a \texttt{retrieve\_candidates} tool. At runtime, the agent decides how many additional retrieval calls to perform and which query paraphrase to pass with each call. It then uses \texttt{finalize} to return an ordered top-five list.
+
+This differs conceptually from the fixed-role, centrally orchestrated MAS. In the fixed-role architecture, the Generator Agent and Verifier/Reranker Agent have predefined specialized roles and deterministic orchestration code determines the execution sequence. In the dynamic architecture, a single controller agent determines the retrieval actions at runtime.
+
+The term single-agent refers specifically to control of the dynamic retrieval process. In the controlled architecture comparison, the resulting candidate list was subsequently sent to the same Qwen3-32B reranker used by the fixed-role pipeline. This reranker remained a fixed downstream ranking stage and did not participate in control of the tool-calling search loop.
+
+Figure~\ref{fig:dynamic-agent} illustrates this distinction. The central retrieval loop is controlled by one dynamic agent, while the final reranker remains a fixed post-processing component.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, align=center, minimum width=5.6cm, minimum height=0.9cm, font=\footnotesize, fill=black!3, inner sep=4pt},
+  decision/.style={draw, diamond, aspect=2.4, align=center, font=\footnotesize, fill=black!6, inner sep=2pt},
+  evalbox/.style={draw, dashed, rounded corners, align=center, minimum width=5.6cm, minimum height=0.9cm, font=\footnotesize, inner sep=4pt},
+  arr/.style={-{Latex[length=2.2mm]}, thick}
+]
+\node[box] (m1) {Input academic or domain term};
+\node[box, below=0.42cm of m1] (m2) {Dynamic retrieval agent\\ Llama 3.2 3B};
+\node[decision, below=0.5cm of m2, minimum width=4.2cm, minimum height=1.5cm] (m3) {Choose next\\ retrieval action};
+
+\node[box, right=2.1cm of m3] (t1) {\texttt{retrieve\_candidates}\\ (agent-selected query)};
+\node[box, below=0.38cm of t1] (t2) {E5 encoding + deterministic candidate retrieval};
+\node[box, below=0.38cm of t2] (t3) {Tool result: ranked candidates};
+\node[box, below=0.38cm of t3] (t4) {Update conversation and candidate memory};
+
+\node[box, below=0.85cm of m3] (m4) {\texttt{finalize}\\ (agent-selected top-5)};
+\node[box, below=0.42cm of m4] (m5) {Matched evaluation mode};
+\node[box, below=0.42cm of m5] (m6) {Qwen3-32B downstream reranker};
+\node[box, below=0.42cm of m6] (m7) {Return reranked top-5};
+\node[evalbox, below=0.55cm of m7] (m8) {Compare with gold synonym\\ \textit{(evaluation only)}};
+
+\draw[arr] (m1) -- (m2);
+\draw[arr] (m2) -- (m3);
+\draw[arr] (m3.east) -- node[above,font=\scriptsize]{call tool} (t1.west);
+\draw[arr] (t1) -- (t2);
+\draw[arr] (t2) -- (t3);
+\draw[arr] (t3) -- (t4);
+\draw[arr] (t4.south) to[out=270,in=0] node[right,font=\scriptsize]{choose again} (m3.east);
+\draw[arr] (m3.south) -- node[left,font=\scriptsize]{finish search} (m4.north);
+\draw[arr] (m4) -- (m5);
+\draw[arr] (m5) -- (m6);
+\draw[arr] (m6) -- (m7);
+\draw[arr, dashed] (m7) -- (m8);
+\end{tikzpicture}%
+}
+\caption{Dynamic tool-calling retrieval architecture. The agent may call \texttt{retrieve\_candidates} repeatedly before calling \texttt{finalize}; the downstream reranker is a fixed stage shared with the pipeline of Figure~\ref{fig:fixed-pipeline} in the matched comparison.}
+\label{fig:dynamic-agent}
+\end{figure}
+
+The input to the dynamic controller was the same term used by the fixed system. Its intermediate outputs were tool calls containing model-selected query strings, while its final output was a top-five candidate list.
+
+A deterministic safety mechanism anchors the search with the original input term before the agent begins its dynamic decisions. Finalization is constrained to candidate strings returned through retrieval. If the model reaches its turn budget before successfully finalizing, the accumulated retrieved candidate pool is used as the output. The turn budget is fixed at four turns.
+
+The principal engineering benefit was adaptability. The agent could finish after the initial search, repeat retrieval with a paraphrase, or explore a different interpretation depending on the term. This behavior recovered five gold synonyms that were missed by the fixed pipeline during the matched validation comparison. For example, self-selected paraphrases sometimes identified candidate regions that were not reached by the fixed set of generated variants.
+
+However, the same flexibility introduced less predictable control flow. The agent sometimes moved toward a plausible but incorrect sense, returned a weaker candidate set, or used additional planning calls without producing a corresponding accuracy improvement.
+
+With the same E5 retriever and Qwen3-32B final reranker, the dynamic architecture achieved validation Hit@1 of 0.830 and average latency of 18.96 seconds per term. The fixed-role, centrally orchestrated multi-agent pipeline achieved validation Hit@1 of 0.851 at 9.08 seconds. The comparison therefore suggests that the dynamic search capability was real but did not provide a positive net trade-off for this dataset.
+
+\section{Prompt and interface contracts}
+
+The following contracts define the roles and interfaces of the LLM-based components used in the two architectures.
+
+The Generator Agent belongs to the fixed-role, centrally orchestrated MAS and is configured as follows.
+
+\paragraph{Generator Agent contract.}
+Model: Llama 3.2 3B through Ollama.
+
+\begin{lstlisting}[style=promptstyle]
+System prompt:
+"You are a domain terminology expert. Generate English synonyms or
+closely related semantic variants for the given academic/domain term.
+These variants will be used as search queries against a vocabulary
+index, so include broader, narrower, and near-equivalent phrasings.
+Return only a JSON list of short variants. Do not explain."
+
+User message template:
+Term: "{term}"
+\end{lstlisting}
+
+Production parameters:
+\begin{itemize}
+  \item temperature = 0.3 for the experimental configuration, or 0.0 for the final pipeline
+  \item $n = 9$ for the final reranked pipeline; $n = 3$ for the faster local-only fallback
+  \item the original input term is prepended by orchestration code
+  \item local generation limit = 300 tokens
+\end{itemize}
+
+The Verifier/Reranker Agent is the second LLM agent in the fixed-role MAS.
+
+\paragraph{Verifier/Reranker Agent contract.}
+Model: Qwen3-32B through OpenRouter.
+
+\begin{lstlisting}[style=promptstyle]
+System prompt:
+"You are a strict semantic ranking agent for domain terminology. You
+receive one input term and a list of candidate synonyms. Your task is
+to ORDER the candidates from best to worst according to semantic
+equivalence. Do not invent new candidates. Do not remove candidates
+unless they are completely invalid. Use the exact candidate strings
+from the provided list. Return only a JSON list of candidate strings
+ordered from best to worst."
+
+User message template:
+Term: "{term}"
+
+Candidate synonyms:
+1. {candidate_1}
+2. {candidate_2}
+...
+\end{lstlisting}
+
+Output constraints:
+\begin{itemize}
+  \item return only candidates present in the input list
+  \item use the exact candidate strings supplied by the retrieval stage
+  \item omitted candidates are appended in their previous order
+\end{itemize}
+
+Production parameters: temperature = 0.0.
+
+The local reranker baseline uses the same ranking role and an almost identical prompt, with Qwen3.5-2B through Ollama and the local generation limit of 300 tokens.
+
+The dynamic tool-calling architecture uses a separate single controller agent.
+
+\paragraph{Dynamic tool-calling agent contract.}
+Controller model: Llama 3.2 3B through native Ollama tool calling.
+
+\begin{lstlisting}[style=promptstyle]
+System prompt:
+"You are a synonym-finding agent. You must find the best synonym for
+a given term, choosing ONLY from a fixed vocabulary you can search
+with the retrieve_candidates tool - you cannot invent candidates.
+Call retrieve_candidates one or more times (try the term itself and,
+if you think it will help, a paraphrase or a broader/narrower
+phrasing) to gather good candidates. When you are confident, call
+finalize with your final top 5 candidates ordered from best to worst,
+using the exact candidate strings returned by retrieve_candidates.
+Do not answer in plain text."
+\end{lstlisting}
+
+Production parameters:
+\begin{itemize}
+  \item temperature = 0.2
+  \item max\_turns = 4
+  \item the original input term is retrieved before the dynamic control loop begins
+\end{itemize}
+
+Tool schema --- \texttt{retrieve\_candidates}:
+
+\begin{lstlisting}[style=jsonstyle]
+{
+  "type": "function",
+  "function": {
+    "name": "retrieve_candidates",
+    "description": "Search the fixed candidate vocabulary for terms semantically close to a query. Returns up to top_k candidate strings, best match first.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search query - the term or a paraphrase of it."
+        },
+        "top_k": {
+          "type": "integer",
+          "description": "How many candidates to return (default 5, max 10)."
+        }
+      },
+      "required": ["query"]
+    }
+  }
+}
+\end{lstlisting}
+
+Tool schema --- \texttt{finalize}:
+
+\begin{lstlisting}[style=jsonstyle]
+{
+  "type": "function",
+  "function": {
+    "name": "finalize",
+    "description": "Submit the final ranked list of up to 5 candidate synonyms, best first. Must use exact strings previously returned by retrieve_candidates.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "ranked_candidates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Up to 5 candidate strings, best synonym first."
+        }
+      },
+      "required": ["ranked_candidates"]
+    }
+  }
+}
+\end{lstlisting}
+
+Safety constraints are enforced by the orchestration code. Finalization accepts candidate strings originating from the retrieval tool, and the accumulated retrieved pool provides a deterministic fallback if the turn budget is reached.
+
+\section{Engineering trade-offs and selection guidance}
+
+The model progression shows that the largest engineering gains did not come from adding complexity indiscriminately. Instead, each useful stage addressed a specific limitation of the previous one. Replacing MiniLM with E5 improved the semantic representation at almost no latency cost. Adding the Generator Agent improved candidate recall and ranking by providing multiple lexical formulations for deterministic retrieval. Weighted fusion reduced the effect of semantic drift by preserving a larger contribution from the original query. Finally, the Verifier/Reranker Agent improved ordering among candidates that had already been retrieved.
+
+Table~\ref{tab:tradeoffs} summarizes the principal operating points. The reported test value for the final pipeline is the fallback-verified rerun, because every candidate list in that execution was confirmed to have received a valid reranker response.
+
+\begingroup
+\footnotesize
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{3.0cm}p{1.1cm}p{1.1cm}p{2.2cm}p{2.6cm}p{2.6cm}}
+\toprule
+\textbf{Operating point} & \textbf{Test Hit@1} & \textbf{Test MRR} & \textbf{Approx.\ latency/term} & \textbf{Monetary API cost} & \textbf{Intended use}\\
+\midrule
+MiniLM embedding baseline & 0.536 & 0.629 & 0.022 s & None & Minimal-compute baseline\\
+E5 embedding baseline & 0.603 & 0.704 & 0.025 s & None & Low-latency local retrieval\\
+E5 with local query expansion and weighted fusion, no reranker & 0.768 & 0.835 & 0.72 s & None & Strong local-only configuration\\
+Fixed-role, centrally orchestrated MAS with Qwen3-32B reranking & 0.830 & 0.884 & 13.32 s (fallback-verified test run) & Approx.\ \$0.03 per 194 terms & Highest confirmed accuracy\\
+Dynamic tool-calling retrieval with Qwen3-32B reranking & 0.830 (val.) & 0.866 (val.) & 18.96 s & Approx.\ \$0.03 per 194 terms, same reranker call pattern & Experimental adaptive retrieval\\
+\bottomrule
+\end{tabular}
+\caption{Principal operating points on the accuracy--latency--cost frontier. Values for the dynamic architecture are validation-split figures, as noted, since it was not run on the test split.}
+\label{tab:tradeoffs}
+\end{table}
+\endgroup
+
+These values show a clear accuracy-latency frontier rather than one universally preferable model. The E5 baseline is approximately 30 times faster than the local expansion pipeline, while the expansion pipeline is substantially faster and cost-free compared with API reranking. Conversely, the final Verifier/Reranker Agent produces an important improvement in top-one ordering, particularly when the correct synonym is already present in the shortlist.
+
+The E5-only configuration should be preferred when latency, local execution, and operational simplicity are the principal requirements. It requires no generative stage and has negligible marginal cost once the candidate vectors are cached. However, its lower Hit@1 indicates that a single vector representation does not cover all lexical forms and domain-specific synonym relations present in the dataset.
+
+The local expansion configuration should be preferred when API independence is required but a moderate latency increase is acceptable. It offers a substantial improvement over E5 alone and can be executed entirely with local models. Its principal risk is generator drift. Therefore, the original-term weight should remain greater than the weight assigned to each generated variant.
+
+The complete fixed-role, centrally orchestrated multi-agent pipeline should be preferred for offline evaluation, catalogue construction, batch terminology processing, or other settings in which accuracy is more important than interactive response time. It provides the strongest confirmed result and follows a predictable execution sequence.
+
+Its centralized orchestration also makes each stage independently observable: generated variants, embedding scores, fused rankings, and final reranker output can be logged separately. This structure improves traceability and makes failures easier to attribute to generation, retrieval, fusion, or reranking.
+
+The dynamic tool-calling agent should be considered when terms vary substantially in difficulty and some inputs may benefit from adaptive search. Its ability to recover candidates missed by the fixed pipeline demonstrates that self-directed retrieval can produce complementary evidence. However, it should not be selected solely because it provides greater runtime control. Under the tested conditions, additional planning increased latency and produced more regressions than recoveries.
+
+The distinction between the two architectures is therefore fundamental:
+
+\begin{quote}
+\textbf{Fixed-role, centrally orchestrated MAS:} a Generator Agent and Verifier/Reranker Agent have predefined specialized roles, while deterministic orchestration code controls a fixed execution sequence and deterministic retrieval/fusion components operate between the two agents.
+\end{quote}
+
+\begin{quote}
+\textbf{Dynamic tool-calling architecture:} one controller agent determines retrieval queries and tool calls dynamically during execution, with the Qwen3-32B reranker retained as a fixed downstream stage in the matched comparison.
+\end{quote}
+
+The 2B local reranker should not be used in the final architecture. Its addition increased latency while reducing Hit@1 on a controlled upstream shortlist. This result demonstrates that reranking quality depends on model capability and task alignment. A reranker does not provide value merely because it processes the candidates jointly.
+
+Finally, the candidate shortlist should remain small unless the reranker or retrieval strategy is changed. Increasing the pool from five to ten or fifteen candidates increased the probability that the gold synonym was available, but it also exposed the reranker to more semantically plausible distractors and reduced top-one accuracy. Therefore, shortlist width must be optimized jointly with reranker capability rather than treated only as a recall parameter.
+
+\section{Methodology and evaluation protocol}
+\label{sec:methodology}
+
+This section defines the metrics used to score every configuration reported in this thesis. The Data chapter defines the dataset and the closed candidate vocabulary (Section~\ref{sec:candidate-vocab}); this section defines how a predicted ranking is turned into a number, so that the comparisons reported in the Results chapter rest on a single, explicit protocol.
+
+For a given input term, a system returns an ordered list of candidates drawn from the closed vocabulary. Let $r_i$ denote the rank, within that ordered list, of the gold synonym recorded for row $i$, with $r_i = \infty$ if the gold synonym is absent from the returned list altogether. All metrics below are computed per row from $r_i$ and then averaged over the $N$ rows of the split being reported.
+
+\subsection{Hit@\textit{k}}
+
+Hit@$k$ is the proportion of rows for which the gold synonym is returned within the first $k$ positions:
+
+\begin{equation}
+\operatorname{Hit@}k = \frac{1}{N} \sum_{i=1}^{N} \mathbb{1}\!\left[r_i \leq k\right].
+\label{eq:hit-at-k}
+\end{equation}
+
+This thesis reports Hit@1, Hit@3, and Hit@5. Hit@1 is treated as the primary metric, since it measures whether the system's single first-choice prediction is correct -- the intended mode of use for the system. Hit@3 and Hit@5 measure whether the gold synonym is present anywhere in a short shortlist, which is useful for separating a retrieval-coverage failure (the gold synonym is never shortlisted) from a ranking failure (it is shortlisted but not placed first); this distinction is used throughout the error analysis in the Results chapter.
+
+\subsection{Mean Reciprocal Rank}
+
+Mean Reciprocal Rank (MRR) averages the reciprocal of the gold synonym's rank, assigning zero credit when it is absent from the returned list:
+
+\begin{equation}
+\operatorname{MRR} = \frac{1}{N} \sum_{i=1}^{N}
+\begin{cases}
+1/r_i, & r_i < \infty,\\
+0, & r_i = \infty.
+\end{cases}
+\label{eq:mrr}
+\end{equation}
+
+Unlike Hit@$k$, which is binary at a fixed cutoff, MRR gives partial, rank-sensitive credit. It distinguishes two systems that achieve the same Hit@5 but place the gold synonym at different average positions within the top five.
+
+\subsection{Normalized Discounted Cumulative Gain}
+
+Normalized Discounted Cumulative Gain at cutoff $k$ (NDCG@$k$) is a rank-sensitive metric that discounts a correct result logarithmically by its position. Under the single-relevant-item setting used in this thesis (each row has exactly one gold synonym, treated as a binary-relevant item), NDCG@$k$ for row $i$ reduces to:
+
+\begin{equation}
+\operatorname{NDCG@}k_i =
+\begin{cases}
+1/\log_2(r_i+1), & r_i \leq k,\\
+0, & r_i > k,
+\end{cases}
+\label{eq:ndcg-at-k}
+\end{equation}
+
+averaged over rows to obtain the reported NDCG@3 and NDCG@5. NDCG@$k$ and MRR are related -- both discount by rank -- but are not identical, since their discount functions differ ($1/\log_2(r_i+1)$ versus $1/r_i$); NDCG@$k$ additionally saturates to zero outside its cutoff $k$, which MRR does not.
+
+\subsection{Rank matching and reporting conventions}
+
+The rank $r_i$ used in Equations~\ref{eq:hit-at-k}--\ref{eq:ndcg-at-k} is computed by normalized string equality between a candidate and the row's gold synonym (Section~\ref{sec:normalization} of the Data chapter), not literal character-for-character equality: a candidate differing from the gold value only in case or surface punctuation is scored as a match. Because each row provides exactly one gold label, these metrics do not give credit for an alternative, unrecorded synonym that may be equally valid (Section~\ref{sec:data-limitations}); this is a property of the annotation scheme rather than of the metrics themselves. Absolute hit counts are reported alongside proportions throughout the Results chapter, particularly for the 194-row validation and test splits, where a single changed prediction corresponds to approximately 0.52 percentage points.
+
+\section{Chapter summary}
+
+This chapter presented the model families and software components used for closed-pool synonym ranking. The selected system combines local LLM-based query expansion, E5 dense embeddings, deterministic weighted score fusion, and Qwen3-32B listwise verification and reranking.
+
+The selected architecture is consistently characterized as a \textbf{fixed-role, centrally orchestrated multi-agent pipeline}. Its two LLM agents have distinct predefined responsibilities: the Generator Agent produces retrieval-oriented semantic variants, while the Verifier/Reranker Agent evaluates and reorders the candidate shortlist to produce the final prediction. E5 retrieval, cosine-similarity computation, candidate caching, and weighted fusion are deterministic supporting components rather than agents. Their execution and the transfer of information between stages are controlled by deterministic orchestration code.
+
+In compact form:
+
+\begin{quote}
+\textbf{Fixed-role MAS = Generator Agent + Verifier/Reranker Agent, with retrieval and fusion used as deterministic tools.}
+\end{quote}
+
+The dynamic tool-calling alternative follows a different control structure. One dynamic controller agent selects retrieval actions at runtime and can adapt its search queries according to previous tool results. In the matched comparison, its candidate output was passed to the same Qwen3-32B downstream reranker used by the fixed architecture. Although the dynamic approach recovered some complementary candidates, the fixed-role, centrally orchestrated multi-agent pipeline achieved higher validation Hit@1 and substantially lower latency under the tested conditions.
+
+Overall, the experimental progression indicates that performance improved when each additional component addressed a distinct error mode. E5 strengthened semantic retrieval, the Generator Agent increased retrieval coverage through multiple semantic formulations, deterministic weighted fusion limited the influence of noisy expansions, and the Verifier/Reranker Agent improved final ordering within a small candidate shortlist. This division of responsibilities provides the conceptual and engineering basis for the selected fixed-role, centrally orchestrated MAS.
