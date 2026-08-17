@@ -3,17 +3,15 @@
 
 \section{Executive summary}
 
-This chapter describes the dataset used to construct and evaluate the closed-pool synonym-ranking system: the origin and documented provenance of the public source; how the project-specific dataset and its closed candidate vocabulary were built; the unit of observation and its single-label limitation; string normalization; the composition of the retained terms; the grouped train/validation/test partitioning; the boundaries of the resulting transductive, closed-pool task; and the main data-related limitations and ethical considerations.
+This chapter describes the dataset used to construct and evaluate the closed-pool synonym-ranking system: the origin and documented provenance of the public source; how the project-specific dataset and its closed candidate vocabulary were built; the unit of observation and its single-label limitation; string normalization; the composition of the retained terms; and the grouped train/validation/test partitioning. Data-related limitations are discussed together with the project's other limitations in the Conclusions chapter.
 
-The public source contains 1,266 records. After removing rows with an unusable input term, removing exact duplicate pairs, and removing one identity pair, the project retains 969 rows for evaluation, together with a closed candidate vocabulary of 921 unique synonym strings built from the 970-row table that precedes the removal of the identity pair. These 969 rows are partitioned, by exact input term and with a fixed random seed (42), into 581 training, 194 validation, and 194 test rows.
-
-The evaluation metrics used to score system predictions (Hit@1, Hit@3, Hit@5, MRR, NDCG@3, NDCG@5) are defined in the Methodology and Evaluation Protocol section of the Models chapter. Model performance broken down by dataset subset (term type, lexical overlap, error category) is reported in the Results chapter; this chapter is limited to properties of the data itself.
+The public source contains 1,266 records. After removing rows with an unusable input term, removing exact duplicate pairs, and removing one identity pair, the project retains 969 rows for evaluation. The closed candidate vocabulary of 921 unique synonym strings is built one step earlier, from the 970-row table that still includes the identity pair, so that the synonym it contributes remains a valid candidate even though the identity row itself is excluded from evaluation. These 969 rows are partitioned, by exact input term and with a fixed random seed (42), into 581 training, 194 validation, and 194 test rows.
 
 \section{Dataset origin and scope}
 
 The source dataset is published on Hugging Face under the identifier \texttt{\seqsplit{jensjorisdecorte/TU-Expert-Collection-Topic-Synonyms}} (Hub revision \texttt{\seqsplit{fb767656de4cb453d3b4d88bcdd060ee17a81f4b}}, last modified 2024-09-23). At this revision, the repository exposes one split, named \texttt{train}, containing 1,266 records with the following fields: an integer row index; a \texttt{topic} identifier such as \texttt{topic-12722}; an English term (\texttt{en}) and its Dutch counterpart (\texttt{nl}); and an English synonym (\texttt{en\_synonym}) with its Dutch counterpart (\texttt{nl\_synonym}).
 
-The repository is labeled with the Apache-2.0 license. Its structured metadata contains only the license declaration and automatically generated size/format tags; it does not document who created the synonym pairs, how they were annotated, whether domain experts validated them, which domains are represented, or how disagreements were resolved. The name of the dataset suggests a connection with a Tilburg University expert-topic collection, but no upstream citation, identifier, version history, or data-generation description is provided by the repository, so this connection is not treated as confirmed. The dataset is cited in this thesis as the Hugging Face repository at the revision above; the original institutional and annotation provenance is unspecified.
+The repository does not provide detailed documentation on the dataset's original collection or annotation procedure.
 
 The public data is bilingual and covers heterogeneous terminology, including examples from economics, law, psychology, information systems, religion, education, and public policy. Some records have a missing, empty, or placeholder value in the English term field while the English synonym field remains populated; the exact effect of this on the retained dataset is quantified in the next section.
 
@@ -21,64 +19,18 @@ The public data is bilingual and covers heterogeneous terminology, including exa
 
 The project retains only the two fields required by the ranking task: \texttt{en}, the input query term, and \texttt{en\_synonym}, the row-specific relevant candidate. The \texttt{topic}, \texttt{nl}, and \texttt{nl\_synonym} fields, and the numeric row index, are not passed to any evaluated method. This restricts the task to English-only synonym ranking and prevents auxiliary fields from influencing candidate generation or ranking.
 
-Table~\ref{tab:data-fields} summarizes which fields are present in the public repository and which are retained by the project.
-
-\begingroup
-\footnotesize
-\begin{table}[htbp]
-\centering
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{3.0cm}p{5.3cm}p{5.3cm}}
-\toprule
-\textbf{Field} & \textbf{Public repository} & \textbf{Retained in this project}\\
-\midrule
-\texttt{en} & Present & Retained (input query term)\\
-\texttt{en\_synonym} & Present & Retained (row-specific relevant candidate)\\
-\texttt{nl}, \texttt{nl\_synonym} & Present & Removed\\
-\texttt{topic} & Present, opaque identifier (e.g. \texttt{topic-12722}) & Removed\\
-Numeric row index & Present & Removed\\
-Total rows & 1,266 & 969 (evaluation dataset; see Table~\ref{tab:data-reduction})\\
-License & Apache-2.0 (repository label) & Reused under the source label\\
-\bottomrule
-\end{tabular}
-\caption{Fields present in the public repository and fields retained for this project.}
-\label{tab:data-fields}
-\end{table}
-\endgroup
-
-The reduction from the public source to the final evaluation dataset proceeds in three filtering steps, summarized in Table~\ref{tab:data-reduction}. Of the 1,266 source rows, 284 have an invalid \texttt{en} value (null, empty, or the placeholder ``\texttt{-}'') and are removed; none of the 284 removed rows are invalid solely because of \texttt{en\_synonym}. A further 12 rows are exact duplicate (\texttt{en}, \texttt{en\_synonym}) pairs and are removed, leaving a prepared table of 970 rows. Finally, the single identity row in which the input term and its recorded synonym coincide (\emph{modernisation}--\emph{modernisation}) is removed, leaving the 969-row evaluation dataset. This identity row is removed because the retrieval implementation excludes the input term from its own candidate list; for an identity row, that exclusion would leave no correct candidate available.
-
-\begingroup
-\footnotesize
-\begin{table}[htbp]
-\centering
-\begin{tabular}{p{8.5cm}p{4.5cm}}
-\toprule
-\textbf{Step} & \textbf{Rows remaining}\\
-\midrule
-Public source & 1,266\\
-Remove rows with an invalid \texttt{en} value (284 removed) & 982\\
-Remove exact duplicate (\texttt{en}, \texttt{en\_synonym}) pairs (12 removed) & 970 (prepared dataset)\\
-Remove the identity pair \emph{modernisation}--\emph{modernisation} (1 removed) & 969 (evaluation dataset)\\
-\bottomrule
-\end{tabular}
-\caption{Source-to-project row reduction. The prepared dataset (970 rows) is the basis for the candidate vocabulary (Section~\ref{sec:candidate-vocab}); the evaluation dataset (969 rows) is the basis for the train/validation/test partition (Section~\ref{sec:partitioning}).}
-\label{tab:data-reduction}
-\end{table}
-\endgroup
-
-\section{Unit of observation}
+The reduction from the public source to the final evaluation dataset proceeds in three filtering steps. Of the 1,266 source rows, 284 have an invalid \texttt{en} value (null, empty, or the placeholder ``\texttt{-}'') and are removed. A further 12 rows are exact duplicate (\texttt{en}, \texttt{en\_synonym}) pairs and are removed, leaving a prepared table of 970 rows. Finally, the single identity row in which the input term and its recorded synonym coincide (\emph{modernisation}--\emph{modernisation}) is removed, leaving the 969-row evaluation dataset. This identity row is removed because the retrieval implementation excludes the input term from its own candidate list; for an identity row, that exclusion would leave no correct candidate available.
 
 Each retained row represents one evaluation instance: one input academic or domain term and one row-specific expected English synonym. The dataset is therefore not a conventional multiclass classification dataset with a small set of balanced classes; it is a ranking dataset in which each query has one labeled relevant item within a much larger shared candidate vocabulary.
 
 For a candidate vocabulary of size $V$, each row contains one labelled relevant candidate and $V-1$ candidates treated as non-relevant under the single-label evaluation protocol used for scoring. This is a statement about the evaluation protocol, not a claim that the remaining $V-1$ candidates are necessarily semantically incorrect for that row: a candidate that is not labelled as relevant for a given row is simply not the row's recorded gold value, and may still be a plausible synonym.
 
-This distinction matters because ten input terms occur twice in the evaluation dataset, each time paired with a different recorded synonym. Given 969 rows with ten terms occurring twice, the evaluation dataset contains 959 distinct input strings (the corresponding prepared, 970-row table contains 960 distinct input strings, one more because it still includes the removed identity row). When a duplicated term has two valid synonyms, each row recognizes only one of them as correct, so a system that returns the alternative synonym associated with the other row is scored as incorrect on the row it was evaluated against. More generally, the dataset can contain plausible synonyms that are not recorded as the current row's gold value; this is a property of the single-gold-label annotation scheme, discussed further in Section~\ref{sec:data-limitations}.
+This distinction matters because ten input terms occur twice in the evaluation dataset, each time paired with a different recorded synonym. Given 969 rows with ten terms occurring twice, the evaluation dataset contains 959 distinct input strings (the corresponding prepared, 970-row table contains 960 distinct input strings, one more because it still includes the removed identity row).
 
 \section{Candidate vocabulary}
 \label{sec:candidate-vocab}
 
-The project adopts a closed-pool ranking formulation, and it is necessary to distinguish two datasets that this formulation depends on. Let the prepared dataset, obtained after removing invalid rows and exact duplicates (Table~\ref{tab:data-reduction}), be
+The project adopts a closed-pool ranking formulation, and it is necessary to distinguish two datasets that this formulation depends on. Let the prepared dataset, obtained after removing invalid rows and exact duplicates, be
 
 \[ D_{\mathrm{prepared}} = \{(q_i, y_i)\}_{i=1}^{970}, \]
 
@@ -92,40 +44,18 @@ where $q_i$ is an English input term and $y_i$ is its recorded English synonym. 
 
 The train, validation, and test partitions (Section~\ref{sec:partitioning}) are derived from $D_{\mathrm{eval}}$, not from $D_{\mathrm{prepared}}$. Consequently, the candidate vocabulary $C$ still contains the synonym string contributed by the excluded identity row, even though that row itself is never scored, since it does not appear in $D_{\mathrm{eval}}$ or in any split derived from it.
 
-The vocabulary is built by deduplicating the retained synonym values under the same normalized-equality rule used throughout the project (Section~\ref{sec:normalization}): for each normalized value, the first surface form encountered is the one retained, and entries are kept in the order in which they were first observed rather than sorted alphabetically. Equality among candidates, and between a candidate and a row-specific gold value, is evaluated after normalization, so entries differing only in case or surface punctuation are not treated as distinct. For every input term, the system produces an ordered list of candidates selected from $C$; the raw output of any language model used for query expansion is not treated as a final answer unless it corresponds to an entry of $C$, so every method, including the ones that free-generate a candidate proposal, ultimately returns a member of the closed vocabulary rather than unconstrained text.
-
-\subsection{Task formulation}
-
-The task is formulated, and should be referred to consistently, as \textbf{transductive, closed-pool synonym ranking}. Under this formulation:
-
-\begin{itemize}
-  \item a global candidate vocabulary is fixed before any prediction is produced;
-  \item this vocabulary includes the synonym labels associated with every row of the prepared dataset, including rows later assigned to the validation and test partitions;
-  \item for a given input term, the system selects and orders candidates from this vocabulary rather than generating unconstrained text;
-  \item the row-specific gold label is accessed only for evaluation, after a prediction has already been produced;
-  \item the objective is to identify or rank the correct candidate within a known inventory, not to generate a synonym that may not appear in it.
-\end{itemize}
-
-Consequently, the reported results measure ranking and selection quality within a closed, known terminology inventory. They do not measure open-vocabulary synonym generation, and they should not be interpreted as evidence that the system can produce synonyms absent from this inventory. The implications of this formulation for information leakage are discussed in Section~\ref{sec:leakage}.
+The vocabulary is built by deduplicating the retained synonym values under a shared normalization rule, defined in full in Section~\ref{sec:normalization}: each string is lowercased and stripped of surface punctuation before comparison, so that, for example, \emph{IT-Governance} and \emph{it governance} are treated as the same candidate. For each normalized value, the first surface form encountered is the one retained, and entries are kept in the order in which they were first observed rather than sorted alphabetically. Equality among candidates, and between a candidate and a row-specific gold value, is evaluated after this normalization, so entries differing only in case or surface punctuation are not treated as distinct. For every input term, the system produces an ordered list of candidates selected from $C$; the raw output of any language model used for query expansion is not treated as a final answer unless it corresponds to an entry of $C$, so every method, including the ones that free-generate a candidate proposal, ultimately returns a member of the closed vocabulary rather than unconstrained text.
 
 \section{Preprocessing and normalization}
 \label{sec:normalization}
 
 \subsection{Stored representation}
 
-The stored dataset retains the original surface form of each string after basic cleaning: leading and trailing whitespace is removed, and empty strings or the placeholder ``\texttt{-}'' are treated as missing values and dropped. No case-folding, Unicode normalization (such as NFC or NFKC), or diacritic folding is applied to the stored strings, and internal whitespace is not collapsed. Because only the English fields are retained, exposure to the source's bilingual, heterogeneous punctuation is reduced but not eliminated: English terminology can still include apostrophes, accented proper names, or non-ASCII dashes. Casing is preserved in storage because it can be informative for acronyms and proper names (for example, distinguishing \emph{IT} or \emph{IdM} from ordinary lowercase words); the stored, cased strings are what the project's language-model components and reranker receive as input.
+The stored dataset retains the original surface form of each string after basic cleaning: leading and trailing whitespace is removed, and empty strings or the placeholder ``\texttt{-}'' are treated as missing values and dropped.
 
 \subsection{Equality representation}
 
-Independently of the stored representation, every equality check performed by the project -- candidate deduplication, exclusion of the input term from its own candidate list, and matching a prediction against the row-specific gold label -- uses a shared normalized form of each string: lowercased, stripped of leading and trailing whitespace, filtered to remove characters outside basic ASCII letters, digits, whitespace, and hyphens, with the remaining whitespace collapsed. This filter deletes unsupported characters rather than transliterating them to an ASCII equivalent, so an accented character is removed rather than folded to its unaccented counterpart. Given that the retained fields are English-language academic terminology, this is expected to affect a small share of entries. Because this normalized form is used consistently for deduplication, self-exclusion, and gold matching, candidate identity and evaluation behave as case-insensitive and punctuation-insensitive throughout the project, even though the stored strings themselves are not modified.
-
-\subsection{Model-specific formatting}
-
-Some embedding models used for retrieval expect an input-role-specific prefix, for example a ``query'' prefix for the input term and a ``passage'' prefix for candidate entries. Where required, this prefix is applied only at encoding time for the model in question and does not alter the stored or normalized representation of the text; replacing one embedding model with another therefore changes only this encoding-time formatting, not the underlying dataset.
-
-\subsection{Stemming and lemmatization}
-
-Stemming and lemmatization were not applied to the stored dataset or to production inputs. A shared word-stem indicator was used only as a diagnostic feature in post-hoc error analysis and did not modify the stored dataset or the system input. Morphological query variants (for example, singular/plural forms) were evaluated as an experimental retrieval strategy; the corresponding results belong to the Models and Results chapters rather than to this description of the dataset.
+Independently of the stored representation, every equality check performed by the project -- candidate deduplication, exclusion of the input term from its own candidate list, and matching a prediction against the row-specific gold label -- uses a shared normalized form of each string: lowercased, stripped of leading and trailing whitespace, filtered to remove characters outside basic ASCII letters, digits, whitespace, and hyphens, with the remaining whitespace collapsed. This filter deletes unsupported characters rather than transliterating them to an ASCII equivalent, so an accented character is removed rather than folded to its unaccented counterpart; given that the retained fields are English-language academic terminology, this is expected to affect a small share of entries. The stored strings themselves are not modified by this process -- it is used only for equality comparisons.
 
 \section{Dataset composition}
 
@@ -156,14 +86,10 @@ Total & 969 & 100.0\%\\
 
 Compounds form the largest category, at approximately 44.6\% of the dataset; multi-word phrases and single words each represent approximately one quarter; abbreviation-like inputs form a comparatively small subset. A lexical-overlap indicator, based on shared whitespace-separated tokens between an input term and its gold synonym, was also defined for post-hoc error analysis; the corresponding performance results are reported in the Results chapter rather than here.
 
-\subsection{Domain and frequency distributions}
-
-The available dataset does not provide interpretable academic-domain or corpus-frequency labels: the source's \texttt{topic} field contains opaque identifiers (e.g.\ \texttt{topic-12722}) rather than named categories, and no frequency or usage-count field is present. Consequently, the descriptive analysis in this chapter is limited to observable properties of term structure, such as the term-type distribution above, rather than domain- or frequency-stratified statistics.
-
 \section{Train, validation, and test partitioning}
 \label{sec:partitioning}
 
-The 969-row evaluation dataset was partitioned with a fixed random seed (42) and a nominal 60/20/20 allocation, producing 581 training rows, 194 validation rows, and 194 test rows (observed proportions 59.96\%, 20.02\%, and 20.02\%). The partition is grouped by the exact input term rather than by row, so that every occurrence of a repeated input term is assigned to the same partition. This grouping is necessary because ten input terms occur twice with different recorded synonyms: without it, one occurrence of a term could be used for configuration decisions while another occurrence of the same term, with a different gold label, appeared in the test partition.
+The 969-row evaluation dataset was partitioned with a fixed random seed (42) and a nominal 60/20/20 allocation, producing 581 training rows, 194 validation rows, and 194 test rows. The partition is grouped by the exact input term rather than by row, so that every occurrence of a repeated input term is assigned to the same partition. This grouping is necessary because ten input terms occur twice with different recorded synonyms: without it, one occurrence of a term could be used for configuration decisions while another occurrence of the same term, with a different gold label, appeared in the test partition.
 
 Table~\ref{tab:partitions} summarizes each partition's size and its actual role in the project.
 
@@ -186,54 +112,6 @@ Full & 969 & 100.00\% & Not an independent split; the union of the three partiti
 \end{table}
 \endgroup
 
-Although no neural model was trained from scratch, this separation is still necessary: selecting an embedding model, fusion strategy, query-expansion setting, candidate-pool width, or reranker according to observed performance is itself a form of data-dependent model selection, with the same overfitting risk as tuning a trained model's hyperparameters.
+The training partition is not used to fit or select any of the evaluated systems: no component in this project is trained with gradient descent, so there is no model-fitting step for it to support. It is reserved, unused, so that a future extension of this project -- for example, fitting fusion weights or a confidence threshold on data the reported comparisons never touched -- would still have a partition available that has not influenced any decision made in this thesis. The validation partition, by contrast, was used throughout the project to choose between embedding models, fusion strategies, query-expansion settings, candidate-pool widths, and rerankers.
 
-The test partition was not used to choose between candidate methods or parameter values -- those decisions were made on the validation partition. However, it is not accurate to describe the test partition as accessed only once: several configurations, already selected on validation, were subsequently evaluated on the test partition at different points during the project as the pipeline evolved, and their results are reported alongside the final configuration. The definitive result for the final configuration is distinguished from these earlier confirmations in the Results chapter.
-
-\section{Leakage and task boundaries}
-\label{sec:leakage}
-
-For this project, label leakage is defined as accessing a row's own gold synonym before producing a prediction for that row. Table~\ref{tab:leakage} separates five distinct leakage concepts that arise from this definition.
-
-\begingroup
-\footnotesize
-\begin{table}[htbp]
-\centering
-\begin{tabular}{p{2.9cm}p{5.0cm}p{5.4cm}}
-\toprule
-\textbf{Leakage type} & \textbf{Definition} & \textbf{Treatment in this project}\\
-\midrule
-Row-label leakage & The row-specific gold synonym is consulted before producing that row's prediction. & Ground truth is read only after a prediction has been produced, immediately before scoring.\\
-Input-group leakage & The same input term appears in more than one partition. & Prevented by grouping rows by the exact input term before partitioning (Section~\ref{sec:partitioning}).\\
-Test-selection leakage & Methods or parameters are chosen based on test-set performance. & Model, fusion, and configuration decisions were made using the validation partition (Section~\ref{sec:partitioning}).\\
-Candidate-vocabulary exposure & Synonym strings associated with validation or test rows are present in the global candidate vocabulary. & A deliberate property of the closed-pool, transductive task formulation (Section~\ref{sec:candidate-vocab}), not an incidental leak.\\
-Identity leakage & The input term is itself accepted as its own recorded synonym. & The identity pair was removed from the dataset (Section~\ref{sec:candidate-vocab}), and the input term is separately excluded from its own candidate list at evaluation time.\\
-\bottomrule
-\end{tabular}
-\caption{Leakage concepts relevant to this dataset and how each is addressed.}
-\label{tab:leakage}
-\end{table}
-\endgroup
-
-The identity check itself uses a simple case-insensitive, whitespace-trimmed string comparison, which is a different, simpler normalization than the shared normalized-equality rule used elsewhere in the project (Section~\ref{sec:normalization}), which additionally removes punctuation and non-ASCII characters. Both comparisons are case-insensitive, and the identity check only needs to catch exact-word identity, so this difference is not expected to affect correctness; it is nonetheless a minor internal inconsistency worth recording.
-
-Near-duplicate or spelling-variant input terms across partitions were not separately checked; the grouping rule in Section~\ref{sec:partitioning} operates on exact string identity.
-
-As introduced in Section~\ref{sec:candidate-vocab}, the candidate vocabulary is available in full before evaluation, including strings that also serve as gold labels for validation and test rows. Under an inductive formulation intended to measure generalization to unseen labels, this would constitute leakage. Under the closed-pool, transductive formulation adopted here, it does not, because no row-specific gold label is consulted before that row's own prediction is produced; this distinction should not be read as a claim that no leakage of any kind exists, only as a description of the specific type of information available to the system.
-
-\section{Data limitations and ethical considerations}
-\label{sec:data-limitations}
-
-\subsection{Data-quality limitations}
-
-\textbf{Incomplete provenance.} The source repository does not document the collection population, annotation process, annotator qualifications, validation protocol, or intended benchmark task. Consequently, it is not possible to determine, from the available materials, whether every pair represents strict synonymy, broader semantic relatedness, translation-mediated equivalence, or a mixture of these relations. This limitation is upstream of the project and cannot be resolved by inspecting the implementation.
-
-\textbf{Single-gold-label evaluation.} Each row provides exactly one accepted gold synonym, even though other synonyms may be plausible for the same term. The ten duplicated input terms partially expose this issue, since each duplicate is still evaluated independently against only its own row's gold label; a semantically defensible prediction can therefore be scored as incorrect if it does not match the specific gold value recorded for that row.
-
-\textbf{Closed-world candidate inventory.} All reported results are produced by ranking or selecting within a known candidate vocabulary (Section~\ref{sec:candidate-vocab}). These results should not be generalized to open-vocabulary synonym generation, for which no candidate inventory is available in advance.
-
-\textbf{Representativeness.} No domain taxonomy or documented sampling design accompanies the source dataset. It is therefore not possible to claim that the dataset represents academic terminology in general, that academic disciplines are proportionally sampled, or that results generalize equally across fields.
-
-\subsection{Future deployment considerations}
-
-The following points were not implemented as part of this project and are noted here as considerations for any future deployment, not as controls already in place: restricting external API calls to non-sensitive terminology under an approved data-processing arrangement; documenting provider logging and retention settings; presenting system outputs as ranked candidates rather than as authoritative terminological equivalences; and, for deployment in a specific academic domain, validation by subject-matter experts.
+The test partition was not used to choose between candidate methods or parameter values -- those decisions were made on the validation partition. It was, however, evaluated more than once: as the pipeline evolved, several configurations already selected on validation were subsequently run on the test partition at different points during the project, and their results are reported alongside the final configuration in the Results chapter. The test partition was therefore not strictly held out until a single final evaluation. Even though no configuration was chosen because of its test-set score, repeated access to test-set results over the course of development can introduce indirect influence on later decisions, and this risk should be weighed when interpreting the reported test numbers.

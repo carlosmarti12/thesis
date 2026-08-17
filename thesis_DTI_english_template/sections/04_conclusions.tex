@@ -104,8 +104,13 @@ Two nominally identical executions of the final configuration -- an original run
 
 \section{Limitations and threats to validity}
 \label{sec:threats}
+\label{sec:data-limitations}
 
 \textbf{Task definition.} The candidate vocabulary is built from the dataset's complete synonym column. Under the closed-pool formulation this is an intended property of the task, not leakage, because the system never inspects a row's own answer before ranking it. It does, however, restrict external validity: the reported results demonstrate the ability to rank a known vocabulary, not to discover synonyms outside it. In a setting where a correct answer may fall outside the predefined vocabulary, the current architecture cannot return it.
+
+\textbf{Incomplete provenance.} The source repository (Data chapter) does not document the collection population, annotation process, annotator qualifications, validation protocol, or intended benchmark task. Consequently, it is not possible to determine, from the available materials, whether every pair represents strict synonymy, broader semantic relatedness, translation-mediated equivalence, or a mixture of these relations. This limitation is upstream of the project and cannot be resolved by inspecting the implementation.
+
+\textbf{Representativeness.} No domain taxonomy or documented sampling design accompanies the source dataset. It is therefore not possible to claim that the dataset represents academic terminology in general, that academic disciplines are proportionally sampled, or that results generalize equally across fields.
 
 \textbf{Sample size and split variance.} The held-out test split contains 194 rows, and only one grouped partition (seed 42) was evaluated. Grouping by unique input term is a strong protection against direct overlap between partitions, but one particular split may still be easier or harder for a given method by chance; the observed validation-to-test differences for several configurations are consistent with non-negligible sampling variance.
 
@@ -147,6 +152,7 @@ Medium & Evaluate one or more mid-sized rerankers under matched conditions. & In
 Medium & Run a controlled prompt-sensitivity experiment. & Quantify dependence on generator and reranker prompt wording.\\
 Long term & Evaluate on another dataset or an open-vocabulary synonym task. & Measure external validity beyond the known candidate pool.\\
 Long term & Introduce expert or multi-reference evaluation for ambiguous synonyms. & Separate dataset-label ambiguity from genuine ranking errors.\\
+Long term & In any deployment, present system outputs as ranked candidates rather than as authoritative terminological equivalences. & Avoid overstating the reliability of a single-reference, closed-pool evaluation to end users.\\
 \bottomrule
 \end{tabular}
 \caption{Recommended future work, in priority order.}
